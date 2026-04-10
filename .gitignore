@@ -1,0 +1,4 @@
+.business/
+.claude/
+.env
+.env.local
