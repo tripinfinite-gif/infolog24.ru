@@ -48,9 +48,10 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 
-# Безопасность: не-root пользователь
+# Безопасность: не-root пользователь + wget для healthcheck
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+    adduser --system --uid 1001 nextjs && \
+    apk add --no-cache wget
 
 # Копируем только то, что нужно для запуска
 COPY --from=builder /app/apps/web/public ./public
