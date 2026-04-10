@@ -86,12 +86,6 @@ const orderStatusLabels: Record<OrderStatus, string> = {
   cancelled: "Отменена",
 };
 
-const payoutStatusLabels: Record<PayoutStatus, string> = {
-  pending: "Ожидание",
-  paid: "Выплачено",
-  none: "\u2014",
-};
-
 function formatCurrency(amount: number): string {
   return new Intl.NumberFormat("ru-RU", {
     style: "currency",

@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.business
+plans
+*.md
+!README.md
+.env*
+.claude

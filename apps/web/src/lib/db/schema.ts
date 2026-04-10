@@ -10,6 +10,8 @@ import {
   timestamp,
   date,
   jsonb,
+  index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 // ── Enums ──────────────────────────────────────────────────────────────────
@@ -133,7 +135,9 @@ export const users = pgTable("users", {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-});
+}, (table) => [
+  index("idx_users_phone").on(table.phone),
+]);
 
 export const sessions = pgTable("sessions", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -257,7 +261,12 @@ export const orders = pgTable("orders", {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-});
+}, (table) => [
+  index("idx_orders_user_id").on(table.userId),
+  index("idx_orders_status").on(table.status),
+  index("idx_orders_created_at").on(table.createdAt),
+  index("idx_orders_user_status").on(table.userId, table.status),
+]);
 
 export const permits = pgTable("permits", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -276,7 +285,12 @@ export const permits = pgTable("permits", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => [
+  index("idx_permits_order_id").on(table.orderId),
+  index("idx_permits_user_id").on(table.userId),
+  index("idx_permits_status").on(table.status),
+  index("idx_permits_valid_until").on(table.validUntil),
+]);
 
 export const documents = pgTable("documents", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -295,7 +309,10 @@ export const documents = pgTable("documents", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => [
+  index("idx_documents_order_id").on(table.orderId),
+  index("idx_documents_user_id").on(table.userId),
+]);
 
 export const payments = pgTable("payments", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -314,7 +331,12 @@ export const payments = pgTable("payments", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => [
+  index("idx_payments_order_id").on(table.orderId),
+  index("idx_payments_user_id").on(table.userId),
+  index("idx_payments_status").on(table.status),
+  uniqueIndex("idx_payments_external_id").on(table.externalId),
+]);
 
 export const notifications = pgTable("notifications", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -332,7 +354,11 @@ export const notifications = pgTable("notifications", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => [
+  index("idx_notifications_user_id").on(table.userId),
+  index("idx_notifications_status").on(table.status),
+  index("idx_notifications_user_read").on(table.userId, table.readAt),
+]);
 
 export const notificationTemplates = pgTable("notification_templates", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -372,7 +398,9 @@ export const chatConversations = pgTable("chat_conversations", {
     .notNull()
     .defaultNow()
     .$onUpdate(() => new Date()),
-});
+}, (table) => [
+  index("idx_chat_conversations_user_id").on(table.userId),
+]);
 
 export const chatMessages = pgTable("chat_messages", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -386,7 +414,9 @@ export const chatMessages = pgTable("chat_messages", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => [
+  index("idx_chat_messages_conversation_id").on(table.conversationId),
+]);
 
 export const promoCodes = pgTable("promo_codes", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -431,7 +461,11 @@ export const auditLog = pgTable("audit_log", {
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
-});
+}, (table) => [
+  index("idx_audit_entity").on(table.entityType, table.entityId),
+  index("idx_audit_user").on(table.userId),
+  index("idx_audit_created").on(table.createdAt),
+]);
 
 // ── Relations ──────────────────────────────────────────────────────────────
 

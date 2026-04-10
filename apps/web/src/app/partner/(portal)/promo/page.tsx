@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, ClipboardCopy, Code, Image, MessageSquare } from "lucide-react";
+import { CheckCircle, ClipboardCopy, Code, Image as ImageIcon, MessageSquare } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -124,7 +124,7 @@ export default function PromoPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Image className="size-5" />
+            <ImageIcon className="size-5" />
             <CardTitle>Баннеры</CardTitle>
           </div>
           <CardDescription>

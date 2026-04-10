@@ -6,8 +6,6 @@ import { ChevronDown, Search } from "lucide-react";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,11 +25,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 import {
   PAYMENTS,
   formatPrice,
-  formatDate,
   formatDateTime,
 } from "../_components/mock-data";
 import { ExportButton } from "../_components/export-button";

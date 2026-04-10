@@ -1,6 +1,8 @@
-import { Star } from "lucide-react";
+"use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { Quote, Star } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 interface Testimonial {
@@ -8,12 +10,19 @@ interface Testimonial {
   company: string;
   text: string;
   rating: number;
+  source?: "yandex" | "2gis" | "site";
 }
 
 interface TestimonialsProps {
   testimonials: Testimonial[];
   className?: string;
 }
+
+const sourceLabels: Record<string, string> = {
+  yandex: "Яндекс",
+  "2gis": "2ГИС",
+  site: "Сайт",
+};
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -22,10 +31,8 @@ function StarRating({ rating }: { rating: number }) {
         <Star
           key={i}
           className={cn(
-            "size-4",
-            i < rating
-              ? "fill-accent text-accent"
-              : "fill-muted text-muted"
+            "size-3.5",
+            i < rating ? "fill-accent text-accent" : "fill-muted text-muted"
           )}
         />
       ))}
@@ -35,32 +42,93 @@ function StarRating({ rating }: { rating: number }) {
 
 export function Testimonials({ testimonials, className }: TestimonialsProps) {
   return (
-    <section className={cn("px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24", className)}>
-      <div className="mx-auto max-w-7xl">
-        <h2 className="font-heading text-center text-3xl font-bold text-foreground sm:text-4xl">
-          Отзывы клиентов
-        </h2>
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((testimonial, index) => (
-            <Card key={index} className="transition-shadow hover:shadow-md">
-              <CardContent className="flex flex-col gap-4">
-                <StarRating rating={testimonial.rating} />
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  &laquo;{testimonial.text}&raquo;
-                </p>
-                <div className="mt-auto border-t pt-4">
-                  <p className="text-sm font-semibold text-foreground">
-                    {testimonial.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {testimonial.company}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+    <div className={cn("space-y-6", className)}>
+      {/* Header row */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-wrap items-baseline justify-between gap-4"
+      >
+        <div>
+          <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
+            Отзывы клиентов
+          </h2>
+          <div className="mt-2 flex items-center gap-3">
+            <div className="flex gap-0.5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Star key={i} className="size-4 fill-accent text-accent" />
+              ))}
+            </div>
+            <span className="text-sm font-semibold text-foreground">4.9</span>
+            <span className="text-sm text-muted-foreground">150+ отзывов</span>
+          </div>
         </div>
+      </motion.div>
+
+      {/* Scrollable testimonial cards */}
+      <div className="flex gap-4 overflow-x-auto pb-4 sm:gap-6 snap-x snap-mandatory scrollbar-hide">
+        {testimonials.map((testimonial, index) => {
+          const isDark = index % 3 === 1;
+
+          return (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
+              className={cn(
+                "flex min-w-[300px] max-w-[360px] flex-shrink-0 flex-col rounded-2xl p-6 sm:p-8 snap-start",
+                isDark
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-card text-card-foreground"
+              )}
+            >
+              <div className="mb-4 flex items-center justify-between">
+                <Quote
+                  className={cn(
+                    "size-8",
+                    isDark ? "text-primary-foreground/20" : "text-foreground/10"
+                  )}
+                />
+                {testimonial.source && sourceLabels[testimonial.source] && (
+                  <span
+                    className={cn(
+                      "rounded-full px-2.5 py-0.5 text-[10px] font-medium",
+                      isDark
+                        ? "bg-primary-foreground/10 text-primary-foreground/60"
+                        : "bg-muted text-muted-foreground"
+                    )}
+                  >
+                    {sourceLabels[testimonial.source]}
+                  </span>
+                )}
+              </div>
+
+              <p
+                className={cn(
+                  "flex-1 text-sm leading-relaxed",
+                  isDark ? "text-primary-foreground/80" : "text-muted-foreground"
+                )}
+              >
+                &laquo;{testimonial.text}&raquo;
+              </p>
+
+              <div className={cn("mt-6 border-t pt-4", isDark ? "border-primary-foreground/10" : "border-border/50")}>
+                <StarRating rating={testimonial.rating} />
+                <p className={cn("mt-2 text-sm font-semibold", isDark ? "text-primary-foreground" : "text-foreground")}>
+                  {testimonial.name}
+                </p>
+                <p className={cn("text-xs", isDark ? "text-primary-foreground/50" : "text-muted-foreground")}>
+                  {testimonial.company}
+                </p>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
-    </section>
+    </div>
   );
 }

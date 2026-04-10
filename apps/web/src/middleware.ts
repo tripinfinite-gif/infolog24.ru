@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { validateCsrf } from "@/lib/security/csrf";
 
 // Rate limiting using in-memory map (simple, for MVP)
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
@@ -23,6 +24,17 @@ function rateLimit(
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // CSRF-проверка для мутирующих API-запросов
+  if (pathname.startsWith("/api/")) {
+    const csrf = validateCsrf(request);
+    if (!csrf.valid) {
+      return NextResponse.json(
+        { error: "CSRF validation failed" },
+        { status: 403 },
+      );
+    }
+  }
 
   // Rate limit API routes
   if (pathname.startsWith("/api/") && !pathname.startsWith("/api/health")) {

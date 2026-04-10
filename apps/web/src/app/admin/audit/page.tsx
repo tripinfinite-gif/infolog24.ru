@@ -24,8 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import { AUDIT_LOG, MANAGERS, formatDateTime } from "../_components/mock-data";
+import { AUDIT_LOG, formatDateTime } from "../_components/mock-data";
 
 const ACTION_LABELS: Record<string, string> = {
   login: "Вход",

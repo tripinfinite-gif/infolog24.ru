@@ -16,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -32,7 +31,6 @@ import {
   MANAGERS,
   formatPrice,
   formatDate,
-  TAG_STYLES,
 } from "./_components/mock-data";
 
 // ── KPI data ──────────────────────────────────────────────────────────────

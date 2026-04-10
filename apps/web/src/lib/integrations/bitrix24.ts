@@ -19,7 +19,7 @@ export class Bitrix24Client {
   async syncOrder(
     orderId: string,
     status: string,
-    data: Record<string, string>,
+    _data: Record<string, string>,
   ): Promise<void> {
     // TODO: Implement Bitrix24 REST API calls
     // POST ${this.webhookUrl}/crm.deal.add or crm.deal.update
@@ -42,7 +42,7 @@ export class Bitrix24Client {
    */
   async syncContact(
     userId: string,
-    data: Record<string, string>,
+    _data: Record<string, string>,
   ): Promise<void> {
     logger.info({ userId, webhookUrl: this.webhookUrl }, "Bitrix24 syncContact (mock)");
   }

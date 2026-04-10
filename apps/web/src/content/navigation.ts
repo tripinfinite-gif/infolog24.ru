@@ -6,7 +6,7 @@ export interface NavItem {
 
 export const mainNav: NavItem[] = [
   {
-    title: "Услуги",
+    title: "Пропуска",
     href: "/services",
     children: [
       { title: "Пропуск на МКАД", href: "/services/propusk-mkad" },
@@ -22,8 +22,8 @@ export const mainNav: NavItem[] = [
   { title: "О компании", href: "/about" },
   { title: "Отзывы", href: "/reviews" },
   { title: "FAQ", href: "/faq" },
-  { title: "Блог", href: "/blog" },
   { title: "Контакты", href: "/contacts" },
+  { title: "Блог", href: "/blog" },
 ];
 
 export const dashboardNav: NavItem[] = [
@@ -39,7 +39,7 @@ export const dashboardNav: NavItem[] = [
 
 export const footerNav: NavItem[] = [
   {
-    title: "Услуги",
+    title: "Пропуска",
     href: "/services",
     children: [
       { title: "Пропуск на МКАД", href: "/services/propusk-mkad" },

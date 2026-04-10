@@ -8,7 +8,7 @@ import { logger } from "@/lib/logger";
  */
 export async function sendTelegram(
   chatId: string,
-  message: string,
+  _message: string,
 ): Promise<boolean> {
   // TODO: Integrate grammY when TELEGRAM_BOT_TOKEN is configured
   // import { Bot } from "grammy";

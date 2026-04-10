@@ -1,3 +1,4 @@
-// Shared utilities and types for @infolog24 monorepo
+// @infolog24/shared — единый источник правды для типов, констант и валидации
 
-export {};
+export * from "./constants";
+export * from "./schemas";

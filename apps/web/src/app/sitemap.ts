@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { blogArticles } from "@/content/blog-articles";
-import { services } from "@/content/services";
+import { serviceZones } from "@/content/services";
 
 const BASE_URL = "https://infolog24.ru";
 
@@ -21,8 +21,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/terms`, lastModified: new Date(), changeFrequency: "yearly", priority: 0.3 },
   ];
 
-  const servicePages: MetadataRoute.Sitemap = services.map((service) => ({
-    url: `${BASE_URL}/services/${service.slug}`,
+  const servicePages: MetadataRoute.Sitemap = serviceZones.map((zone) => ({
+    url: `${BASE_URL}/services/${zone.slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly",
     priority: 0.8,

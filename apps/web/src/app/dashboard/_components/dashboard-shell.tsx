@@ -32,17 +32,6 @@ const breadcrumbMap: Record<string, string> = {
   "/dashboard/settings": "Настройки",
 };
 
-// Sidebar uses transliterated paths, map them too
-const sidebarPathMap: Record<string, string> = {
-  "/dashboard/zayavki": "/dashboard/orders",
-  "/dashboard/propuska": "/dashboard/permits",
-  "/dashboard/transport": "/dashboard/vehicles",
-  "/dashboard/dokumenty": "/dashboard/documents",
-  "/dashboard/oplata": "/dashboard/payments",
-  "/dashboard/uvedomleniya": "/dashboard/notifications",
-  "/dashboard/nastroyki": "/dashboard/settings",
-};
-
 function getBreadcrumbs(pathname: string) {
   const segments = pathname.split("/").filter(Boolean);
   const crumbs: { label: string; href: string }[] = [];

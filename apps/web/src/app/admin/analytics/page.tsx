@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ORDERS, MANAGERS, PAYMENTS, CLIENTS, formatPrice } from "../_components/mock-data";
+import { ORDERS, PAYMENTS, CLIENTS, MANAGERS, formatPrice } from "../_components/mock-data";
 import { ExportButton } from "../_components/export-button";
 
 // ── KPI calculations ──────────────────────────────────────────────────────

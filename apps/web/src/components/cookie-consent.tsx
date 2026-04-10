@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 
+import { Button } from "@/components/ui/button";
+
 type ConsentPreference = "all" | "necessary" | null;
 
 const CONSENT_KEY = "cookie-consent";
@@ -27,25 +29,24 @@ export function CookieConsent() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 shadow-lg">
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 sm:flex-row">
-        <p className="flex-1 text-sm text-gray-600">
+    <div className="fixed bottom-4 left-4 right-4 z-50 rounded-2xl border border-border/60 bg-card p-4 shadow-[0_8px_30px_-4px_rgba(28,28,30,0.12)] sm:left-auto sm:right-6 sm:max-w-md">
+      <div className="flex flex-col items-start gap-4">
+        <p className="flex-1 text-sm text-muted-foreground">
           Мы используем cookies для улучшения работы сайта. Вы можете принять все
           cookies или оставить только необходимые для работы сайта.
         </p>
         <div className="flex shrink-0 gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-xl"
             onClick={() => savePreference("necessary")}
-            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
           >
             Только необходимые
-          </button>
-          <button
-            onClick={() => savePreference("all")}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-          >
+          </Button>
+          <Button size="sm" className="rounded-xl bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => savePreference("all")}>
             Принять все
-          </button>
+          </Button>
         </div>
       </div>
     </div>

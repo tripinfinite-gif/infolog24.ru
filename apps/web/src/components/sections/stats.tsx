@@ -42,28 +42,35 @@ function AnimatedNumber({ value, suffix }: { value: number; suffix?: string }) {
 
 export function Stats({ stats, className }: StatsProps) {
   return (
-    <section className={cn("px-4 py-16 sm:px-6 sm:py-20 lg:px-8", className)}>
-      <div className="mx-auto max-w-5xl">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-          {stats.map((stat) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="text-center"
-            >
-              <div className="text-3xl font-bold text-primary sm:text-4xl lg:text-5xl">
-                <AnimatedNumber value={stat.value} suffix={stat.suffix} />
-              </div>
-              <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                {stat.label}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className={cn(
+        "rounded-3xl bg-primary p-6 sm:p-8 lg:p-10",
+        className
+      )}
+    >
+      <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
+        {stats.map((stat, index) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="text-center"
+          >
+            <div className="font-heading text-4xl font-bold tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
+              <AnimatedNumber value={stat.value} suffix={stat.suffix} />
+            </div>
+            <p className="mt-2 text-xs text-primary-foreground/50 sm:text-sm">
+              {stat.label}
+            </p>
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </motion.div>
   );
 }

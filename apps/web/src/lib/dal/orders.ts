@@ -1,12 +1,8 @@
-import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   orders,
   orderStatusHistory,
-  vehicles,
-  users,
-  documents,
-  payments,
 } from "@/lib/db/schema";
 import type { NewOrder, OrderFilters, PaginatedResult, Order } from "@/lib/types";
 import { logger } from "@/lib/logger";

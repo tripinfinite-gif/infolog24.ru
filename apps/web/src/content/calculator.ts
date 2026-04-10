@@ -11,8 +11,7 @@ export const zones: CalculatorOption[] = [
 ];
 
 export const passTypes: CalculatorOption[] = [
-  { id: "annual-day", label: "Годовой дневной", value: "annual-day" },
-  { id: "annual-night", label: "Годовой ночной", value: "annual-night" },
+  { id: "annual", label: "Годовой (включает временный)", value: "annual" },
   { id: "temp", label: "Временный (до 5 суток)", value: "temp" },
 ];
 
@@ -32,15 +31,9 @@ export const priceRules: PriceRule[] = [
   // МКАД
   {
     zone: "mkad",
-    type: "annual-day",
+    type: "annual",
     duration: "1year",
-    basePrice: 10000,
-  },
-  {
-    zone: "mkad",
-    type: "annual-night",
-    duration: "1year",
-    basePrice: 8000,
+    basePrice: 12000,
   },
   {
     zone: "mkad",
@@ -51,13 +44,7 @@ export const priceRules: PriceRule[] = [
   // ТТК
   {
     zone: "ttk",
-    type: "annual-day",
-    duration: "1year",
-    basePrice: 15000,
-  },
-  {
-    zone: "ttk",
-    type: "annual-night",
+    type: "annual",
     duration: "1year",
     basePrice: 12000,
   },
@@ -65,26 +52,20 @@ export const priceRules: PriceRule[] = [
     zone: "ttk",
     type: "temp",
     duration: "5days",
-    basePrice: 5000,
+    basePrice: 3500,
   },
   // Садовое кольцо
   {
     zone: "sk",
-    type: "annual-day",
+    type: "annual",
     duration: "1year",
-    basePrice: 20000,
-  },
-  {
-    zone: "sk",
-    type: "annual-night",
-    duration: "1year",
-    basePrice: 16000,
+    basePrice: 12000,
   },
   {
     zone: "sk",
     type: "temp",
     duration: "5days",
-    basePrice: 7000,
+    basePrice: 3500,
   },
 ];
 

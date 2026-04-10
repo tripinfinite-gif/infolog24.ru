@@ -7,9 +7,7 @@ import {
   ArrowLeft,
   Check,
   CheckCircle2,
-  Clock,
   FileIcon,
-  Trash2,
   UserPlus,
   X,
   XCircle,
@@ -22,7 +20,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
@@ -31,7 +28,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   DropdownMenu,

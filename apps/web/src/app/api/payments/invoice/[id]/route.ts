@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { orders, payments } from "@/lib/db/schema";
+import { payments } from "@/lib/db/schema";
 import { getSession } from "@/lib/auth/session";
 import { generateInvoiceHtml } from "@/lib/payments/invoice";
 import { logger } from "@/lib/logger";

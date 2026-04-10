@@ -1,6 +1,6 @@
 import { logger } from "@/lib/logger";
 import { createNotification } from "@/lib/dal/notifications";
-import { sendToChannel, type NotificationChannel } from "./channels";
+import { sendToChannel } from "./channels";
 import { getTemplateByEvent } from "./templates";
 
 export interface NotificationPayload {

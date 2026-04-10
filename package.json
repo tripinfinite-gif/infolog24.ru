@@ -7,11 +7,15 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "type-check": "turbo type-check",
+    "test": "turbo test",
     "db:generate": "pnpm --filter @infolog24/web drizzle-kit generate",
     "db:migrate": "pnpm --filter @infolog24/web drizzle-kit migrate",
     "db:studio": "pnpm --filter @infolog24/web drizzle-kit studio"
   },
   "devDependencies": {
-    "turbo": "^2"
+    "@vitejs/plugin-react": "^6.0.1",
+    "turbo": "^2",
+    "vercel": "^50.43.0",
+    "vitest": "^4.1.4"
   }
 }

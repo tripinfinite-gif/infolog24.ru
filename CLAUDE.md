@@ -103,6 +103,61 @@ infologistic-24/
 4. Эффективно ли решение, что можно было лучше.
 5. Как было и как стало.
 
+## Система скиллов — автоматический подбор навыков
+
+Перед выполнением любой задачи агент **обязан** выбрать релевантные скиллы из таблицы ниже и применить их. Скиллы вызываются через `/skill-name` или через Skill tool.
+
+### Маршрутизация: задача → скиллы
+
+| Категория задачи | Когда применять | Скиллы для вызова |
+|---|---|---|
+| **Новая фича (любая)** | Любая нетривиальная реализация | `/bulletproof` → 12-этапный workflow |
+| **Фронтенд (компоненты, страницы)** | React/Next.js компоненты, UI | `/senior-frontend`, `/react-patterns`, `/frontend-patterns` |
+| **Next.js маршрутизация** | App Router, динамические роуты | `/nextjs-app-router-fundamentals`, `/nextjs-advanced-routing`, `/nextjs-dynamic-routes-params` |
+| **Next.js Server/Client** | Выбор Server vs Client components | `/nextjs-server-client-components`, `/nextjs-server-navigation` |
+| **Next.js антипаттерны** | Ревью Next.js кода | `/nextjs-anti-patterns`, `/nextjs-use-search-params-suspense` |
+| **UI/дизайн-система** | shadcn/ui, Tailwind, темы | `/shadcn-ui`, `/tailwind-theme-builder` |
+| **База данных (схема)** | Проектирование таблиц, ERD | `/database-schema-designer`, `/database-designer` |
+| **База данных (запросы)** | SQL, миграции, ORM | `/sql-database-assistant` |
+| **AI-чатбот** | Vercel AI SDK, streaming, tools | `/vercel-ai-sdk`, `/claude-api` |
+| **Лендинг/маркетинг** | Создание лендинговых страниц | `/landing-page`, `/design-loop` |
+| **Качество кода** | Нейминг, читаемость, паттерны | `/coding-standards`, `/code-review-skill` |
+| **Безопасность** | Auth, API, формы, платежи | `/security-review`, `/insecure-defaults`, `/sharp-edges` |
+| **Code review** | Ревью PR, дифф-анализ | `/differential-review`, `/code-review-skill` |
+| **UX-аудит** | Проверка юзабилити | `/ux-audit` |
+| **Дизайн-ревью** | Визуальное качество | `/design-review` |
+| **Монорепо** | Навигация по Turborepo | `/monorepo-navigator` |
+| **Тестирование веба** | E2E, Playwright | `/webapp-testing` |
+| **SEO/производительность** | Core Web Vitals, оптимизация | `/nextjs-anti-patterns`, `/senior-frontend` |
+| **Документы (PDF/DOCX/XLSX)** | Работа с файлами | `/pdf`, `/docx`, `/xlsx` |
+| **Презентации** | PowerPoint | `/pptx` |
+| **Дизайн-система (экстракция)** | Извлечение стилей с сайта | `/design-system` |
+
+### Как агент выбирает скиллы
+
+1. **Прочитай задачу** — определи категорию из таблицы выше.
+2. **Выбери 1-3 основных скилла** — не больше, чтобы не перегружать.
+3. **Вызови скилл** через `/skill-name` перед началом работы.
+4. **Bulletproof обязателен** для любой фичи размера M и L (см. `.claude/skills/bulletproof/`).
+
+### Карта: план → скиллы
+
+Соответствие планов проекта и скиллов для их реализации:
+
+| План | Файл | Приоритетные скиллы |
+|---|---|---|
+| Архитектура и стек | `plans/2026-04-10-архитектура-и-стек.md` | `/bulletproof`, `/monorepo-navigator` |
+| Дизайн-система | `plans/2026-04-10-дизайн-система.md` | `/tailwind-theme-builder`, `/shadcn-ui`, `/design-system` |
+| Редизайн сайта | `plans/2026-04-10-редизайн-сайта-infolog24.md` | `/senior-frontend`, `/landing-page`, `/design-loop` |
+| Страницы и контент | `plans/2026-04-10-страницы-и-контент-сайта.md` | `/nextjs-app-router-fundamentals`, `/nextjs-dynamic-routes-params`, `/landing-page` |
+| Личный кабинет | `plans/2026-04-10-личный-кабинет-фронтенд.md` | `/senior-frontend`, `/react-patterns`, `/nextjs-server-client-components` |
+| Бэкенд и API | `plans/2026-04-10-бэкенд-и-api.md` | `/security-review`, `/database-schema-designer`, `/sql-database-assistant` |
+| Автоматизация | `plans/2026-04-10-автоматизация-и-уведомления.md` | `/bulletproof`, `/coding-standards` |
+| AI-чатбот | `plans/2026-04-10-ai-чатбот-и-telegram-бот.md` | `/vercel-ai-sdk`, `/claude-api` |
+| Деплой и DevOps | `plans/2026-04-10-деплой-и-devops.md` | `/bulletproof`, `/security-review` |
+| Тестирование | `plans/2026-04-10-тестирование-оптимизация-деплой.md` | `/webapp-testing`, `/security-review` |
+| SEO и аналитика | `plans/2026-04-10-seo-аналитика-интеграции.md` | `/nextjs-anti-patterns`, `/senior-frontend` |
+
 ## Язык
 
 Всегда отвечай мне на русском.

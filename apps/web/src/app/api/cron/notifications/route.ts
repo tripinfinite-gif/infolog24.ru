@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
-import { getPendingNotifications, markAsRead } from "@/lib/dal/notifications";
+import { getPendingNotifications } from "@/lib/dal/notifications";
 import { sendToChannel, type NotificationChannel } from "@/lib/notifications/channels";
 
 /**

@@ -61,12 +61,12 @@ export function PartnersClient() {
   return (
     <>
       {/* Hero */}
-      <section className="bg-primary px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+      <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="font-heading text-3xl font-bold text-primary-foreground sm:text-4xl lg:text-5xl">
+          <h1 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
             Партнёрская программа
           </h1>
-          <p className="mt-6 text-lg text-primary-foreground/80">
+          <p className="mt-6 text-lg text-muted-foreground">
             Зарабатывайте вместе с нами. Рекомендуйте Инфологистик-24 своим
             клиентам и получайте агентское вознаграждение за каждого
             привлечённого клиента.
@@ -84,10 +84,10 @@ export function PartnersClient() {
             {benefits.map((benefit) => {
               const Icon = benefit.icon;
               return (
-                <Card key={benefit.title}>
-                  <CardContent className="flex flex-col items-center text-center">
-                    <div className="flex size-12 items-center justify-center rounded-lg bg-primary/10">
-                      <Icon className="size-6 text-primary" />
+                <Card key={benefit.title} className="rounded-2xl border-0 bg-card shadow-sm">
+                  <CardContent className="flex flex-col items-center p-6 sm:p-8 text-center">
+                    <div className="flex size-12 items-center justify-center rounded-2xl bg-accent/10">
+                      <Icon className="size-6 text-accent" />
                     </div>
                     <h3 className="mt-4 text-lg font-semibold text-foreground">
                       {benefit.title}
@@ -104,21 +104,21 @@ export function PartnersClient() {
       </section>
 
       {/* How it works */}
-      <section className="bg-muted/50 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <h2 className="font-heading text-center text-2xl font-bold text-foreground sm:text-3xl">
+      <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="mx-auto max-w-5xl rounded-3xl bg-primary p-6 sm:p-8 lg:p-12">
+          <h2 className="font-heading text-center text-2xl font-bold text-primary-foreground sm:text-3xl">
             Как это работает
           </h2>
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-3">
             {steps.map((step) => (
               <div key={step.number} className="text-center">
-                <div className="mx-auto flex size-16 items-center justify-center rounded-full border-2 border-primary bg-background text-xl font-bold text-primary">
+                <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-accent text-xl font-bold text-accent-foreground">
                   {step.number}
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-foreground">
+                <h3 className="mt-4 text-base font-semibold text-primary-foreground">
                   {step.title}
                 </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-primary-foreground/60">
                   {step.description}
                 </p>
               </div>
@@ -135,7 +135,7 @@ export function PartnersClient() {
           </h2>
 
           {submitted ? (
-            <Card className="mt-8">
+            <Card className="mt-8 rounded-3xl border-0 bg-card shadow-sm">
               <CardContent className="flex flex-col items-center py-12 text-center">
                 <CheckCircle className="size-16 text-primary" />
                 <h3 className="mt-4 text-xl font-semibold text-foreground">
@@ -148,8 +148,8 @@ export function PartnersClient() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="mt-8">
-              <CardContent>
+            <Card className="mt-8 rounded-3xl border-0 bg-card shadow-sm">
+              <CardContent className="p-6 sm:p-8">
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="partner-name">Имя *</Label>

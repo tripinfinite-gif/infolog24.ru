@@ -1,57 +1,111 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { CheckCircle, ClipboardCheck, FileText, Send } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
-interface Step {
-  number: number;
-  title: string;
-  description: string;
-}
-
 interface HowItWorksProps {
-  steps: Step[];
   className?: string;
 }
 
-export function HowItWorks({ steps, className }: HowItWorksProps) {
+const steps = [
+  {
+    number: "01",
+    title: "Заявка",
+    description: "Оставьте заявку на сайте или в мессенджер. Перезвоним за 15 минут.",
+    duration: "15 мин",
+    icon: Send,
+  },
+  {
+    number: "02",
+    title: "Документы",
+    description: "Отправьте фото документов — email, WhatsApp или Telegram. Мы всё проверим.",
+    duration: "1 день",
+    icon: FileText,
+  },
+  {
+    number: "03",
+    title: "Оформляем",
+    description: "Подаём заявку в Дептранс, сопровождаем процесс. Вы получаете временный пропуск.",
+    duration: "1-3 дня",
+    icon: ClipboardCheck,
+  },
+  {
+    number: "04",
+    title: "Готово!",
+    description: "Получаете готовый пропуск и уведомление. Можно выезжать на маршрут.",
+    duration: "",
+    icon: CheckCircle,
+  },
+];
+
+export function HowItWorks({ className }: HowItWorksProps) {
   return (
-    <section
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
       className={cn(
-        "bg-muted/50 px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24",
+        "rounded-3xl bg-card p-6 sm:p-8 lg:p-10",
         className
       )}
     >
-      <div className="mx-auto max-w-5xl">
-        <h2 className="font-heading text-center text-3xl font-bold text-foreground sm:text-4xl">
+      <div className="mb-8">
+        <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
           Как это работает
         </h2>
-        <div className="relative mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4 lg:gap-4">
-          {/* Connecting line (desktop) */}
-          <div
-            className="absolute top-10 right-0 left-0 hidden h-0.5 bg-border lg:block"
-            aria-hidden="true"
-          />
+        <p className="mt-2 text-muted-foreground">
+          4 простых шага — и пропуск у вас
+        </p>
+      </div>
 
-          {steps.map((step, index) => (
-            <div key={step.number} className="relative flex flex-col items-center text-center">
-              {/* Connecting line (mobile) */}
-              {index < steps.length - 1 && (
-                <div
-                  className="absolute top-20 left-1/2 h-8 w-0.5 -translate-x-1/2 bg-border md:hidden"
-                  aria-hidden="true"
-                />
-              )}
-              <div className="relative z-10 flex size-20 items-center justify-center rounded-full border-2 border-primary bg-background text-2xl font-bold text-primary">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+        {steps.map((step, index) => (
+          <motion.div
+            key={step.number}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: index * 0.12 }}
+            className="relative"
+          >
+            {/* Connector line (desktop) */}
+            {index < steps.length - 1 && (
+              <div
+                className="absolute top-8 left-[calc(50%+32px)] hidden h-px w-[calc(100%-64px)] bg-border lg:block"
+                aria-hidden="true"
+              />
+            )}
+
+            <div className="flex flex-col items-center text-center lg:items-center">
+              {/* Large step number */}
+              <div className="font-heading text-5xl font-bold tracking-tighter text-foreground/10 sm:text-6xl">
                 {step.number}
               </div>
+
+              <div className="-mt-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
+                <step.icon className="size-5 text-primary" />
+              </div>
+
               <h3 className="mt-4 text-base font-semibold text-foreground">
                 {step.title}
               </h3>
+
+              {step.duration && (
+                <span className="mt-1 inline-block rounded-full bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
+                  {step.duration}
+                </span>
+              )}
+
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {step.description}
               </p>
             </div>
-          ))}
-        </div>
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </motion.div>
   );
 }

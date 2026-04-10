@@ -2,7 +2,7 @@ import { tool } from "ai";
 import { z } from "zod";
 
 import { calculateTotal, priceRules } from "@/content/calculator";
-import { services } from "@/content/services";
+import { serviceZones } from "@/content/services";
 
 const zoneLabels: Record<string, string> = {
   mkad: "МКАД",
@@ -11,8 +11,7 @@ const zoneLabels: Record<string, string> = {
 };
 
 const typeLabels: Record<string, string> = {
-  "annual-day": "Годовой дневной",
-  "annual-night": "Годовой ночной",
+  annual: "Годовой (включает временный)",
   temp: "Временный (до 5 суток)",
 };
 
@@ -25,9 +24,9 @@ export const chatTools = {
         .enum(["mkad", "ttk", "sk"])
         .describe("Зона: mkad, ttk или sk (Садовое кольцо)"),
       type: z
-        .enum(["annual-day", "annual-night", "temp"])
+        .enum(["annual", "temp"])
         .describe(
-          "Тип пропуска: annual-day (годовой дневной), annual-night (годовой ночной), temp (временный)",
+          "Тип пропуска: annual (годовой, включает временный), temp (временный до 5 суток)",
         ),
       vehicleCount: z
         .number()
@@ -142,14 +141,13 @@ export const chatTools = {
         .describe("Тип: annual (годовой) или temp (временный)"),
     }),
     execute: async ({ zone, type }) => {
-      // Find matching service
-      const matchingService = services.find((s) => {
-        if (s.zone !== zone) return false;
-        if (type === "annual") return s.type !== "temp";
-        return s.type === "temp";
-      });
+      // Find matching service zone
+      const matchingZone =
+        type === "temp"
+          ? serviceZones.find((z) => z.id === "temp")
+          : serviceZones.find((z) => z.id === zone);
 
-      if (!matchingService) {
+      if (!matchingZone) {
         return {
           zone: zoneLabels[zone] ?? zone,
           type: type === "annual" ? "Годовой" : "Временный",
@@ -167,10 +165,10 @@ export const chatTools = {
       return {
         zone: zoneLabels[zone] ?? zone,
         type: type === "annual" ? "Годовой" : "Временный",
-        serviceName: matchingService.title,
-        documents: matchingService.documents,
-        requirements: matchingService.requirements,
-        processingDays: matchingService.processingDays,
+        serviceName: matchingZone.fullName,
+        documents: matchingZone.documents,
+        requirements: matchingZone.requirements,
+        processingDays: matchingZone.processingDays,
       };
     },
   }),

@@ -4,7 +4,38 @@ import { orders, payments } from "@/lib/db/schema";
 import * as paymentsDAL from "@/lib/dal/payments";
 import { validatePromoCode, applyPromoCode } from "@/lib/dal/promo-codes";
 import { getYooKassaClient } from "./yookassa";
+import { pricingTiers } from "@/content/pricing";
 import { logger } from "@/lib/logger";
+
+/**
+ * Безопасность: серверный расчёт базовой цены по типу и зоне заказа.
+ * Никогда не доверяем цене, переданной клиентом или сохранённой из клиентского запроса.
+ */
+function calculateServerSidePrice(
+  orderType: string,
+  orderZone: string,
+): number {
+  // Временный пропуск — фиксированная цена, зона не влияет
+  if (orderType === "temp") {
+    const tempTier = pricingTiers.find((t) => t.type === "temp");
+    if (!tempTier) {
+      throw new Error("Тариф для временного пропуска не найден");
+    }
+    return tempTier.price;
+  }
+
+  // Годовой пропуск — ищем по зоне
+  const tier = pricingTiers.find(
+    (t) => t.zone === orderZone && t.type === "annual",
+  );
+  if (!tier) {
+    throw new Error(
+      `Тариф не найден для зоны "${orderZone}" и типа "${orderType}"`,
+    );
+  }
+
+  return tier.price;
+}
 
 interface InitiatePaymentResult {
   paymentUrl: string;
@@ -43,8 +74,25 @@ export class PaymentService {
       throw new Error(`Cannot pay for order in status: ${order.status}`);
     }
 
-    // 2. Apply promo code discount if provided
-    let finalAmount = order.price - order.discount;
+    // 2. Безопасность: рассчитываем базовую цену на сервере по типу и зоне заказа.
+    // Не используем order.price напрямую — он мог быть установлен из клиентского запроса.
+    const serverPrice = calculateServerSidePrice(order.type, order.zone);
+
+    if (order.price !== serverPrice) {
+      logger.warn(
+        {
+          orderId,
+          orderPrice: order.price,
+          serverPrice,
+          orderType: order.type,
+          orderZone: order.zone,
+        },
+        "Цена в заказе не совпадает с серверным расчётом — используем серверную цену",
+      );
+    }
+
+    // 3. Apply promo code discount if provided
+    let finalAmount = serverPrice - order.discount;
 
     if (options?.promoCode) {
       const validation = await validatePromoCode(options.promoCode);
@@ -68,10 +116,10 @@ export class PaymentService {
     // Ensure amount is at least 1 ruble
     finalAmount = Math.max(finalAmount, 1);
 
-    // 3. Create payment record in DB
+    // 4. Create payment record in DB
     const payment = await paymentsDAL.createPayment(orderId, userId, finalAmount);
 
-    // 4. Create YooKassa payment
+    // 5. Create YooKassa payment
     const yookassa = getYooKassaClient();
     const returnUrl =
       options?.returnUrl ??
@@ -86,14 +134,14 @@ export class PaymentService {
       customerPhone: options?.customerPhone ?? order.user.phone ?? undefined,
     });
 
-    // 5. Update payment with external ID
+    // 6. Update payment with external ID
     await paymentsDAL.updatePaymentStatus(
       payment.id,
       "pending",
       yookassaPayment.id,
     );
 
-    // 6. Update order status to payment_pending if it was draft
+    // 7. Update order status to payment_pending if it was draft
     if (order.status === "draft") {
       await db
         .update(orders)

@@ -9,7 +9,7 @@ import { logger } from "@/lib/logger";
 export async function sendEmail(
   to: string,
   subject: string,
-  body: string,
+  _body: string,
 ): Promise<boolean> {
   // TODO: Integrate Resend when RESEND_API_KEY is configured
   // import { Resend } from "resend";
