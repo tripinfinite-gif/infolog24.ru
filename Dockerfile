@@ -61,8 +61,8 @@ USER nextjs
 
 EXPOSE 3000
 
-# Healthcheck для мониторинга
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+# Healthcheck для мониторинга (увеличен start-period для первого деплоя)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=5 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1
 
 CMD ["node", "apps/web/server.js"]
