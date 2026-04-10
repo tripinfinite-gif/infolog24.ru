@@ -1,0 +1,17 @@
+{
+  "name": "@infolog24/root",
+  "private": true,
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "db:generate": "pnpm --filter @infolog24/web drizzle-kit generate",
+    "db:migrate": "pnpm --filter @infolog24/web drizzle-kit migrate",
+    "db:studio": "pnpm --filter @infolog24/web drizzle-kit studio"
+  },
+  "devDependencies": {
+    "turbo": "^2"
+  }
+}

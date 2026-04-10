@@ -2,3 +2,12 @@
 .claude/
 .env
 .env.local
+
+# Dependencies
+node_modules/
+
+# Build
+.next/
+.turbo/
+dist/
+*.tsbuildinfo

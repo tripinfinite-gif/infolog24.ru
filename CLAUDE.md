@@ -48,7 +48,21 @@ infologistic-24/
 
 ## Стек
 
-Пока не определён. Будет выбран при старте разработки (ЛК, CRM, автоматизация).
+Определён в `plans/2026-04-10-архитектура-и-стек.md`. Краткая сводка:
+
+| Слой | Технология |
+|------|-----------|
+| Монорепо | Turborepo + pnpm |
+| Фреймворк | Next.js 15 (App Router) |
+| UI | shadcn/ui + Tailwind CSS v4 |
+| ORM | Drizzle ORM |
+| БД | PostgreSQL 16+ |
+| Авторизация | Better Auth |
+| Хранилище файлов | Selectel S3 |
+| Платежи | YooKassa |
+| Telegram-бот | grammY |
+| AI-чатбот | Vercel AI SDK |
+| Деплой | Coolify на Selectel VPS |
 
 ## Папка `.business/`
 
