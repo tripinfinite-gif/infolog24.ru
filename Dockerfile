@@ -54,7 +54,7 @@ RUN addgroup --system --gid 1001 nodejs && \
     apk add --no-cache wget
 
 # Копируем только то, что нужно для запуска
-COPY --from=builder /app/apps/web/public ./public
+COPY --from=builder /app/apps/web/public ./apps/web/public
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
 
