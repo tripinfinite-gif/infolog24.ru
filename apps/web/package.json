@@ -15,7 +15,8 @@
     "test:e2e:ui": "playwright test --ui",
     "analyze": "ANALYZE=true next build",
     "db:seed": "tsx src/lib/db/seed.ts",
-    "db:seed:partner": "tsx --env-file=.env.local src/lib/db/seed-test-partner.ts"
+    "db:seed:partner": "tsx --env-file=.env.local src/lib/db/seed-test-partner.ts",
+    "rag:build-embeddings": "tsx --env-file=.env.local scripts/build-knowledge-embeddings.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.52",

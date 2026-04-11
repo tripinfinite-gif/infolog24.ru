@@ -403,6 +403,61 @@ export const chatConversations = pgTable("chat_conversations", {
 ]);
 
 /**
+ * P5 — Vector RAG для базы знаний AI-помощника.
+ *
+ * Хранит embedding каждого пункта knowledge-base.ts (или его чанков).
+ * Поле embedding — pgvector тип. Drizzle не имеет встроенного типа,
+ * используем кастомный тип через customType — он сериализуется как
+ * строка PostgreSQL вида '[0.1,0.2,...]'.
+ *
+ * Таблица создаётся миграцией 0003_p5_knowledge_chunks.sql, которая:
+ *   1. CREATE EXTENSION IF NOT EXISTS vector
+ *   2. CREATE TABLE knowledge_chunks (...)
+ *   3. CREATE INDEX ON knowledge_chunks USING ivfflat (embedding vector_cosine_ops)
+ *
+ * Применять миграцию должен суперюзер БД (для CREATE EXTENSION).
+ * Без таблицы код fallback'ит на keyword scoring без ошибок.
+ */
+import { customType } from "drizzle-orm/pg-core";
+
+const vector = customType<{ data: number[]; driverData: string }>({
+  dataType() {
+    return "vector(1536)";
+  },
+  toDriver(value: number[]): string {
+    return `[${value.join(",")}]`;
+  },
+  fromDriver(value: string): number[] {
+    return value
+      .replace(/^\[|\]$/g, "")
+      .split(",")
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n));
+  },
+});
+
+export const knowledgeChunks = pgTable(
+  "knowledge_chunks",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    sourceId: varchar("source_id", { length: 64 }).notNull(),
+    chunkIndex: integer("chunk_index").notNull().default(0),
+    content: text("content").notNull(),
+    embedding: vector("embedding").notNull(),
+    metadata: jsonb("metadata"),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("idx_knowledge_chunks_source_chunk").on(
+      table.sourceId,
+      table.chunkIndex,
+    ),
+  ],
+);
+
+/**
  * P3.2 — Memory across sessions для AI-помощника.
  * Простое key-value хранилище фактов о клиенте, которые ассистент
  * запомнил в одной сессии и хочет использовать в будущих.

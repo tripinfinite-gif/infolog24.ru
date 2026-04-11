@@ -23,6 +23,7 @@ import {
   fillTemplate,
 } from "@/content/scenario-templates";
 import { loadCabinetSummary } from "./cabinet-summary";
+import { hybridSearchKnowledge } from "./hybrid-search";
 import type { ActionCard, PermitZone, WithActions } from "@/lib/chat/action-cards";
 import {
   deleteFact,
@@ -492,11 +493,12 @@ export function createChatTools({ userId }: ChatUserContext) {
           ),
       }),
       execute: async ({ query, category }) => {
-        let results = searchKnowledge(query, 3);
-
-        if (category) {
-          results = results.filter((r) => r.item.category === category);
-        }
+        // P5 — hybrid retrieval. Если pgvector доступен и индекс заполнен,
+        // объединяем keyword + cosine через RRF. Иначе fallback на keyword.
+        const results = await hybridSearchKnowledge(query, {
+          limit: 3,
+          category,
+        });
 
         if (results.length === 0) {
           return {
@@ -517,13 +519,14 @@ export function createChatTools({ userId }: ChatUserContext) {
         }
 
         return {
-          matches: results.map(({ item, score }) => ({
+          matches: results.map(({ item, score, source }) => ({
             id: item.id,
             category: item.category,
             question: item.question,
             short: item.short,
             hasDetail: item.detail.length > item.short.length,
             score,
+            source, // hybrid | vector | keyword — для дебага и аналитики
           })),
           hint:
             "Если пользователь захочет подробнее — вызови getKnowledgeDetail с id одного из этих пунктов.",
