@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { validateCsrf } from "@/lib/security/csrf";
-import { getClientIp, rateLimit, rateLimitResponse } from "@/lib/security/rate-limit";
+
+// ВАЖНО: middleware работает в Edge Runtime — нельзя импортировать ioredis,
+// node:net, node:fs и т.п. Rate-limit вынесен в API routes (Node Runtime).
 
 // ── CORS конфигурация ────────────────────────────────────────────────────
 
@@ -37,20 +39,6 @@ function applyCors(response: NextResponse, origin: string | null): NextResponse 
   return response;
 }
 
-// ── Пути, исключённые из rate-limit через middleware ───────────────────
-// (имеют свои точечные лимиты или критичны для мониторинга)
-const RATE_LIMIT_SKIP_PATHS = [
-  "/api/health",
-  "/api/auth/", // rate limit ставится локально
-  "/api/chat", // rate limit ставится локально (anonymous vs auth)
-  "/api/contacts", // rate limit ставится локально (contact-form)
-  "/api/payments/webhook", // IP allowlist
-  "/api/telegram", // secret header
-  "/api/cron/", // CRON_SECRET
-  "/api/documents/upload-url", // file-upload
-  "/api/documents", // file-upload
-];
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const origin = request.headers.get("origin");
@@ -61,7 +49,7 @@ export async function middleware(request: NextRequest) {
     return applyCors(response, origin);
   }
 
-  // ── CSRF для мутирующих API-запросов ──────────────────────────────────
+  // ── CSRF для мутирующих API-запросов (Edge-совместимо) ────────────────
   if (pathname.startsWith("/api/")) {
     const csrf = validateCsrf(request);
     if (!csrf.valid) {
@@ -73,19 +61,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // ── Общий rate-limit для API ──────────────────────────────────────────
-  if (pathname.startsWith("/api/")) {
-    const skip = RATE_LIMIT_SKIP_PATHS.some((p) => pathname.startsWith(p));
-    if (!skip) {
-      const ip = getClientIp(request);
-      const result = await rateLimit("api-general", ip);
-      if (!result.success) {
-        return applyCors(rateLimitResponse(result), origin);
-      }
-    }
-  }
-
   // ── Защита dashboard/admin ────────────────────────────────────────────
+  // Лёгкая cookie-проверка. Полная валидация сессии — в layout.tsx
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
     const sessionCookie = request.cookies.get("better-auth.session_token");
     if (!sessionCookie) {
@@ -100,6 +77,12 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+// ВАЖНО: matcher исключает /api/health (healthcheck должен работать всегда).
+// Rate-limiting перенесён в каждый API route индивидуально (Node Runtime).
 export const config = {
-  matcher: ["/api/:path*", "/dashboard/:path*", "/admin/:path*"],
+  matcher: [
+    "/api/((?!health).*)",
+    "/dashboard/:path*",
+    "/admin/:path*",
+  ],
 };
