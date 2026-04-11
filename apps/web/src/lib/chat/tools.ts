@@ -359,7 +359,9 @@ export function createChatTools({ userId }: ChatUserContext) {
 
     requestCallback: tool({
       description:
-        "Оставить заявку на обратный звонок менеджера. Создаёт лид в системе.",
+        "Оставить заявку на обратный звонок менеджера. Создаёт лид в системе. " +
+        "Поле priority='high' помечает обращение как срочное (используй при " +
+        "негативе клиента, угрозе уйти, ругани, серьёзной проблеме с пропуском).",
       inputSchema: z.object({
         name: z.string().min(1).max(100).describe("Имя клиента"),
         phone: z
@@ -372,8 +374,14 @@ export function createChatTools({ userId }: ChatUserContext) {
           .max(500)
           .optional()
           .describe("Пояснения клиента: что нужно, удобное время и т.д."),
+        priority: z
+          .enum(["normal", "high"])
+          .optional()
+          .describe(
+            "Приоритет: 'high' если клиент в стрессе, негативе, угрожает уйти или жалуется. По умолчанию 'normal'.",
+          ),
       }),
-      execute: async ({ name, phone, comment }) => {
+      execute: async ({ name, phone, comment, priority }) => {
         try {
           const baseUrl =
             process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
@@ -384,7 +392,8 @@ export function createChatTools({ userId }: ChatUserContext) {
               name,
               phone,
               message: comment,
-              source: "ai_chat",
+              source: priority === "high" ? "ai_chat_urgent" : "ai_chat",
+              priority: priority ?? "normal",
             }),
           });
           const data = (await response.json().catch(() => null)) as
@@ -402,7 +411,11 @@ export function createChatTools({ userId }: ChatUserContext) {
 
           return {
             success: true as const,
-            message: `Спасибо, ${name}! Менеджер перезвонит в ближайшее время по номеру ${phone}.`,
+            priority: priority ?? "normal",
+            message:
+              priority === "high"
+                ? `Передал срочно, ${name}. Менеджер перезвонит в течение 15 минут на ${phone}. Если что-то критичное прямо сейчас — звоните +7 (499) 110-55-49, дежурный диспетчер 24/7.`
+                : `Спасибо, ${name}! Менеджер перезвонит в ближайшее время по номеру ${phone}.`,
           };
         } catch (error) {
           logger.error({ error }, "requestCallback tool failed");

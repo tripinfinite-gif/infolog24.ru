@@ -22,6 +22,13 @@ const contactSchema = z.object({
   message: z.string().max(2000).optional().or(z.literal("")),
   zone: z.string().max(50).optional().or(z.literal("")),
   source: z.string().max(100).optional().or(z.literal("")),
+  /**
+   * Приоритет лида. "high" — клиент в стрессе, негатив, угроза уйти,
+   * требует срочной реакции менеджера. Маркируется в теме email,
+   * заголовке Bitrix-сделки и в логах для быстрой фильтрации.
+   * Используется AI-ассистентом при sentiment-эскалации.
+   */
+  priority: z.enum(["normal", "high"]).default("normal").optional(),
 });
 
 type ContactInput = z.infer<typeof contactSchema>;
@@ -36,7 +43,9 @@ function escapeHtml(value: string): string {
 }
 
 function buildAdminEmailHtml(data: ContactInput): string {
+  const isHighPriority = data.priority === "high";
   const rows: Array<[string, string]> = [
+    ["Приоритет", isHighPriority ? "🚨 СРОЧНО" : "Обычный"],
     ["Имя", data.name],
     ["Телефон", data.phone],
     ["Email", data.email || "—"],
@@ -52,9 +61,18 @@ function buildAdminEmailHtml(data: ContactInput): string {
         )}</strong></td><td style="padding:4px 12px;border:1px solid #ddd;">${escapeHtml(value)}</td></tr>`,
     )
     .join("");
+  const heading = isHighPriority
+    ? "🚨 СРОЧНАЯ ЗАЯВКА — клиент в стрессе"
+    : "Новая заявка с сайта";
+  const headingColor = isHighPriority ? "#dc2626" : "#1e293b";
   return `
     <div style="font-family:system-ui,-apple-system,sans-serif;max-width:600px;">
-      <h2>Новая заявка с сайта</h2>
+      <h2 style="color:${headingColor};">${heading}</h2>
+      ${
+        isHighPriority
+          ? '<p style="color:#dc2626;font-weight:600;">AI-ассистент определил негативный sentiment. Перезвоните в течение 15 минут.</p>'
+          : ""
+      }
       <table style="border-collapse:collapse;border:1px solid #ddd;">${trs}</table>
       <p style="color:#666;font-size:12px;margin-top:16px;">
         Сформировано автоматически сервисом Инфолог24.
@@ -88,6 +106,8 @@ export async function POST(request: Request) {
 
     const data = result.data;
     const createdAt = new Date().toISOString();
+    const isHighPriority = data.priority === "high";
+    const priorityPrefix = isHighPriority ? "🚨 СРОЧНО — " : "";
 
     // 1. Persistent log of the lead (audit trail via pino)
     logger.info(
@@ -99,11 +119,14 @@ export async function POST(request: Request) {
           message: data.message || null,
           zone: data.zone || null,
           source: data.source || "website",
+          priority: data.priority ?? "normal",
           createdAt,
           ip,
         },
       },
-      "New contact form lead",
+      isHighPriority
+        ? "New HIGH PRIORITY contact form lead (AI sentiment escalation)"
+        : "New contact form lead",
     );
 
     // 2. Outbound notifications — never block UX on failures
@@ -111,7 +134,7 @@ export async function POST(request: Request) {
     const emailPromise: Promise<unknown> = adminEmail
       ? sendEmailMessage({
           to: adminEmail,
-          subject: `Новая заявка: ${data.name} (${data.phone})`,
+          subject: `${priorityPrefix}Новая заявка: ${data.name} (${data.phone})`,
           html: buildAdminEmailHtml(data),
         }).catch((err) => {
           logger.error({ err }, "Lead email dispatch failed");
@@ -119,11 +142,14 @@ export async function POST(request: Request) {
       : Promise.resolve();
 
     const bitrixPromise = createDeal({
-      title: `Заявка с сайта: ${data.name}`,
+      title: `${priorityPrefix}Заявка с сайта: ${data.name}`,
       contact: data.name,
       phone: data.phone,
       email: data.email || undefined,
       comments: [
+        isHighPriority
+          ? "🚨 ВЫСОКИЙ ПРИОРИТЕТ — AI определил негативный sentiment, перезвонить в 15 мин"
+          : null,
         data.zone ? `Зона: ${data.zone}` : null,
         data.source ? `Источник: ${data.source}` : null,
         data.message ? `Сообщение: ${data.message}` : null,

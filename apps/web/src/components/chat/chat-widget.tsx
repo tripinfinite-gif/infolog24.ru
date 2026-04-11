@@ -79,6 +79,43 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
     return () => window.removeEventListener("infopilot:open", handleOpen);
   }, []);
 
+  // Action card "contact_manager" handler (P1.3 + P1.4):
+  // Когда клиент кликает кнопку «Связаться с менеджером» под ответом
+  // ассистента, ActionCardList диспатчит CustomEvent "infopilot:contact-manager"
+  // с detail = { reason, priority }. Виджет открывает чат (если закрыт)
+  // и отправляет от имени пользователя сообщение, по которому ассистент
+  // понимает контекст и вызывает requestCallback с нужным priority.
+  useEffect(() => {
+    function handleContactManager(event: Event) {
+      const detail = (event as CustomEvent<{ reason?: string; priority?: "normal" | "high" }>).detail ?? {};
+      const reason = detail.reason?.trim();
+      const priority = detail.priority ?? "normal";
+
+      setIsOpen(true);
+
+      const text =
+        priority === "high"
+          ? `Хочу срочно связаться с менеджером${reason ? `: ${reason}` : ""}.`
+          : `Свяжитесь со мной${reason ? ` по теме: ${reason}` : ""}.`;
+
+      // Небольшая задержка, чтобы виджет успел открыться
+      // и transport был готов к отправке.
+      window.setTimeout(() => {
+        sendMessage({ text });
+      }, 50);
+    }
+
+    window.addEventListener(
+      "infopilot:contact-manager",
+      handleContactManager as EventListener,
+    );
+    return () =>
+      window.removeEventListener(
+        "infopilot:contact-manager",
+        handleContactManager as EventListener,
+      );
+  }, [sendMessage]);
+
   // Proactive opener (P1.2): при первом открытии чата — фетч персонального
   // приветствия с /api/chat/welcome. Endpoint сам разбирается с авторизацией:
   // для авторизованных — генерирует приветствие через LLM на основе
