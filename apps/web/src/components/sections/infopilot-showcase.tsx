@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import {
   ArrowRight,
   ClipboardCheck,
@@ -47,14 +44,7 @@ const techIconMap: Record<string, LucideIcon> = {
 
 export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
   return (
-    <motion.section
-      id="infopilot"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6 }}
-      className={cn("space-y-6", className)}
-    >
+    <section id="infopilot" className={cn("scroll-mt-24 space-y-6", className)}>
       {/* Dark hero block */}
       <div className="relative overflow-hidden rounded-3xl bg-primary p-6 sm:p-10 lg:p-14">
         <div
@@ -71,49 +61,25 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
         />
 
         <div className="relative mx-auto max-w-3xl text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-5 inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-sm text-primary-foreground/80"
-          >
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-sm text-primary-foreground/80">
             <Sparkles className="size-4 text-accent" />
             Флагманский продукт
-          </motion.div>
+          </div>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="font-heading text-3xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-4xl lg:text-5xl"
-          >
+          <h2 className="font-heading text-3xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-4xl lg:text-5xl">
             ИнфоПилот — <span className="text-accent">ИИ-диспетчер</span>{" "}
             на&nbsp;трассе 24/7
-          </motion.h2>
+          </h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary-foreground/70 sm:text-lg"
-          >
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
             Водитель говорит в Telegram: «Встал, Воронежская, 230-й километр,
             мост через Дон, не заводится». Через 2 минуты у него в чате —
-            карточка с проверенным эвакуатором: ETA 27 минут, цена
-            зафиксирована 8&nbsp;500&nbsp;₽, наш робот уже созвонился
-            с диспетчером партнёра. Водитель нажимает «Подтверждаю». Всё.
-          </motion.p>
+            карточка с проверенным эвакуатором: ETA 27 минут, цена зафиксирована
+            8&nbsp;500&nbsp;₽, наш робот уже созвонился с диспетчером партнёра.
+            Водитель нажимает «Подтверждаю». Всё.
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
-          >
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button
               asChild
               size="lg"
@@ -136,11 +102,11 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
             >
               <Link href="/infopilot">Подробнее про ИнфоПилот</Link>
             </Button>
-          </motion.div>
+          </div>
         </div>
       </div>
 
-      {/* Scenarios block on light background */}
+      {/* Scenarios block */}
       <div className="rounded-3xl border bg-card p-6 sm:p-10 lg:p-14">
         <div className="mx-auto max-w-3xl text-center">
           <h3 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
@@ -153,15 +119,11 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-          {infopilotScenarios.map((scenario, index) => {
+          {infopilotScenarios.map((scenario) => {
             const Icon = scenarioIconMap[scenario.iconName];
             return (
-              <motion.div
+              <div
                 key={scenario.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.08 }}
                 className="group flex flex-col rounded-2xl border bg-background p-6 transition-shadow hover:shadow-lg"
               >
                 <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent">
@@ -176,7 +138,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
                 <span className="mt-4 inline-flex w-fit items-center rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
                   {scenario.monetizationHint}
                 </span>
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -187,15 +149,11 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
             Что внутри технологически
           </h3>
           <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {infopilotTechFeatures.map((feature, index) => {
+            {infopilotTechFeatures.map((feature) => {
               const Icon = techIconMap[feature.iconName];
               return (
-                <motion.div
+                <div
                   key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.08 }}
                   className="flex flex-col items-center text-center"
                 >
                   <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-primary/5 text-primary">
@@ -207,7 +165,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     {feature.description}
                   </p>
-                </motion.div>
+                </div>
               );
             })}
           </div>
@@ -223,6 +181,6 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
           </p>
         </div>
       </div>
-    </motion.section>
+    </section>
   );
 }

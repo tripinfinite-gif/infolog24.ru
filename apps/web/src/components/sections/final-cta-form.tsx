@@ -178,8 +178,8 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
         <div className="rounded-2xl bg-background p-6 shadow-2xl sm:p-8">
           {submitted ? (
             <div className="py-8 text-center">
-              <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-green-100">
-                <Shield className="size-8 text-green-600" />
+              <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-accent/15">
+                <Shield className="size-8 text-accent" />
               </div>
               <h3 className="mt-4 text-xl font-semibold text-foreground">
                 Заявка принята!

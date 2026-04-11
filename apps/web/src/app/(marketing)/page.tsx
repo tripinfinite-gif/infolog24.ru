@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 
-import { FaqMini } from "@/components/sections/v2/faq-mini";
-import { FinalCtaForm } from "@/components/sections/v2/final-cta-form";
-import { HeroV2 } from "@/components/sections/v2/hero-v2";
-import { HowItWorksV2 } from "@/components/sections/v2/how-it-works-v2";
-import { InfopilotHeroSection } from "@/components/sections/v2/infopilot-hero-section";
-import { PackagesGridV2 } from "@/components/sections/v2/packages-grid";
-import { PainSystemsGrid } from "@/components/sections/v2/pain-systems-grid";
-import { RegulatoryTimelineV2 } from "@/components/sections/v2/regulatory-timeline-v2";
-import { SimplePassSection } from "@/components/sections/v2/simple-pass-section";
-import { WhyUsTiles } from "@/components/sections/v2/why-us-tiles";
+import { FaqMini } from "@/components/sections/faq-mini";
+import { FinalCtaForm } from "@/components/sections/final-cta-form";
+import { Hero } from "@/components/sections/hero";
+import { HowItWorks } from "@/components/sections/how-it-works";
+import { InfopilotShowcase } from "@/components/sections/infopilot-showcase";
+import { PackagesGrid } from "@/components/sections/packages-grid";
+import { PainSystems } from "@/components/sections/pain-systems";
+import { RegulatoryTimeline } from "@/components/sections/regulatory-timeline";
+import { SimplePass } from "@/components/sections/simple-pass";
 import { Testimonials } from "@/components/sections/testimonials";
+import { WhyUsTiles } from "@/components/sections/why-us-tiles";
 import {
   BreadcrumbJsonLd,
   LocalBusinessJsonLd,
@@ -107,25 +107,25 @@ export default function HomePage() {
       {/* === HOMEPAGE v2 — PLATFORM === */}
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-6 sm:space-y-14 sm:px-6 sm:py-10 lg:px-8">
         {/* 1. Hero */}
-        <HeroV2 />
+        <Hero />
 
         {/* 2. Pain: 6 systems */}
-        <PainSystemsGrid />
+        <PainSystems />
 
         {/* 3. Three packages — main conversion block */}
-        <PackagesGridV2 />
+        <PackagesGrid />
 
         {/* 4. InfoPilot — flagship AI dispatcher */}
-        <InfopilotHeroSection />
+        <InfopilotShowcase />
 
         {/* 5. Regulatory timeline */}
-        <RegulatoryTimelineV2 />
+        <RegulatoryTimeline />
 
         {/* 6. "Just a pass" door */}
-        <SimplePassSection />
+        <SimplePass />
 
         {/* 7. How it works */}
-        <HowItWorksV2 />
+        <HowItWorks />
 
         {/* 8. Why us */}
         <WhyUsTiles />

@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import {
   ArrowRight,
   Building,
@@ -30,13 +27,20 @@ const iconMap: Record<string, LucideIcon> = {
   Stethoscope,
 };
 
+// Шесть тонов на основе токенов проекта (без хардкода Tailwind-цветов).
+// Дают визуальную дифференциацию 6 систем, оставаясь внутри дизайн-системы.
+const tonePalette = [
+  "bg-destructive/10 text-destructive",
+  "bg-primary/10 text-primary",
+  "bg-accent/15 text-accent",
+  "bg-foreground/10 text-foreground",
+  "bg-primary/15 text-primary",
+  "bg-destructive/15 text-destructive",
+];
+
 export function PainSystems({ className }: PainSystemsProps) {
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6 }}
+    <section
       className={cn(
         "relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-10 lg:p-14",
         className
@@ -55,16 +59,18 @@ export function PainSystems({ className }: PainSystemsProps) {
       <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         {painSystems.map((system, index) => {
           const Icon = iconMap[system.iconName];
+          const tone = tonePalette[index % tonePalette.length];
           return (
-            <motion.div
+            <div
               key={system.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.08 }}
               className="group relative flex flex-col rounded-2xl border bg-background p-6 transition-shadow hover:shadow-lg"
             >
-              <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <div
+                className={cn(
+                  "mb-4 flex size-12 items-center justify-center rounded-full",
+                  tone
+                )}
+              >
                 {Icon ? <Icon className="size-6" /> : null}
               </div>
               <h3 className="text-lg font-bold text-foreground">
@@ -73,20 +79,20 @@ export function PainSystems({ className }: PainSystemsProps) {
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {system.pain}
               </p>
-            </motion.div>
+            </div>
           );
         })}
       </div>
 
-      <div className="mt-10 text-center">
-        <p className="mx-auto max-w-2xl text-base leading-relaxed text-foreground sm:text-lg">
+      <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-accent/20 bg-accent/5 p-6 text-center">
+        <p className="text-base font-medium text-foreground sm:text-lg">
           Мы собрали всё в одно окно. Плюс добавили то, чего ни у кого нет —
           ИИ-диспетчера, который решает проблемы на трассе за водителя.
         </p>
         <Button
           asChild
           size="lg"
-          className="mt-6 h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
+          className="mt-5 h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
         >
           <Link href="#packages">
             Посмотреть, как это работает
@@ -94,6 +100,6 @@ export function PainSystems({ className }: PainSystemsProps) {
           </Link>
         </Button>
       </div>
-    </motion.section>
+    </section>
   );
 }

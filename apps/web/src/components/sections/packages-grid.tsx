@@ -56,7 +56,7 @@ export function PackagesGrid({ className }: PackagesGridProps) {
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6 }}
       className={cn(
-        "relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-10 lg:p-14",
+        "relative scroll-mt-24 overflow-hidden rounded-3xl border bg-card p-6 sm:p-10 lg:p-14",
         className
       )}
     >

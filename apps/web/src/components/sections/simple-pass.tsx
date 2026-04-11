@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 import { Calculator } from "@/app/(marketing)/calculator";
 
-interface SimplePassSectionProps {
+interface SimplePassProps {
   className?: string;
 }
 
@@ -84,7 +84,7 @@ const services: SimplePassCard[] = [
   },
 ];
 
-export function SimplePassSection({ className }: SimplePassSectionProps) {
+export function SimplePass({ className }: SimplePassProps) {
   return (
     <section
       id="passes"
@@ -111,11 +111,11 @@ export function SimplePassSection({ className }: SimplePassSectionProps) {
                   "relative flex flex-col rounded-2xl p-6 transition-shadow hover:shadow-lg sm:p-8",
                   service.dark
                     ? "bg-primary text-primary-foreground"
-                    : "bg-card text-card-foreground"
+                    : "border bg-card text-card-foreground"
                 )}
               >
                 {service.popular && (
-                  <div className="absolute -top-3 right-6 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
+                  <div className="absolute -top-3 right-6 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground shadow-md">
                     Популярное
                   </div>
                 )}
