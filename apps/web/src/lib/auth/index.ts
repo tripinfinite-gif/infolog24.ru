@@ -1,6 +1,5 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { twoFactor } from "better-auth/plugins";
 import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 
@@ -43,13 +42,11 @@ export const auth = betterAuth({
     autoSignIn: true,
     minPasswordLength: 8,
   },
-  plugins: [
-    twoFactor({
-      schema: {
-        twoFactor: { modelName: "two_factors" },
-      },
-    }),
-  ],
+  // twoFactor plugin отключён: для его работы в users нужна колонка
+  // twoFactorEnabled, которой пока нет в schema.ts. Подключим вместе
+  // с миграцией, когда дойдём до 2FA. На текущем этапе тестового режима
+  // он не нужен — таблица two_factors остаётся пустой.
+  plugins: [],
 });
 
 export type Session = typeof auth.$Infer.Session;
