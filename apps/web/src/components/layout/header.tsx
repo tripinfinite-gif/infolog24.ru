@@ -493,7 +493,7 @@ export function Header({ className }: HeaderProps) {
           </nav>
 
           {/* Desktop Right Side */}
-          <div className="hidden items-center gap-2 lg:flex xl:gap-3">
+          <div className="hidden items-center gap-3 lg:flex xl:gap-4">
             <a
               href="tel:+74951234567"
               className="group hidden items-center gap-2 xl:flex"
@@ -512,18 +512,10 @@ export function Header({ className }: HeaderProps) {
             </a>
             <Button
               asChild
-              variant="outline"
-              size="sm"
-              className="rounded-xl border-border/70"
-            >
-              <Link href="/dashboard">Личный кабинет</Link>
-            </Button>
-            <Button
-              asChild
               size="sm"
               className="rounded-xl bg-accent text-accent-foreground shadow-sm hover:bg-accent/90"
             >
-              <Link href="#zayavka">Оформить пропуск</Link>
+              <Link href="/dashboard">Личный кабинет</Link>
             </Button>
           </div>
 

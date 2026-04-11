@@ -44,14 +44,19 @@ export function Footer({ className }: FooterProps) {
   return (
     <footer className={cn(className)}>
       {/* Trust Bar */}
-      <div className="bg-primary">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-6 sm:px-6 md:grid-cols-4 lg:px-8">
+      <div className="border-b border-primary-foreground/10 bg-primary">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-8 px-4 py-10 sm:px-6 md:grid-cols-4 md:gap-y-0 md:divide-x md:divide-primary-foreground/10 md:py-12 lg:px-8">
           {trustItems.map((item) => (
-            <div key={item.value} className="text-center">
-              <span className="block font-[family-name:var(--font-manrope)] text-xl font-extrabold text-primary-foreground sm:text-2xl">
+            <div
+              key={item.value}
+              className="flex flex-col items-center justify-center px-4 text-center md:px-6"
+            >
+              <span className="block font-[family-name:var(--font-manrope)] text-2xl font-extrabold leading-none text-primary-foreground sm:text-3xl lg:text-4xl">
                 {item.value}
               </span>
-              <span className="text-sm text-primary-foreground/70">{item.label}</span>
+              <span className="mt-2 text-sm text-primary-foreground/60 sm:text-base">
+                {item.label}
+              </span>
             </div>
           ))}
         </div>
