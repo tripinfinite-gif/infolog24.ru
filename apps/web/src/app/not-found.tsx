@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const popularLinks = [
   { href: "/services/propusk-mkad", label: "Пропуск на МКАД" },
   { href: "/services/propusk-ttk", label: "Пропуск на ТТК" },
-  { href: "/pricing", label: "Тарифы" },
+  { href: "/services/propusk-sk", label: "Пропуск на Садовое" },
   { href: "/faq", label: "Частые вопросы" },
   { href: "/contacts", label: "Контакты" },
 ];

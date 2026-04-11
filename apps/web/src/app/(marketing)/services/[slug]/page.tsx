@@ -310,7 +310,7 @@ export default async function ServiceDetailPage({
               <Link href="/contacts">Оставить заявку</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="/pricing">Все тарифы и цены</Link>
+              <Link href="/services">Все услуги</Link>
             </Button>
           </div>
         </div>

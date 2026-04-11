@@ -75,9 +75,7 @@ const sections: MobileMenuSection[] = [
       { href: "/services/propusk-ttk", label: "Пропуск на ТТК" },
       { href: "/services/propusk-sk", label: "Пропуск на Садовое" },
       { href: "/services/vremennyj-propusk", label: "Временный пропуск" },
-      { href: "/services/godovoj-propusk", label: "Годовой пропуск" },
       { href: "/check-status", label: "Проверить статус пропуска" },
-      { href: "/pricing", label: "Калькулятор стоимости" },
     ],
   },
   {
@@ -113,13 +111,6 @@ const sections: MobileMenuSection[] = [
     ],
   },
   {
-    key: "pricing",
-    label: "Тарифы",
-    href: "/pricing",
-    icon: Truck,
-    matchPrefix: "/pricing",
-  },
-  {
     key: "company",
     label: "Компания",
     href: "/about",
@@ -152,7 +143,6 @@ export function MobileNav({ children }: MobileNavProps) {
 
   const isActive = (section: MobileMenuSection) => {
     if (!section.matchPrefix) return false;
-    if (section.matchPrefix === "/pricing") return pathname === "/pricing";
     return pathname.startsWith(section.matchPrefix);
   };
 

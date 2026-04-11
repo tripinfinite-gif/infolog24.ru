@@ -20,7 +20,6 @@ export const mainNav: NavItem[] = [
       { title: "Переход на ЭТрН", href: "/etrn" },
     ],
   },
-  { title: "Тарифы", href: "/pricing" },
   { title: "О компании", href: "/about" },
   { title: "Отзывы", href: "/reviews" },
   { title: "FAQ", href: "/faq" },
@@ -70,7 +69,6 @@ export const footerNav: NavItem[] = [
     href: "/faq",
     children: [
       { title: "FAQ", href: "/faq" },
-      { title: "Тарифы", href: "/pricing" },
       { title: "Проверить статус", href: "/check-status" },
       {
         title: "Политика конфиденциальности",

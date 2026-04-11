@@ -13,7 +13,6 @@ const serviceLinks = [
   { href: "/services/vremennyj-propusk", label: "Временный пропуск" },
   { href: "/goslog", label: "Регистрация в ГосЛог" },
   { href: "/etrn", label: "Переход на ЭТрН" },
-  { href: "/pricing", label: "Тарифы" },
 ];
 
 const companyLinks = [

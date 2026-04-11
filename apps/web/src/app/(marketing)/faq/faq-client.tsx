@@ -325,12 +325,6 @@ export function FaqClient() {
                   <ArrowRight className="ml-2 size-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline">
-                <Link href="/pricing">
-                  Цены и тарифы
-                  <ArrowRight className="ml-2 size-4" />
-                </Link>
-              </Button>
               <Button
                 asChild
                 className="bg-accent text-accent-foreground hover:bg-accent/90"

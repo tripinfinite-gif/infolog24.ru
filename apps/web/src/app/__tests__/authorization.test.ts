@@ -18,7 +18,7 @@ interface RouteCase {
 
 const ROUTES: RouteCase[] = [
   { path: "/", kind: "public" },
-  { path: "/pricing", kind: "public" },
+  { path: "/services", kind: "public" },
   { path: "/contact", kind: "public" },
   { path: "/login", kind: "public" },
   { path: "/dashboard", kind: "dashboard" },
@@ -57,11 +57,11 @@ describe("middleware authorization", () => {
       expect(response?.headers.get("location")).toContain("/login");
     });
 
-    it("allows access to public /pricing", async () => {
+    it("allows access to public /services", async () => {
       // Public paths are outside the matcher. The middleware config.matcher
       // ensures this handler is not invoked for public paths, but if called
       // directly, the middleware must not redirect them.
-      const request = makeRequest("/pricing", false);
+      const request = makeRequest("/services", false);
       const response = await middleware(request);
       // .next() returns a 200-like passthrough
       expect(response?.status).toBeLessThan(400);

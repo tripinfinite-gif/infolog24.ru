@@ -118,19 +118,9 @@ const sections: MenuSection[] = [
         description: "Разовый въезд на 1–5 дней",
       },
       {
-        href: "/services/godovoj-propusk",
-        title: "Годовой пропуск",
-        description: "Максимальная экономия",
-      },
-      {
         href: "/check-status",
         title: "Проверить статус",
         description: "Узнать готовность пропуска",
-      },
-      {
-        href: "/pricing",
-        title: "Калькулятор стоимости",
-        description: "Расчёт под ваш маршрут",
       },
     ],
   },
@@ -235,12 +225,6 @@ const sections: MenuSection[] = [
     },
   },
   {
-    key: "pricing",
-    label: "Тарифы",
-    href: "/pricing",
-    matchPrefix: "/pricing",
-  },
-  {
     key: "company",
     label: "Компания",
     href: "/about",
@@ -297,7 +281,6 @@ export function Header({ className }: HeaderProps) {
 
   const isActive = (section: MenuSection) => {
     if (!section.matchPrefix) return false;
-    if (section.matchPrefix === "/pricing") return pathname === "/pricing";
     return pathname.startsWith(section.matchPrefix);
   };
 
