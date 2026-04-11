@@ -19,11 +19,23 @@ import { cn } from "@/lib/utils";
 
 import { ChatMessages } from "./chat-messages";
 
-export function ChatWidget() {
+type ChatWidgetProps = {
+  /**
+   * Известно ли изначально, что юзер авторизован. Влияет только на
+   * приоритет показа proactive opener — endpoint /api/chat/welcome
+   * сам решит, какое приветствие отдать (анонимам — статичное).
+   */
+  isAuthenticated?: boolean;
+};
+
+export function ChatWidget({ isAuthenticated = false }: ChatWidgetProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  // Гарантия идемпотентности: welcome загружается один раз за жизнь компонента,
+  // чтобы при повторных открытиях не дёргать endpoint.
+  const welcomeFetchedRef = useRef(false);
 
   const pathname = usePathname() ?? "/";
 
@@ -39,7 +51,7 @@ export function ChatWidget() {
     [pathname],
   );
 
-  const { messages, sendMessage, status, error } = useChat({
+  const { messages, sendMessage, setMessages, status, error } = useChat({
     transport,
   });
 
@@ -66,6 +78,48 @@ export function ChatWidget() {
     window.addEventListener("infopilot:open", handleOpen);
     return () => window.removeEventListener("infopilot:open", handleOpen);
   }, []);
+
+  // Proactive opener (P1.2): при первом открытии чата — фетч персонального
+  // приветствия с /api/chat/welcome. Endpoint сам разбирается с авторизацией:
+  // для авторизованных — генерирует приветствие через LLM на основе
+  // данных кабинета (имя, истекающие пропуска, активные заявки), для
+  // анонимов — отдаёт статичный текст. Идемпотентно — один welcome за сессию.
+  useEffect(() => {
+    if (!isOpen) return;
+    if (welcomeFetchedRef.current) return;
+    if (messages.length > 0) return;
+
+    welcomeFetchedRef.current = true;
+    const controller = new AbortController();
+
+    fetch("/api/chat/welcome", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { message?: string } | null) => {
+        const message = data?.message?.trim();
+        if (!message) return;
+        setMessages([
+          {
+            id: `welcome-${Date.now()}`,
+            role: "assistant",
+            parts: [{ type: "text", text: message }],
+          },
+        ]);
+      })
+      .catch((err: unknown) => {
+        if ((err as Error)?.name === "AbortError") return;
+        // Молчаливо игнорируем — пользователь просто не увидит приветствие,
+        // обычный поток чата продолжит работать.
+      });
+
+    return () => controller.abort();
+    // Намеренно зависим только от isOpen — messages в зависимостях
+    // дёрнули бы повторный фетч после первого setMessages.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const handleSend = useCallback(() => {
     const text = input.trim();

@@ -1,5 +1,5 @@
 import { tool } from "ai";
-import { and, asc, desc, eq, gte, inArray, lte, or } from "drizzle-orm";
+import { and, asc, desc, eq, gte, lte, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/lib/db";
@@ -17,6 +17,7 @@ import {
   knowledgeCategories,
   type KnowledgeItem,
 } from "@/content/knowledge-base";
+import { loadCabinetSummary } from "./cabinet-summary";
 import { logger } from "@/lib/logger";
 
 export type ChatUserContext = {
@@ -559,131 +560,7 @@ export function createChatTools({ userId }: ChatUserContext) {
       description:
         "Получить краткую сводку по личному кабинету авторизованного клиента: имя, компания, количество ТС, активные заявки, ближайшие сроки окончания пропусков. ВСЕГДА вызывай этот инструмент в начале диалога с авторизованным пользователем — он даёт контекст для персонализированных ответов.",
       inputSchema: z.object({}),
-      execute: async () => {
-        if (!userId) {
-          return {
-            authenticated: false as const,
-            message:
-              "Пользователь не авторизован — отвечаю в публичном режиме без доступа к личным данным.",
-          };
-        }
-
-        try {
-          const [user, vehicleList, activeOrders, activePermits] =
-            await Promise.all([
-              db.query.users.findFirst({
-                where: eq(users.id, userId),
-                columns: {
-                  id: true,
-                  name: true,
-                  email: true,
-                  phone: true,
-                  company: true,
-                  inn: true,
-                },
-              }),
-              db.query.vehicles.findMany({
-                where: eq(vehicles.userId, userId),
-                columns: {
-                  id: true,
-                  brand: true,
-                  model: true,
-                  licensePlate: true,
-                  ecoClass: true,
-                  year: true,
-                },
-                limit: 50,
-              }),
-              db
-                .select({
-                  id: orders.id,
-                  zone: orders.zone,
-                  type: orders.type,
-                  status: orders.status,
-                  estimatedReadyDate: orders.estimatedReadyDate,
-                })
-                .from(orders)
-                .where(
-                  and(
-                    eq(orders.userId, userId),
-                    inArray(orders.status, [
-                      "draft",
-                      "documents_pending",
-                      "payment_pending",
-                      "processing",
-                      "submitted",
-                    ]),
-                  ),
-                )
-                .orderBy(desc(orders.createdAt))
-                .limit(20),
-              db
-                .select({
-                  id: permits.id,
-                  zone: permits.zone,
-                  permitNumber: permits.permitNumber,
-                  validUntil: permits.validUntil,
-                  status: permits.status,
-                })
-                .from(permits)
-                .where(
-                  and(
-                    eq(permits.userId, userId),
-                    eq(permits.status, "active"),
-                  ),
-                )
-                .orderBy(asc(permits.validUntil))
-                .limit(20),
-            ]);
-
-          const expiringSoon = activePermits.filter((p) => {
-            const days = daysUntil(p.validUntil);
-            return days >= 0 && days <= 30;
-          });
-
-          return {
-            authenticated: true as const,
-            user: {
-              name: user?.name ?? null,
-              company: user?.company ?? null,
-              email: user?.email ?? null,
-              phone: user?.phone ?? null,
-            },
-            counts: {
-              vehicles: vehicleList.length,
-              activeOrders: activeOrders.length,
-              activePermits: activePermits.length,
-              expiringInNext30Days: expiringSoon.length,
-            },
-            vehiclesPreview: vehicleList.slice(0, 5).map((v) => ({
-              id: v.id,
-              plate: v.licensePlate,
-              model: `${v.brand} ${v.model}`.trim(),
-              ecoClass: v.ecoClass,
-              year: v.year,
-            })),
-            activeOrdersPreview: activeOrders.slice(0, 5).map((o) => ({
-              id: o.id,
-              zone: zoneLabels[o.zone] ?? o.zone,
-              status: o.status,
-              estimatedReadyDate: formatDateOrNull(o.estimatedReadyDate),
-            })),
-            expiringSoon: expiringSoon.map((p) => ({
-              permitNumber: p.permitNumber,
-              zone: zoneLabels[p.zone] ?? p.zone,
-              validUntil: formatDateOrNull(p.validUntil),
-              daysLeft: daysUntil(p.validUntil),
-            })),
-          };
-        } catch (error) {
-          logger.warn({ error, userId }, "getMyContext failed");
-          return {
-            authenticated: true as const,
-            error:
-              "Не удалось получить данные кабинета. Попробуйте обновить страницу или свяжитесь с менеджером.",
-          };
-        }
-      },
+      execute: async () => loadCabinetSummary(userId),
     }),
 
     getMyVehicles: tool({
