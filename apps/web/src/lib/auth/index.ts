@@ -47,6 +47,15 @@ export const auth = betterAuth({
   // с миграцией, когда дойдём до 2FA. На текущем этапе тестового режима
   // он не нужен — таблица two_factors остаётся пустой.
   plugins: [],
+  // Наши id-колонки имеют тип uuid с DEFAULT gen_random_uuid().
+  // Better Auth по умолчанию генерирует id как nanoid-строку, что
+  // ломает PostgreSQL ("invalid input syntax for type uuid"). Переопределяем
+  // генерацию через crypto.randomUUID() — стандартный UUID v4.
+  advanced: {
+    database: {
+      generateId: () => crypto.randomUUID(),
+    },
+  },
 });
 
 export type Session = typeof auth.$Infer.Session;
