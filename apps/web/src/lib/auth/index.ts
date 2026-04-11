@@ -5,22 +5,27 @@ import { db } from "@/lib/db";
 import * as schema from "@/lib/db/schema";
 
 // Наши таблицы во множественном числе (users / sessions / accounts /
-// verifications / two_factors). Better Auth по умолчанию ищет таблицы
-// в единственном числе — без явного маппинга падает с
-// "model 'user' was not found in the schema object".
+// verifications / two_factors). Better Auth внутри ищет модели как
+// по дефолтным singular именам, так и по кастомным modelName, в
+// зависимости от пути кода. Передаём оба варианта ключей в schema
+// объекте, чтобы попасть в любой lookup.
+const drizzleSchema = {
+  user: schema.users,
+  users: schema.users,
+  session: schema.sessions,
+  sessions: schema.sessions,
+  account: schema.accounts,
+  accounts: schema.accounts,
+  verification: schema.verifications,
+  verifications: schema.verifications,
+  twoFactor: schema.twoFactors,
+  two_factors: schema.twoFactors,
+};
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
-    // Ключи в schema объекте должны совпадать с modelName, который мы
-    // переопределили ниже на plural-формы, иначе Better Auth не найдёт
-    // таблицу.
-    schema: {
-      users: schema.users,
-      sessions: schema.sessions,
-      accounts: schema.accounts,
-      verifications: schema.verifications,
-      two_factors: schema.twoFactors,
-    },
+    schema: drizzleSchema,
   }),
   user: { modelName: "users" },
   session: {
