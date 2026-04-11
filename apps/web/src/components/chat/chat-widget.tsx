@@ -3,6 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { MessageCircle, Minus, Send, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -13,6 +14,7 @@ import {
 } from "react";
 
 import { Button } from "@/components/ui/button";
+import { parsePathnameToContext } from "@/lib/chat/page-context";
 import { cn } from "@/lib/utils";
 
 import { ChatMessages } from "./chat-messages";
@@ -23,9 +25,18 @@ export function ChatWidget() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  const pathname = usePathname() ?? "/";
+
+  // Transport пересобирается при смене маршрута, чтобы каждое сообщение
+  // отправлялось со свежим clientContext (page-aware ассистент знает,
+  // на какой странице сейчас клиент и какую сущность смотрит).
   const transport = useMemo(
-    () => new DefaultChatTransport({ api: "/api/chat" }),
-    [],
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        body: { clientContext: parsePathnameToContext(pathname) },
+      }),
+    [pathname],
   );
 
   const { messages, sendMessage, status, error } = useChat({

@@ -6,8 +6,9 @@ import {
 } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-import { SYSTEM_PROMPT } from "@/lib/chat/system-prompt";
+import { buildSystemPrompt } from "@/lib/chat/system-prompt";
 import { createChatTools } from "@/lib/chat/tools";
+import type { ClientContext } from "@/lib/chat/types";
 import {
   checkChatRateLimitAsync,
   getClientIp,
@@ -27,6 +28,49 @@ export const runtime = "nodejs";
 
 const MAX_OUTPUT_TOKENS = 1000;
 const MAX_HISTORY = 20;
+
+/**
+ * Серверная санитизация ClientContext, который пришёл от чат-виджета.
+ * Никогда не доверяем body как есть — клиент может прислать что угодно.
+ * Жёсткие лимиты на длину и набор полей.
+ */
+function sanitizeClientContext(
+  raw: ClientContext | undefined,
+): ClientContext | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const route = typeof raw.route === "string" ? raw.route.slice(0, 256) : null;
+  if (!route || !route.startsWith("/")) return undefined;
+
+  const section =
+    typeof raw.section === "string" ? raw.section.slice(0, 128) : undefined;
+
+  const entity = (() => {
+    if (!raw.entity || typeof raw.entity !== "object") return undefined;
+    const e = raw.entity as { kind?: unknown; id?: unknown; slug?: unknown };
+    if (typeof e.kind !== "string") return undefined;
+    switch (e.kind) {
+      case "order":
+      case "vehicle":
+      case "permit":
+      case "document":
+        return typeof e.id === "string" && e.id.length <= 64
+          ? ({ kind: e.kind, id: e.id } as ClientContext["entity"])
+          : undefined;
+      case "service":
+      case "blog":
+        return typeof e.slug === "string" && e.slug.length <= 128
+          ? ({ kind: e.kind, slug: e.slug } as ClientContext["entity"])
+          : undefined;
+      case "new_order_form":
+      case "new_vehicle_form":
+        return { kind: e.kind } as ClientContext["entity"];
+      default:
+        return undefined;
+    }
+  })();
+
+  return { route, section, entity };
+}
 
 function extractUserText(message: UIMessage): string {
   if (!message.parts) return "";
@@ -125,9 +169,11 @@ export async function POST(req: Request) {
     const body = (await req.json()) as {
       messages: UIMessage[];
       conversationId?: string;
+      clientContext?: ClientContext;
     };
     const messages = body.messages;
     const initialConversationId = body.conversationId ?? null;
+    const clientContext = sanitizeClientContext(body.clientContext);
 
     if (!Array.isArray(messages) || messages.length === 0) {
       return new Response(
@@ -201,7 +247,7 @@ export async function POST(req: Request) {
 
     const result = streamText({
       model: openai("gpt-4o-mini"),
-      system: SYSTEM_PROMPT,
+      system: buildSystemPrompt(clientContext),
       messages: modelMessages,
       tools,
       stopWhen: stepCountIs(3),

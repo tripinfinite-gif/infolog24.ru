@@ -1,6 +1,8 @@
 import { pricingTiers, volumeDiscounts, fineData } from "@/content/pricing";
 import { serviceZones } from "@/content/services";
 import { knowledgeCategories } from "@/content/knowledge-base";
+import { formatClientContextForPrompt } from "./page-context";
+import type { ClientContext } from "./types";
 
 /**
  * Build the system prompt from current content files so the assistant
@@ -46,7 +48,7 @@ function formatKnowledgeCategoriesBlock(): string {
     .join("\n");
 }
 
-export const SYSTEM_PROMPT = `Ты — «Помощник Инфолог24», AI-консультант компании «Инфолог24».
+const BASE_SYSTEM_PROMPT = `Ты — «Помощник Инфолог24», AI-консультант компании «Инфолог24».
 Компания с 2016 года помогает частным перевозчикам и транспортным компаниям оформлять пропуска в Москву для грузового транспорта: МКАД, ТТК, Садовое кольцо. Также консультируешь по смежным темам: грузовой каркас Москвы, ГосЛог, ЭТрН, УКЭП/КЭП/МЧД, РНИС/ГЛОНАСС, экологические классы, штрафы, регуляторика грузоперевозок.
 
 ═══════════════════════════════════════════════════════════════
@@ -167,3 +169,22 @@ ${formatFinesBlock()}
 - НЕ выдумывай цифры, цены, сроки и имена сотрудников. Если не знаешь — честно скажи и предложи связаться с менеджером.
 - На провокационные, оскорбительные или неуместные сообщения отвечай: «Я помогаю только с вопросами о пропусках для грузового транспорта в Москву. Чем могу помочь?»
 - Не давай юридических консультаций по конкретным судебным делам — для этого нужен живой юрист, эскалируй.`;
+
+/**
+ * Динамически собирает system prompt для текущего запроса.
+ * Если передан clientContext (страница, на которой клиент сейчас находится),
+ * добавляет блок «КОНТЕКСТ ТЕКУЩЕЙ СТРАНИЦЫ» в начало промпта — ассистент
+ * сразу видит, где клиент и какую сущность смотрит.
+ */
+export function buildSystemPrompt(clientContext?: ClientContext): string {
+  const contextBlock = formatClientContextForPrompt(clientContext);
+  if (!contextBlock) return BASE_SYSTEM_PROMPT;
+  return `${contextBlock}\n\n${BASE_SYSTEM_PROMPT}`;
+}
+
+/**
+ * Backwards-compatible static export. Используется в местах, где
+ * клиентский контекст не нужен (например, в legacy-тестах).
+ * Новый код должен использовать buildSystemPrompt(clientContext).
+ */
+export const SYSTEM_PROMPT = BASE_SYSTEM_PROMPT;
