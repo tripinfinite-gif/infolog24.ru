@@ -3,6 +3,8 @@
 import type { UIMessage } from "ai";
 import { Bot, User } from "lucide-react";
 
+import { ActionCardList } from "@/components/chat/action-card-list";
+import { extractActionsFromResult } from "@/lib/chat/action-cards";
 import { cn } from "@/lib/utils";
 
 function TypingIndicator() {
@@ -210,10 +212,17 @@ export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
               const toolCallId =
                 "toolCallId" in part ? String(part.toolCallId) : undefined;
               const output = "output" in part ? part.output : undefined;
+              const result =
+                output ??
+                ("result" in part
+                  ? (part as { result?: unknown }).result
+                  : undefined);
               if (!toolCallId) return null;
+              const actions = extractActionsFromResult(result);
               return (
                 <div key={toolCallId} className="ml-9 mt-2">
-                  <ToolResultCard result={output} />
+                  <ToolResultCard result={result} />
+                  <ActionCardList actions={actions} />
                 </div>
               );
             })}

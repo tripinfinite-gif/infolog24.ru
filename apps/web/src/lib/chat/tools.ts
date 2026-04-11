@@ -18,6 +18,7 @@ import {
   type KnowledgeItem,
 } from "@/content/knowledge-base";
 import { loadCabinetSummary } from "./cabinet-summary";
+import type { ActionCard, PermitZone, WithActions } from "@/lib/chat/action-cards";
 import { logger } from "@/lib/logger";
 
 export type ChatUserContext = {
@@ -183,6 +184,10 @@ export function createChatTools({ userId }: ChatUserContext) {
                 ? 5
                 : 0;
 
+        const actions: ActionCard[] = [
+          { kind: "create_order", zone, permitType: type },
+        ];
+
         return {
           zone: zoneLabels[zone],
           type: typeLabels[type],
@@ -195,6 +200,7 @@ export function createChatTools({ userId }: ChatUserContext) {
             type === "temporary"
               ? "Временный пропуск бесплатно при заказе годового."
               : "В цену включён бесплатный временный пропуск на время оформления.",
+          actions,
         };
       },
     }),
@@ -251,6 +257,10 @@ export function createChatTools({ userId }: ChatUserContext) {
             };
           }
 
+          const actions: ActionCard[] = [
+            { kind: "view_order", orderId: found.id },
+          ];
+
           return {
             found: true as const,
             orderId: found.id,
@@ -258,6 +268,7 @@ export function createChatTools({ userId }: ChatUserContext) {
             zone: zoneLabels[found.zone] ?? found.zone,
             createdAt: found.createdAt.toISOString(),
             estimatedReadyDate: found.estimatedReadyDate ?? null,
+            actions,
           };
         } catch (error) {
           logger.warn({ error }, "checkPermitStatus failed");
@@ -319,6 +330,11 @@ export function createChatTools({ userId }: ChatUserContext) {
             "Order draft created from chat",
           );
 
+          const actions: ActionCard[] = [
+            { kind: "view_order", orderId: order.id },
+            { kind: "upload_document", orderId: order.id },
+          ];
+
           return {
             success: true as const,
             orderId: order.id,
@@ -328,6 +344,7 @@ export function createChatTools({ userId }: ChatUserContext) {
               "Оплатите заявку через СБП или карту",
               "Мы подадим заявку в Дептранс в течение рабочего дня",
             ],
+            actions,
           };
         } catch (error) {
           logger.error({ error, userId }, "createOrderDraft failed");
@@ -560,7 +577,31 @@ export function createChatTools({ userId }: ChatUserContext) {
       description:
         "Получить краткую сводку по личному кабинету авторизованного клиента: имя, компания, количество ТС, активные заявки, ближайшие сроки окончания пропусков. ВСЕГДА вызывай этот инструмент в начале диалога с авторизованным пользователем — он даёт контекст для персонализированных ответов.",
       inputSchema: z.object({}),
-      execute: async () => loadCabinetSummary(userId),
+      execute: async (): Promise<WithActions<Awaited<ReturnType<typeof loadCabinetSummary>>>> => {
+        const summary = await loadCabinetSummary(userId);
+        if (!summary.authenticated) return summary;
+
+        const actions: ActionCard[] = [];
+
+        for (const p of summary.expiringSoon) {
+          actions.push({
+            kind: "extend_permit",
+            permitId: p.permitNumber,
+            label: `Продлить ${p.permitNumber}`,
+          });
+        }
+
+        const firstOrder = summary.activeOrdersPreview[0];
+        if (firstOrder) {
+          actions.push({ kind: "view_order", orderId: firstOrder.id });
+        }
+
+        if (summary.counts.vehicles === 0) {
+          actions.push({ kind: "create_order" });
+        }
+
+        return actions.length > 0 ? { ...summary, actions } : summary;
+      },
     }),
 
     getMyVehicles: tool({
@@ -594,6 +635,14 @@ export function createChatTools({ userId }: ChatUserContext) {
               )
             : list;
 
+          const actions: ActionCard[] = [
+            ...filtered.map<ActionCard>((v) => ({
+              kind: "view_vehicle",
+              vehicleId: v.id,
+            })),
+            { kind: "create_order" },
+          ];
+
           return {
             authenticated: true as const,
             count: filtered.length,
@@ -607,6 +656,7 @@ export function createChatTools({ userId }: ChatUserContext) {
               maxWeight: v.maxWeight,
               vin: v.vin,
             })),
+            actions,
           };
         } catch (error) {
           logger.warn({ error, userId }, "getMyVehicles failed");
@@ -666,6 +716,16 @@ export function createChatTools({ userId }: ChatUserContext) {
             .orderBy(desc(orders.createdAt))
             .limit(limit);
 
+          const actions: ActionCard[] = list.flatMap<ActionCard>((o) => {
+            const entries: ActionCard[] = [
+              { kind: "view_order", orderId: o.id },
+            ];
+            if (o.status === "documents_pending") {
+              entries.push({ kind: "upload_document", orderId: o.id });
+            }
+            return entries;
+          });
+
           return {
             authenticated: true as const,
             count: list.length,
@@ -678,6 +738,7 @@ export function createChatTools({ userId }: ChatUserContext) {
               estimatedReadyDate: formatDateOrNull(o.estimatedReadyDate),
               createdAt: o.createdAt.toISOString().slice(0, 10),
             })),
+            ...(actions.length > 0 ? { actions } : {}),
           };
         } catch (error) {
           logger.warn({ error, userId }, "getMyOrders failed");
@@ -740,18 +801,42 @@ export function createChatTools({ userId }: ChatUserContext) {
             .orderBy(asc(permits.validUntil))
             .limit(50);
 
+          const labelToZone: Record<string, PermitZone> = {
+            "МКАД": "mkad",
+            "ТТК": "ttk",
+            "Садовое кольцо": "sk",
+          };
+
+          const permitsView = list.map((p) => ({
+            id: p.id,
+            permitNumber: p.permitNumber,
+            zone: zoneLabels[p.zone] ?? p.zone,
+            type: p.type,
+            validFrom: formatDateOrNull(p.validFrom),
+            validUntil: formatDateOrNull(p.validUntil),
+            daysLeft: daysUntil(p.validUntil),
+          }));
+
+          const actions: ActionCard[] = permitsView.flatMap<ActionCard>((p) => {
+            const entries: ActionCard[] = [
+              { kind: "view_permit", permitId: p.id },
+            ];
+            if (p.daysLeft <= 30) {
+              const zoneCode = labelToZone[p.zone];
+              entries.push({
+                kind: "extend_permit",
+                permitId: p.id,
+                ...(zoneCode ? { zone: zoneCode } : {}),
+              });
+            }
+            return entries;
+          });
+
           return {
             authenticated: true as const,
             count: list.length,
-            permits: list.map((p) => ({
-              id: p.id,
-              permitNumber: p.permitNumber,
-              zone: zoneLabels[p.zone] ?? p.zone,
-              type: p.type,
-              validFrom: formatDateOrNull(p.validFrom),
-              validUntil: formatDateOrNull(p.validUntil),
-              daysLeft: daysUntil(p.validUntil),
-            })),
+            permits: permitsView,
+            ...(actions.length > 0 ? { actions } : {}),
           };
         } catch (error) {
           logger.warn({ error, userId }, "getMyPermits failed");
