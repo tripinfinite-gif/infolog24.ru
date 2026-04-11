@@ -2,10 +2,16 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { twoFactor } from "better-auth/plugins";
 import { db } from "@/lib/db";
+import * as schema from "@/lib/db/schema";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
+    // Наши таблицы во множественном числе (users / sessions / accounts /
+    // verifications / two_factors). Better Auth по умолчанию ищет
+    // singular — без usePlural падает с "model 'user' was not found".
+    schema,
+    usePlural: true,
   }),
   emailAndPassword: {
     enabled: true,
