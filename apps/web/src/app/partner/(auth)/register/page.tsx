@@ -246,7 +246,7 @@ export default function PartnerRegisterPage() {
                 </span>
               </label>
             </CardContent>
-            <CardFooter className="flex-col gap-3">
+            <CardFooter className="mt-6 flex-col gap-3 border-t pt-6">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Регистрация..." : "Стать партнёром"}
               </Button>

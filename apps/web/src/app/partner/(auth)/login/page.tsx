@@ -121,7 +121,7 @@ export default function PartnerLoginPage() {
                 />
               </div>
             </CardContent>
-            <CardFooter className="flex-col gap-3">
+            <CardFooter className="mt-6 flex-col gap-3 border-t pt-6">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Вход..." : "Войти"}
               </Button>
