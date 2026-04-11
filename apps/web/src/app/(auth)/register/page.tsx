@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,21 +17,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { completeClientProfileAction } from "../_actions";
+
+interface FormState {
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+}
+
+const INITIAL_STATE: FormState = {
+  name: "",
+  email: "",
+  phone: "",
+  password: "",
+  confirmPassword: "",
+};
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    password: "",
-    confirmPassword: "",
-  });
+  const [form, setForm] = useState<FormState>(INITIAL_STATE);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function update(field: string, value: string) {
+  function update<K extends keyof FormState>(field: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -47,22 +59,47 @@ export default function RegisterPage() {
       return;
     }
 
+    if (form.phone.trim().length < 5) {
+      setError("Укажите корректный телефон");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const result = await authClient.signUp.email({
+      const signUpResult = await authClient.signUp.email({
         email: form.email,
         password: form.password,
         name: form.name,
       });
 
-      if (result.error) {
-        setError(result.error.message ?? "Ошибка регистрации");
-      } else {
-        router.push("/dashboard");
+      if (signUpResult.error) {
+        const message = signUpResult.error.message ?? "Ошибка регистрации";
+        setError(message);
+        toast.error(message);
+        return;
       }
-    } catch {
-      setError("Произошла ошибка. Попробуйте позже.");
+
+      // Сохраняем телефон отдельным шагом — Better Auth не знает про
+      // дополнительные поля в schema.users.
+      const profileResult = await completeClientProfileAction({
+        phone: form.phone,
+      });
+
+      if (!profileResult.ok) {
+        // Регистрация прошла, но телефон не сохранился — не блокируем вход.
+        toast.warning(profileResult.error);
+      } else {
+        toast.success("Аккаунт создан");
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      const message = "Произошла ошибка. Попробуйте позже.";
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -79,7 +116,10 @@ export default function RegisterPage() {
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {error && (
-            <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            <div
+              role="alert"
+              className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive"
+            >
               {error}
             </div>
           )}
@@ -119,19 +159,6 @@ export default function RegisterPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="company">
-              Компания{" "}
-              <span className="text-muted-foreground">(необязательно)</span>
-            </Label>
-            <Input
-              id="company"
-              placeholder="ООО «Логистика»"
-              value={form.company}
-              onChange={(e) => update("company", e.target.value)}
-              autoComplete="organization"
-            />
-          </div>
-          <div className="space-y-2">
             <Label htmlFor="password">Пароль</Label>
             <Input
               id="password"
@@ -154,6 +181,10 @@ export default function RegisterPage() {
               autoComplete="new-password"
             />
           </div>
+          <p className="text-xs text-muted-foreground">
+            Название компании заполнять необязательно — попросим позже,
+            когда дойдём до оформления заявки.
+          </p>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full" disabled={loading}>

@@ -134,7 +134,7 @@ interface Props {
 
 export default async function OrderDetailPage({ params }: Props) {
   const session = await getSession();
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/login");
 
   const { id } = await params;
   const order = await getOrderById(id);

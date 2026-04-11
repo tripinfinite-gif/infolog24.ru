@@ -55,13 +55,37 @@ function formatPrice(amount: number): string {
 
 interface NewOrderFormProps {
   vehicles: VehicleOption[];
+  /** Тип пропуска, заранее выбранный из «повторить заявку». */
+  initialType?: string | null;
+  /** ТС, заранее выбранное из «повторить заявку». */
+  initialVehicleId?: string | null;
 }
 
-export function NewOrderForm({ vehicles }: NewOrderFormProps) {
+export function NewOrderForm({
+  vehicles,
+  initialType,
+  initialVehicleId,
+}: NewOrderFormProps) {
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedPass, setSelectedPass] = useState<string | null>(null);
-  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
+
+  // Если из URL пришли оба параметра — пропускаем выбор типа и ТС,
+  // сразу открываем шаг с документами.
+  const validInitialType = initialType
+    ? passTypes.find((p) => p.id === initialType)?.id ?? null
+    : null;
+  const validInitialVehicle = initialVehicleId
+    ? vehicles.find((v) => v.id === initialVehicleId)?.id ?? null
+    : null;
+  const initialStep =
+    validInitialType && validInitialVehicle ? 3 : 1;
+
+  const [currentStep, setCurrentStep] = useState(initialStep);
+  const [selectedPass, setSelectedPass] = useState<string | null>(
+    validInitialType,
+  );
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(
+    validInitialVehicle,
+  );
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [notes, setNotes] = useState("");
   const [consent, setConsent] = useState(false);

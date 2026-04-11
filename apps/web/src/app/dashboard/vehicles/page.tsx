@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function VehiclesPage() {
   const session = await getSession();
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/login");
 
   const vehicles = await getVehiclesByUser(session.user.id);
 

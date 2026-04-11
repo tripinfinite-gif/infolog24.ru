@@ -1,6 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import {
+  ArrowLeft,
+  AlertTriangle,
+  Clock,
+  Mail,
+  Phone,
+  TrendingUp,
+} from "lucide-react";
 import { getClientDetail } from "@/lib/dal/admin";
 import {
   Card,
@@ -9,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -77,27 +85,136 @@ export default async function ClientDetailPage({
     notFound();
   }
 
-  const { client, orders, vehicles, payments, documents, permits, totalSpend } =
-    data;
+  const {
+    client,
+    orders,
+    vehicles,
+    payments,
+    documents,
+    permits,
+    totalSpend,
+    insights,
+  } = data;
+
+  const tierColors: Record<string, string> = {
+    T1: "bg-slate-100 text-slate-700",
+    T2: "bg-blue-100 text-blue-700",
+    T3: "bg-emerald-100 text-emerald-700",
+    T4: "bg-amber-100 text-amber-700",
+    T5: "bg-purple-100 text-purple-700",
+  };
+
+  const riskBadge =
+    insights.riskScore >= 2
+      ? { label: "Под угрозой ухода", className: "bg-red-100 text-red-700" }
+      : insights.riskScore === 1
+        ? { label: "Требует внимания", className: "bg-amber-100 text-amber-700" }
+        : { label: "Норма", className: "bg-emerald-100 text-emerald-700" };
+
+  function formatDays(days: number | null): string {
+    if (days === null) return "никогда";
+    if (days === 0) return "сегодня";
+    if (days === 1) return "вчера";
+    return `${days} дн. назад`;
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Link
           href="/admin/clients"
           className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-4" />
         </Link>
-        <div>
-          <h1 className="text-2xl font-bold">
-            {client.name ?? client.email}
-          </h1>
+        <div className="flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-2xl font-bold">
+              {client.name ?? client.email}
+            </h1>
+            <Badge className={tierColors[insights.tier.tier]}>
+              {insights.tier.tier} · {insights.tier.label}
+            </Badge>
+            <Badge variant="secondary" className={riskBadge.className}>
+              {riskBadge.label}
+            </Badge>
+          </div>
           <p className="text-sm text-muted-foreground">
             {client.company ?? "Без компании"}
           </p>
         </div>
+        <div className="flex gap-2">
+          {client.phone && (
+            <Button asChild size="sm" variant="outline">
+              <a href={`tel:${client.phone}`}>
+                <Phone className="size-4" />
+                Позвонить
+              </a>
+            </Button>
+          )}
+          <Button asChild size="sm" variant="outline">
+            <a href={`mailto:${client.email}`}>
+              <Mail className="size-4" />
+              Написать
+            </a>
+          </Button>
+        </div>
+      </div>
+
+      {/* Insights */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardContent className="flex items-center gap-3 p-4">
+            <TrendingUp className="size-5 text-emerald-600" />
+            <div>
+              <p className="text-xs text-muted-foreground">LTV</p>
+              <p className="text-lg font-bold">
+                {formatPriceRub(totalSpend)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center gap-3 p-4">
+            <Clock className="size-5 text-blue-600" />
+            <div>
+              <p className="text-xs text-muted-foreground">Последний вход</p>
+              <p className="text-lg font-bold">
+                {formatDays(insights.daysSinceLastLogin)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center gap-3 p-4">
+            <Clock className="size-5 text-purple-600" />
+            <div>
+              <p className="text-xs text-muted-foreground">Последняя заявка</p>
+              <p className="text-lg font-bold">
+                {formatDays(insights.daysSinceLastOrder)}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center gap-3 p-4">
+            <AlertTriangle
+              className={cn(
+                "size-5",
+                insights.stuckOrdersCount > 0
+                  ? "text-amber-600"
+                  : "text-muted-foreground",
+              )}
+            />
+            <div>
+              <p className="text-xs text-muted-foreground">Зависшие заявки</p>
+              <p className="text-lg font-bold">
+                {insights.stuckOrdersCount}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -409,6 +526,26 @@ export default async function ClientDetailPage({
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Всего заявок</dt>
                   <dd className="font-bold">{orders.length}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">Одобрено</dt>
+                  <dd className="font-bold">{insights.approvedOrdersCount}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">Success rate</dt>
+                  <dd className="font-bold">
+                    {insights.successRate !== null
+                      ? `${insights.successRate}%`
+                      : "—"}
+                  </dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-muted-foreground">Среднее время</dt>
+                  <dd className="font-bold">
+                    {insights.avgCycleHours !== null
+                      ? `${insights.avgCycleHours} ч`
+                      : "—"}
+                  </dd>
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Пропусков</dt>

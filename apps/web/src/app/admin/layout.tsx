@@ -18,7 +18,7 @@ export default async function AdminLayout({
   const session = await getSession();
 
   if (!session) {
-    redirect("/auth/login?callbackUrl=/admin");
+    redirect("/login?callbackUrl=/admin");
   }
 
   const userRole = (session.user as Record<string, unknown>).role as

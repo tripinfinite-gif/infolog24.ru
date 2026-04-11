@@ -89,7 +89,7 @@ const statusConfig = {
 
 export default async function PermitsPage() {
   const session = await getSession();
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/login");
 
   const permits = await getPermitsByUser(session.user.id);
 

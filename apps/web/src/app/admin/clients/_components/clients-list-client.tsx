@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -18,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 import { formatPriceRub, formatDate } from "../../_components/format-utils";
 import { ExportButton } from "../../_components/export-button";
 
@@ -31,6 +33,10 @@ interface SerializedClient {
   orderCount: number;
   totalRevenue: number;
   createdAt: string;
+  tier: string;
+  tierLabel: string;
+  lastOrderAt: string | null;
+  lastLoginAt: string | null;
 }
 
 interface ClientsListClientProps {
@@ -39,6 +45,35 @@ interface ClientsListClientProps {
   page: number;
   totalPages: number;
   currentSearch: string;
+  currentTier: string;
+}
+
+const TIER_COLORS: Record<string, string> = {
+  T1: "bg-slate-100 text-slate-700",
+  T2: "bg-blue-100 text-blue-700",
+  T3: "bg-emerald-100 text-emerald-700",
+  T4: "bg-amber-100 text-amber-700",
+  T5: "bg-purple-100 text-purple-700",
+};
+
+const TIER_OPTIONS = [
+  { value: "", label: "Все тиры" },
+  { value: "T5", label: "T5 · VIP" },
+  { value: "T4", label: "T4 · Постоянный" },
+  { value: "T3", label: "T3 · Активный" },
+  { value: "T2", label: "T2 · Развивающийся" },
+  { value: "T1", label: "T1 · Новичок" },
+];
+
+function formatRelative(iso: string | null): string {
+  if (!iso) return "—";
+  const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);
+  if (days === 0) return "сегодня";
+  if (days === 1) return "вчера";
+  if (days < 7) return `${days} дн.`;
+  if (days < 30) return `${Math.floor(days / 7)} нед.`;
+  if (days < 365) return `${Math.floor(days / 30)} мес.`;
+  return `${Math.floor(days / 365)} г.`;
 }
 
 export function ClientsListClient({
@@ -47,6 +82,7 @@ export function ClientsListClient({
   page,
   totalPages,
   currentSearch,
+  currentTier,
 }: ClientsListClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -89,11 +125,11 @@ export function ClientsListClient({
         />
       </div>
 
-      {/* Search */}
+      {/* Filters */}
       <Card>
         <CardContent className="pt-0">
-          <div className="flex gap-3 max-w-md">
-            <div className="relative flex-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative max-w-md flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
               <Input
                 placeholder="Поиск по имени, email, компании, ИНН..."
@@ -106,6 +142,17 @@ export function ClientsListClient({
             <Button variant="outline" onClick={handleSearch}>
               Искать
             </Button>
+            <select
+              value={currentTier}
+              onChange={(e) => updateFilters({ tier: e.target.value })}
+              className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              {TIER_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </div>
         </CardContent>
       </Card>
@@ -117,13 +164,13 @@ export function ClientsListClient({
             <TableHeader>
               <TableRow>
                 <TableHead>Имя</TableHead>
+                <TableHead>Тир</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Телефон</TableHead>
-                <TableHead>Компания</TableHead>
-                <TableHead>ИНН</TableHead>
                 <TableHead className="text-center">Заявок</TableHead>
-                <TableHead className="text-right">Выручка</TableHead>
-                <TableHead>Регистрация</TableHead>
+                <TableHead className="text-right">LTV</TableHead>
+                <TableHead>Посл. заказ</TableHead>
+                <TableHead>Посл. вход</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -136,6 +183,19 @@ export function ClientsListClient({
                     >
                       {client.name}
                     </Link>
+                    {client.company !== "---" && (
+                      <p className="text-xs text-muted-foreground">
+                        {client.company}
+                      </p>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="secondary"
+                      className={cn(TIER_COLORS[client.tier])}
+                    >
+                      {client.tier}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {client.email}
@@ -143,18 +203,17 @@ export function ClientsListClient({
                   <TableCell className="text-muted-foreground">
                     {client.phone}
                   </TableCell>
-                  <TableCell>{client.company}</TableCell>
-                  <TableCell className="text-muted-foreground font-mono text-xs">
-                    {client.inn}
-                  </TableCell>
                   <TableCell className="text-center">
                     {client.orderCount}
                   </TableCell>
                   <TableCell className="text-right font-medium text-green-600">
                     {formatPriceRub(client.totalRevenue)}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(client.createdAt)}
+                  <TableCell className="text-muted-foreground text-sm">
+                    {formatRelative(client.lastOrderAt)}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {formatRelative(client.lastLoginAt)}
                   </TableCell>
                 </TableRow>
               ))}

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default async function PaymentsPage() {
   const session = await getSession();
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/login");
 
   const [payments, stats] = await Promise.all([
     getPaymentsByUser(session.user.id),

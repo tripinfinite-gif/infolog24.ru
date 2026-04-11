@@ -8,10 +8,20 @@ export const metadata: Metadata = {
   title: "Новая заявка",
 };
 
-export default async function NewOrderPage() {
-  const session = await getSession();
-  if (!session) redirect("/auth/login");
+interface NewOrderPageProps {
+  searchParams: Promise<{
+    type?: string;
+    vehicleId?: string;
+  }>;
+}
 
+export default async function NewOrderPage({
+  searchParams,
+}: NewOrderPageProps) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const params = await searchParams;
   const vehicles = await getVehiclesByUser(session.user.id);
 
   return (
@@ -22,6 +32,8 @@ export default async function NewOrderPage() {
         model: v.model,
         licensePlate: v.licensePlate,
       }))}
+      initialType={params.type ?? null}
+      initialVehicleId={params.vehicleId ?? null}
     />
   );
 }

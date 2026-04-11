@@ -8,7 +8,38 @@ import {
   documents,
   vehicles,
   auditLog,
+  sessions,
 } from "@/lib/db/schema";
+
+// ── Client tiers (T1–T5) ──────────────────────────────────────────────────
+//
+// Сегментация клиентов по совокупному доходу (LTV в копейках/рублях).
+// Менеджеры используют тир, чтобы понимать кому уделять внимание.
+// Пороги подобраны под текущую среднюю стоимость пропуска (~6 000 ₽).
+
+export type ClientTier = "T1" | "T2" | "T3" | "T4" | "T5";
+
+export interface ClientTierInfo {
+  tier: ClientTier;
+  label: string;
+  description: string;
+}
+
+export function classifyClientTier(totalRevenue: number): ClientTierInfo {
+  if (totalRevenue >= 500_000) {
+    return { tier: "T5", label: "VIP", description: "≥ 500 000 ₽" };
+  }
+  if (totalRevenue >= 150_000) {
+    return { tier: "T4", label: "Постоянный", description: "≥ 150 000 ₽" };
+  }
+  if (totalRevenue >= 50_000) {
+    return { tier: "T3", label: "Активный", description: "≥ 50 000 ₽" };
+  }
+  if (totalRevenue >= 10_000) {
+    return { tier: "T2", label: "Развивающийся", description: "≥ 10 000 ₽" };
+  }
+  return { tier: "T1", label: "Новичок", description: "< 10 000 ₽" };
+}
 
 // ── Dashboard Stats ───────────────────────────────────────────────────────
 
@@ -305,31 +336,47 @@ export async function getAdminClients(filters: AdminClientFilters = {}) {
     db.select({ count: count() }).from(users).where(whereClause),
   ]);
 
-  // For each client, get order count and total revenue
+  // For each client, get order count, total revenue, last order, last login
   const clientsWithStats = await Promise.all(
     data.map(async (client) => {
-      const [orderCount, revenueResult] = await Promise.all([
-        db
-          .select({ count: count() })
-          .from(orders)
-          .where(eq(orders.userId, client.id)),
-        db
-          .select({
-            sum: sql<number>`coalesce(sum(${payments.amount}), 0)`,
-          })
-          .from(payments)
-          .where(
-            and(
-              eq(payments.userId, client.id),
-              eq(payments.status, "succeeded"),
+      const [orderCount, revenueResult, lastOrder, lastSession] =
+        await Promise.all([
+          db
+            .select({ count: count() })
+            .from(orders)
+            .where(eq(orders.userId, client.id)),
+          db
+            .select({
+              sum: sql<number>`coalesce(sum(${payments.amount}), 0)`,
+            })
+            .from(payments)
+            .where(
+              and(
+                eq(payments.userId, client.id),
+                eq(payments.status, "succeeded"),
+              ),
             ),
-          ),
-      ]);
+          db.query.orders.findFirst({
+            where: eq(orders.userId, client.id),
+            orderBy: [desc(orders.createdAt)],
+            columns: { createdAt: true },
+          }),
+          db.query.sessions.findFirst({
+            where: eq(sessions.userId, client.id),
+            orderBy: [desc(sessions.updatedAt)],
+            columns: { updatedAt: true },
+          }),
+        ]);
+
+      const totalRevenue = revenueResult[0]?.sum ?? 0;
 
       return {
         ...client,
         orderCount: orderCount[0]?.count ?? 0,
-        totalRevenue: revenueResult[0]?.sum ?? 0,
+        totalRevenue,
+        lastOrderAt: lastOrder?.createdAt ?? null,
+        lastLoginAt: lastSession?.updatedAt ?? null,
+        tier: classifyClientTier(totalRevenue),
       };
     }),
   );
@@ -350,33 +397,88 @@ export async function getClientDetail(clientId: string) {
 
   if (!client) return null;
 
-  const [clientOrders, clientVehicles, clientPayments, clientDocuments, clientPermits] =
-    await Promise.all([
-      db.query.orders.findMany({
-        where: eq(orders.userId, clientId),
-        with: { vehicle: true },
-        orderBy: [desc(orders.createdAt)],
-      }),
-      db.query.vehicles.findMany({
-        where: eq(vehicles.userId, clientId),
-      }),
-      db.query.payments.findMany({
-        where: eq(payments.userId, clientId),
-        orderBy: [desc(payments.createdAt)],
-      }),
-      db.query.documents.findMany({
-        where: eq(documents.userId, clientId),
-        orderBy: [desc(documents.createdAt)],
-      }),
-      db.query.permits.findMany({
-        where: eq(permits.userId, clientId),
-        orderBy: [desc(permits.createdAt)],
-      }),
-    ]);
+  const [
+    clientOrders,
+    clientVehicles,
+    clientPayments,
+    clientDocuments,
+    clientPermits,
+    lastSession,
+  ] = await Promise.all([
+    db.query.orders.findMany({
+      where: eq(orders.userId, clientId),
+      with: { vehicle: true },
+      orderBy: [desc(orders.createdAt)],
+    }),
+    db.query.vehicles.findMany({
+      where: eq(vehicles.userId, clientId),
+    }),
+    db.query.payments.findMany({
+      where: eq(payments.userId, clientId),
+      orderBy: [desc(payments.createdAt)],
+    }),
+    db.query.documents.findMany({
+      where: eq(documents.userId, clientId),
+      orderBy: [desc(documents.createdAt)],
+    }),
+    db.query.permits.findMany({
+      where: eq(permits.userId, clientId),
+      orderBy: [desc(permits.createdAt)],
+    }),
+    db.query.sessions.findFirst({
+      where: eq(sessions.userId, clientId),
+      orderBy: [desc(sessions.updatedAt)],
+    }),
+  ]);
 
   const totalSpend = clientPayments
     .filter((p) => p.status === "succeeded")
     .reduce((sum, p) => sum + p.amount, 0);
+
+  // ── Insights ─────────────────────────────────────────────────────────────
+
+  const tier = classifyClientTier(totalSpend);
+
+  const lastLoginAt = lastSession?.updatedAt ?? null;
+  const lastOrderAt = clientOrders[0]?.createdAt ?? null;
+
+  const now = Date.now();
+  const daysSince = (date: Date | null) =>
+    date ? Math.floor((now - new Date(date).getTime()) / 86_400_000) : null;
+
+  const daysSinceLastLogin = daysSince(lastLoginAt);
+  const daysSinceLastOrder = daysSince(lastOrderAt);
+
+  const approvedOrders = clientOrders.filter((o) => o.status === "approved");
+  const finishedOrders = clientOrders.filter((o) =>
+    ["approved", "rejected", "cancelled"].includes(o.status),
+  );
+  const successRate =
+    finishedOrders.length > 0
+      ? Math.round((approvedOrders.length / finishedOrders.length) * 100)
+      : null;
+
+  // Среднее время от создания заявки до её обновления (approved/rejected).
+  // Берём updatedAt как прокси к фактической дате завершения.
+  const avgCycleHours =
+    approvedOrders.length > 0
+      ? Math.round(
+          approvedOrders.reduce((sum, o) => {
+            const created = new Date(o.createdAt).getTime();
+            const updated = new Date(o.updatedAt).getTime();
+            return sum + Math.max(0, (updated - created) / 3_600_000);
+          }, 0) / approvedOrders.length,
+        )
+      : null;
+
+  // Risk score: 0 (норм) — 3 (под угрозой ухода)
+  let riskScore = 0;
+  if ((daysSinceLastOrder ?? 0) > 60) riskScore++;
+  if ((daysSinceLastLogin ?? 0) > 30) riskScore++;
+  const stuckOrders = clientOrders.filter((o) =>
+    ["documents_pending", "payment_pending"].includes(o.status),
+  );
+  if (stuckOrders.length > 0) riskScore++;
 
   return {
     client,
@@ -386,6 +488,19 @@ export async function getClientDetail(clientId: string) {
     documents: clientDocuments,
     permits: clientPermits,
     totalSpend,
+    insights: {
+      tier,
+      lastLoginAt,
+      lastOrderAt,
+      daysSinceLastLogin,
+      daysSinceLastOrder,
+      successRate,
+      avgCycleHours,
+      riskScore,
+      stuckOrdersCount: stuckOrders.length,
+      ordersTotalCount: clientOrders.length,
+      approvedOrdersCount: approvedOrders.length,
+    },
   };
 }
 

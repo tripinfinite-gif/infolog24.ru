@@ -20,7 +20,7 @@ interface Props {
 
 async function OrdersContent({ searchParams }: Props) {
   const session = await getSession();
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/login");
 
   const params = await searchParams;
   const page = parseInt(params.page ?? "1", 10);

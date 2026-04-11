@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 
 export default async function SettingsPage() {
   const session = await getSession();
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/login");
 
   const user = await getUserById(session.user.id);
-  if (!user) redirect("/auth/login");
+  if (!user) redirect("/login");
 
   return (
     <SettingsTabs

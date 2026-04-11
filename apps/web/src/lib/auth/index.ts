@@ -9,6 +9,11 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    // Тестовый режим: email/SMS подтверждение пока не подключаем —
+    // подключим позже отдельной задачей. Аккаунт активен сразу.
+    requireEmailVerification: false,
+    autoSignIn: true,
+    minPasswordLength: 8,
   },
   plugins: [twoFactor()],
   session: {

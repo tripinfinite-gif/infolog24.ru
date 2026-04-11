@@ -7,6 +7,7 @@ import {
   Upload,
   Truck,
   AlertTriangle,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -82,7 +83,7 @@ function formatPrice(kopeks: number): string {
 
 export default async function DashboardPage() {
   const session = await getSession();
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/login");
 
   const userId = session.user.id;
 
@@ -95,6 +96,14 @@ export default async function DashboardPage() {
       getRecentOrders(userId, 5),
       getExpiringPermits(userId, 30),
     ]);
+
+  // Последняя заявка с привязанным ТС — берём её для кнопки «Повторить»
+  // в quick actions. Это самый частый сценарий: транспортная компания
+  // оформляет один и тот же тип пропуска для одной и той же машины.
+  const lastOrderForRepeat = recentOrders.find((o) => o.vehicleId);
+  const repeatHref = lastOrderForRepeat
+    ? `/dashboard/orders/new?type=${lastOrderForRepeat.type}&vehicleId=${lastOrderForRepeat.vehicleId}`
+    : null;
 
   const kpiCards = [
     {
@@ -192,6 +201,7 @@ export default async function DashboardPage() {
                     <TableHead>Тип</TableHead>
                     <TableHead>Статус</TableHead>
                     <TableHead className="text-right">Цена</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -215,6 +225,22 @@ export default async function DashboardPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           {formatPrice(order.price)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {order.vehicleId && (
+                            <Link
+                              href={`/dashboard/orders/new?type=${order.type}&vehicleId=${order.vehicleId}`}
+                              title="Повторить заявку"
+                            >
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="size-7"
+                              >
+                                <RefreshCw className="size-3.5" />
+                              </Button>
+                            </Link>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
@@ -241,6 +267,17 @@ export default async function DashboardPage() {
                 Новая заявка
               </Button>
             </Link>
+            {repeatHref && (
+              <Link href={repeatHref}>
+                <Button
+                  className="w-full justify-start gap-2"
+                  variant="outline"
+                >
+                  <RefreshCw className="size-4" />
+                  Повторить последнюю
+                </Button>
+              </Link>
+            )}
             <Link href="/dashboard/documents">
               <Button className="w-full justify-start gap-2" variant="outline">
                 <Upload className="size-4" />
