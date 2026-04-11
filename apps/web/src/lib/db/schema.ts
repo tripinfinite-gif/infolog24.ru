@@ -402,6 +402,32 @@ export const chatConversations = pgTable("chat_conversations", {
   index("idx_chat_conversations_user_id").on(table.userId),
 ]);
 
+/**
+ * P2.5 — Manual override менеджером.
+ * Когда строка с ended_at IS NULL существует для conversationId, ассистент
+ * не отвечает в этом разговоре — управление перехвачено живым менеджером.
+ * Деактивация = установка ended_at в текущий момент.
+ */
+export const chatHandovers = pgTable("chat_handovers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  conversationId: uuid("conversation_id")
+    .notNull()
+    .references(() => chatConversations.id, { onDelete: "cascade" }),
+  managerId: uuid("manager_id")
+    .notNull()
+    .references(() => users.id),
+  reason: text("reason"),
+  startedAt: timestamp("started_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  endedAt: timestamp("ended_at", { withTimezone: true }),
+}, (table) => [
+  index("idx_chat_handovers_conversation_active").on(
+    table.conversationId,
+    table.endedAt,
+  ),
+]);
+
 export const chatMessages = pgTable("chat_messages", {
   id: uuid("id").primaryKey().defaultRandom(),
   conversationId: uuid("conversation_id")

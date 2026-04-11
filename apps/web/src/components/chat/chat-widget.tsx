@@ -18,6 +18,10 @@ import { parsePathnameToContext } from "@/lib/chat/page-context";
 import { cn } from "@/lib/utils";
 
 import { ChatMessages } from "./chat-messages";
+import {
+  ChatSuggestions,
+  type ChatSuggestion,
+} from "./chat-suggestions";
 
 type ChatWidgetProps = {
   /**
@@ -31,6 +35,7 @@ type ChatWidgetProps = {
 export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWidgetProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
+  const [suggestions, setSuggestions] = useState<ChatSuggestion[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   // Гарантия идемпотентности: welcome загружается один раз за жизнь компонента,
@@ -162,8 +167,52 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
     const text = input.trim();
     if (!text || isStreaming) return;
     setInput("");
+    setSuggestions([]);
     sendMessage({ text });
   }, [input, isStreaming, sendMessage]);
+
+  // P2.2 — Smart suggestions: пока клиент печатает, debounce 250ms,
+  // запрос к /api/chat/suggest. Идёт без LLM, чисто keyword search.
+  useEffect(() => {
+    if (!isOpen) return;
+    const text = input.trim();
+    if (text.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+    const controller = new AbortController();
+    const handle = window.setTimeout(() => {
+      fetch(`/api/chat/suggest?q=${encodeURIComponent(text)}`, {
+        signal: controller.signal,
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { suggestions?: ChatSuggestion[] } | null) => {
+          if (Array.isArray(data?.suggestions)) {
+            setSuggestions(data.suggestions);
+          }
+        })
+        .catch((err: unknown) => {
+          if ((err as Error)?.name !== "AbortError") {
+            // Тихая деградация — пользователь просто не увидит подсказки.
+          }
+        });
+    }, 250);
+
+    return () => {
+      window.clearTimeout(handle);
+      controller.abort();
+    };
+  }, [input, isOpen]);
+
+  const handleSuggestionSelect = useCallback(
+    (suggestion: ChatSuggestion) => {
+      if (isStreaming) return;
+      setInput("");
+      setSuggestions([]);
+      sendMessage({ text: suggestion.question });
+    },
+    [isStreaming, sendMessage],
+  );
 
   function handleKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -225,6 +274,12 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
               Ошибка соединения. Попробуйте ещё раз.
             </div>
           )}
+
+          {/* P2.2 — Smart suggestions поверх input */}
+          <ChatSuggestions
+            suggestions={suggestions}
+            onSelect={handleSuggestionSelect}
+          />
 
           {/* Input area */}
           <div className="border-t p-3">

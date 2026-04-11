@@ -8,6 +8,13 @@
       "when": 1775861706022,
       "tag": "0000_rich_captain_universe",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1775919689876,
+      "tag": "0001_p2_5_chat_handovers",
+      "breakpoints": true
     }
   ]
 }

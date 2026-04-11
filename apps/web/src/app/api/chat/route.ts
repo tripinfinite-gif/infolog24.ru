@@ -9,6 +9,7 @@ import { openai } from "@ai-sdk/openai";
 import { buildSystemPrompt } from "@/lib/chat/system-prompt";
 import { createChatTools } from "@/lib/chat/tools";
 import type { ClientContext } from "@/lib/chat/types";
+import { isHandoverActive } from "@/lib/dal/chat-handover";
 import {
   checkChatRateLimitAsync,
   getClientIp,
@@ -236,6 +237,35 @@ export async function POST(req: Request) {
       initialConversationId,
       userId,
     );
+
+    // P2.5 — Manual override menedjer'om: если в этом разговоре активен
+    // handover, ассистент молчит, отвечает только живой человек.
+    if (conversationId) {
+      const handoverActive = await isHandoverActive(conversationId);
+      if (handoverActive) {
+        // Сохраняем сообщение клиента для истории, но не зовём LLM.
+        const inputTokens = estimateTokens(lastUserText);
+        await saveUserMessage(conversationId, lastUserText, inputTokens);
+
+        const text =
+          "На связи живой менеджер — он ответит здесь же через несколько минут. Если очень срочно — звоните +7 (499) 110-55-49.";
+
+        await saveAssistantMessage(conversationId, text, estimateTokens(text));
+
+        // Возвращаем простой JSON, чтобы клиент мог отобразить сообщение
+        // как обычный assistant message без streaming.
+        return new Response(
+          JSON.stringify({
+            handover: true,
+            message: text,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+      }
+    }
 
     const estimatedInputTokens = estimateTokens(
       sanitizedMessages.map((m) => extractUserText(m)).join(" "),

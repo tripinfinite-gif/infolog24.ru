@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ShieldCheck, AlertTriangle, XCircle } from "lucide-react";
+import { ShieldCheck, AlertTriangle, XCircle, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -95,7 +95,20 @@ export default async function PermitsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Пропуска</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">Пропуска</h1>
+        {permits.length > 0 && (
+          <Button asChild variant="outline" size="sm">
+            <a
+              href="/api/dashboard/calendar"
+              download="infolog24-deadlines.ics"
+            >
+              <CalendarDays className="size-4" />
+              <span>Скачать в календарь</span>
+            </a>
+          </Button>
+        )}
+      </div>
 
       {permits.length === 0 ? (
         <Card>

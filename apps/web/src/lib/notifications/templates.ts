@@ -370,6 +370,12 @@ export const notificationTemplates: NotificationTemplate[] = [
     body: "Грузовик {{plateNumber}} ({{permitNumber}}) не отправляет данные в РНИС более {{hoursSilent}} ч. Дептранс может аннулировать пропуск. Проверьте трекер: питание, антенна, симка, баланс.",
     channels: ["email", "sms", "telegram", "push"],
   },
+  {
+    event: "weekly_digest",
+    title: "Сводка за неделю по вашему парку",
+    body: "{{summary}}",
+    channels: ["email", "telegram"],
+  },
 ];
 
 /**
