@@ -18,8 +18,17 @@ import {
   knowledgeCategories,
   type KnowledgeItem,
 } from "@/content/knowledge-base";
+import {
+  findScenarioByTriggers,
+  fillTemplate,
+} from "@/content/scenario-templates";
 import { loadCabinetSummary } from "./cabinet-summary";
 import type { ActionCard, PermitZone, WithActions } from "@/lib/chat/action-cards";
+import {
+  deleteFact,
+  getFactsByUser,
+  upsertFact,
+} from "@/lib/dal/client-facts";
 import { logger } from "@/lib/logger";
 
 export type ChatUserContext = {
@@ -550,6 +559,50 @@ export function createChatTools({ userId }: ChatUserContext) {
       },
     }),
 
+    getScenarioTemplate: tool({
+      description:
+        "Найти структурированный шаблон ответа для типового сценария (лизинг, штраф, отказ Дептранса, спецтехника и т.д.). Используй вместо searchKnowledge, когда вопрос матчит очевидный сценарий целиком — это даёт более структурированный ответ. Возвращает шаблон с slots, которые ты должен заполнить из контекста разговора.",
+      inputSchema: z.object({
+        query: z
+          .string()
+          .describe("Вопрос пользователя или ключевые слова сценария"),
+        fillValues: z
+          .record(z.string(), z.string())
+          .optional()
+          .describe(
+            "Если у тебя уже есть значения для slots — передай как { slot_name: value }, и тебе вернётся заполненный текст",
+          ),
+      }),
+      execute: async ({ query, fillValues }) => {
+        const template = findScenarioByTriggers(query);
+        if (!template) {
+          return {
+            found: false as const,
+            message: "Подходящий шаблон не найден",
+          };
+        }
+        if (fillValues) {
+          const filled = fillTemplate(template, fillValues);
+          return {
+            found: true as const,
+            id: template.id,
+            title: template.title,
+            filled,
+            slots: template.slots,
+          };
+        }
+        return {
+          found: true as const,
+          id: template.id,
+          title: template.title,
+          template: template.template,
+          slots: template.slots,
+          instructionsForLLM:
+            "Заполни {{slot}} placeholder'ы значениями из контекста разговора, потом верни клиенту отформатированный текст",
+        };
+      },
+    }),
+
     /** Backwards-compatible alias of searchKnowledge for legacy callers. */
     getFaqAnswer: tool({
       description:
@@ -1000,6 +1053,79 @@ export function createChatTools({ userId }: ChatUserContext) {
             error: "Не удалось получить список документов.",
           };
         }
+      },
+    }),
+
+    // ================================================================
+    // MEMORY TOOLS (P3.2) — память между сессиями для AI-ассистента
+    // ================================================================
+
+    getMyFacts: tool({
+      description:
+        "Получить факты о клиенте, которые ассистент запомнил в предыдущих сессиях. Используй ВСЕГДА в начале диалога с авторизованным юзером (после getMyContext), чтобы вспомнить, что ты знаешь о клиенте: предпочтения, фактический парк, лизинг, особенности.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        if (!userId) return { authenticated: false as const };
+        const facts = await getFactsByUser(userId);
+        return {
+          authenticated: true as const,
+          count: facts.length,
+          facts: facts.map((f) => ({
+            key: f.key,
+            value: f.value,
+            updatedAt: f.updatedAt.toISOString().slice(0, 10),
+          })),
+        };
+      },
+    }),
+
+    rememberFact: tool({
+      description:
+        "Запомнить факт о клиенте между сессиями. Используй когда клиент сообщает что-то важное, что не вписывается в стандартные поля кабинета: предпочтения по связи, реальный размер парка, лизинговая компания, привычки. НЕ используй для временной информации в рамках одного разговора.",
+      inputSchema: z.object({
+        key: z
+          .string()
+          .min(1)
+          .max(100)
+          .describe(
+            "Ключ факта (snake_case): preferred_contact_time, lessor, fleet_size_actual, etc",
+          ),
+        value: z
+          .string()
+          .min(1)
+          .max(2000)
+          .describe("Значение факта в свободной форме"),
+      }),
+      execute: async ({ key, value }) => {
+        if (!userId) {
+          return { success: false as const, message: "Нужна авторизация" };
+        }
+        const fact = await upsertFact(userId, key, value);
+        if (!fact) {
+          return {
+            success: false as const,
+            message: "Не удалось сохранить факт.",
+          };
+        }
+        return {
+          success: true as const,
+          key: fact.key,
+          value: fact.value,
+          message: "Запомнил.",
+        };
+      },
+    }),
+
+    forgetFact: tool({
+      description:
+        "Удалить запомненный факт. Используй когда клиент явно просит «забудь это» или информация устарела.",
+      inputSchema: z.object({
+        key: z.string().min(1).max(100),
+      }),
+      execute: async ({ key }) => {
+        if (!userId) return { success: false as const };
+        const ok = await deleteFact(userId, key);
+        return { success: ok };
       },
     }),
   };

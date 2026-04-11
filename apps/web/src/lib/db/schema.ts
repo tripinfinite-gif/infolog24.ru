@@ -403,6 +403,43 @@ export const chatConversations = pgTable("chat_conversations", {
 ]);
 
 /**
+ * P3.2 — Memory across sessions для AI-помощника.
+ * Простое key-value хранилище фактов о клиенте, которые ассистент
+ * запомнил в одной сессии и хочет использовать в будущих.
+ *
+ * Примеры фактов:
+ *  - "preferred_zone" → "ttk"
+ *  - "fleet_size_actual" → "27"
+ *  - "lessor" → "Газпромбанк Лизинг"
+ *  - "preferred_contact_time" → "после 18:00"
+ *
+ * Один user может иметь много фактов, но (userId, key) уникален —
+ * новое значение перетирает старое.
+ */
+export const clientFacts = pgTable(
+  "client_facts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    key: varchar("key", { length: 100 }).notNull(),
+    value: text("value").notNull(),
+    source: varchar("source", { length: 50 }).notNull().default("ai_chat"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    uniqueIndex("idx_client_facts_user_key").on(table.userId, table.key),
+  ],
+);
+
+/**
  * P2.5 — Manual override менеджером.
  * Когда строка с ended_at IS NULL существует для conversationId, ассистент
  * не отвечает в этом разговоре — управление перехвачено живым менеджером.

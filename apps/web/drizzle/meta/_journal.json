@@ -15,6 +15,13 @@
       "when": 1775919689876,
       "tag": "0001_p2_5_chat_handovers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775919952680,
+      "tag": "0002_p3_2_client_facts",
+      "breakpoints": true
     }
   ]
 }
