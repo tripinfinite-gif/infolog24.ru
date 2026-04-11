@@ -70,6 +70,21 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // ── Защита партнёрского портала ───────────────────────────────────────
+  // Публичные: /partner/login, /partner/register, /partner/forgot-password.
+  // Полная валидация роли — в layout.tsx (server component).
+  if (
+    pathname.startsWith("/partner") &&
+    !pathname.startsWith("/partner/login") &&
+    !pathname.startsWith("/partner/register") &&
+    !pathname.startsWith("/partner/forgot-password")
+  ) {
+    const sessionCookie = request.cookies.get("better-auth.session_token");
+    if (!sessionCookie) {
+      return NextResponse.redirect(new URL("/partner/login", request.url));
+    }
+  }
+
   const response = NextResponse.next();
   if (pathname.startsWith("/api/")) {
     return applyCors(response, origin);
@@ -84,5 +99,6 @@ export const config = {
     "/api/((?!health).*)",
     "/dashboard/:path*",
     "/admin/:path*",
+    "/partner/:path*",
   ],
 };

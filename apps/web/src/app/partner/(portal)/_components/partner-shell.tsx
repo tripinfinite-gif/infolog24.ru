@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  FileText,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -12,14 +13,13 @@ import {
   X,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState, type ElementType } from "react";
+import { toast } from "sonner";
 
+import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
-import {
-  Avatar,
-  AvatarFallback,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,17 +36,62 @@ interface NavItem {
   icon: ElementType;
 }
 
+interface PartnerShellUser {
+  name: string | null;
+  email: string;
+}
+
 const navItems: NavItem[] = [
   { href: "/partner", label: "Дашборд", icon: LayoutDashboard },
+  { href: "/partner/passes", label: "Заявки", icon: FileText },
   { href: "/partner/referrals", label: "Рефералы", icon: Users },
   { href: "/partner/payouts", label: "Выплаты", icon: Wallet },
   { href: "/partner/promo", label: "Промо-материалы", icon: Megaphone },
   { href: "/partner/settings", label: "Настройки", icon: Settings },
 ];
 
-export function PartnerShell({ children }: { children: React.ReactNode }) {
+function computeInitials(user: PartnerShellUser): string {
+  const source = user.name?.trim();
+  if (source) {
+    const parts = source.split(/\s+/).filter(Boolean);
+    const letters = parts
+      .slice(0, 2)
+      .map((word) => word[0]!.toUpperCase())
+      .join("");
+    if (letters.length > 0) return letters;
+  }
+  return (user.email[0] ?? "?").toUpperCase();
+}
+
+export function PartnerShell({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user: PartnerShellUser;
+}) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+
+  const initials = computeInitials(user);
+  const displayName = user.name ?? user.email;
+
+  async function handleSignOut() {
+    if (signingOut) return;
+    setSigningOut(true);
+    try {
+      await authClient.signOut();
+      router.push("/partner/login");
+      router.refresh();
+    } catch (err) {
+      toast.error("Не удалось выйти. Попробуйте ещё раз.");
+      console.error(err);
+    } finally {
+      setSigningOut(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -134,10 +179,10 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
                   className="flex items-center gap-2 px-2"
                 >
                   <Avatar>
-                    <AvatarFallback>АП</AvatarFallback>
+                    <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
-                  <span className="hidden text-sm font-medium md:inline-block">
-                    Алексей Партнёров
+                  <span className="hidden max-w-[180px] truncate text-sm font-medium md:inline-block">
+                    {displayName}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
@@ -151,9 +196,16 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
                   </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
+                <DropdownMenuItem
+                  variant="destructive"
+                  disabled={signingOut}
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    void handleSignOut();
+                  }}
+                >
                   <LogOut className="size-4" />
-                  Выйти
+                  {signingOut ? "Выход..." : "Выйти"}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

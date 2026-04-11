@@ -216,3 +216,49 @@ export async function deleteObject(
     return { error: "Не удалось удалить файл" };
   }
 }
+
+/**
+ * Uploads a buffer directly to S3 (server-side, used for archive contents).
+ * Returns the resulting key and a virtual URL (s3://bucket/key) for storage in DB.
+ */
+export async function putObject(input: {
+  userId: string;
+  fileName: string;
+  body: Buffer;
+  contentType: string;
+}): Promise<Result<{ key: string; fileUrl: string; size: number }>> {
+  const s3 = getClient();
+  const bucket = getBucket();
+  if (!s3 || !bucket) return { error: "Хранилище файлов не настроено" };
+
+  if (input.body.length === 0) return { error: "Файл пустой" };
+  if (input.body.length > MAX_FILE_SIZE_BYTES) {
+    return {
+      error: `Файл превышает ${Math.round(MAX_FILE_SIZE_BYTES / (1024 * 1024))} МБ`,
+    };
+  }
+  if (!ALLOWED_MIME_TYPES.includes(input.contentType as AllowedMimeType)) {
+    return { error: "Недопустимый тип файла" };
+  }
+
+  const key = buildS3Key(input.userId, input.fileName);
+  try {
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: key,
+        Body: input.body,
+        ContentType: input.contentType,
+        ContentLength: input.body.length,
+      }),
+    );
+    logger.info(
+      { userId: input.userId, key, size: input.body.length },
+      "Object uploaded to S3",
+    );
+    return { key, fileUrl: `s3://${bucket}/${key}`, size: input.body.length };
+  } catch (error) {
+    logger.error({ err: error, key }, "Failed to upload to S3");
+    return { error: "Не удалось загрузить файл" };
+  }
+}

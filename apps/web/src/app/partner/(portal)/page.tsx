@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   CheckCircle,
   ClipboardCopy,
   Clock,
+  Plus,
   TrendingUp,
   Users,
   Wallet,
@@ -174,6 +176,24 @@ export default function PartnerDashboardPage() {
           Обзор вашей партнёрской активности
         </p>
       </div>
+
+      {/* CTA — Новая заявка */}
+      <Card>
+        <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h3 className="font-semibold">Создать заявку на пропуск</h3>
+            <p className="text-sm text-muted-foreground">
+              Загрузите архив с документами клиента — система всё разберёт автоматически
+            </p>
+          </div>
+          <Button asChild>
+            <Link href="/partner/passes/new">
+              <Plus className="size-4" />
+              Новая заявка
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
