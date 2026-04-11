@@ -358,6 +358,18 @@ export const notificationTemplates: NotificationTemplate[] = [
     body: "Пропуск {{permitNumber}} истекает {{expiryDate}}. Рекомендуем оформить продление сейчас.",
     channels: ["email", "telegram", "push"],
   },
+  {
+    event: "permit_expiring_3days",
+    title: "Пропуск {{permitNumber}} истекает через 3 дня",
+    body: "Срочно: пропуск {{permitNumber}} истекает {{expiryDate}}. Чтобы не было разрыва, оформите продление сегодня.",
+    channels: ["email", "sms", "telegram", "push"],
+  },
+  {
+    event: "rnis_silent",
+    title: "РНИС не передаёт данные по {{plateNumber}}",
+    body: "Грузовик {{plateNumber}} ({{permitNumber}}) не отправляет данные в РНИС более {{hoursSilent}} ч. Дептранс может аннулировать пропуск. Проверьте трекер: питание, антенна, симка, баланс.",
+    channels: ["email", "sms", "telegram", "push"],
+  },
 ];
 
 /**

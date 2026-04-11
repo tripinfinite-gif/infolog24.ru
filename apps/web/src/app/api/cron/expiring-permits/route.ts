@@ -21,7 +21,11 @@ export async function GET(request: NextRequest) {
     const summary = {
       processed: result.checked,
       succeeded: result.notified,
-      failed: Math.max(0, result.checked - result.notified),
+      skippedDuplicates: result.skippedDuplicates,
+      failed: Math.max(
+        0,
+        result.checked - result.notified - result.skippedDuplicates,
+      ),
     };
     logger.info(summary, "Expiring permits check complete");
     return NextResponse.json(summary);

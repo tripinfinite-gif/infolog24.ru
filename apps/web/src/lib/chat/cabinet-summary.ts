@@ -1,6 +1,12 @@
-import { and, asc, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { orders, permits, users, vehicles } from "@/lib/db/schema";
+import {
+  notifications,
+  orders,
+  permits,
+  users,
+  vehicles,
+} from "@/lib/db/schema";
 import { logger } from "@/lib/logger";
 
 const ZONE_LABELS: Record<string, string> = {
@@ -39,6 +45,7 @@ export type CabinetSummary =
         activeOrders: number;
         activePermits: number;
         expiringInNext30Days: number;
+        unreadAlerts: number;
       };
       vehiclesPreview: Array<{
         id: string;
@@ -58,6 +65,18 @@ export type CabinetSummary =
         zone: string;
         validUntil: string | null;
         daysLeft: number;
+      }>;
+      /**
+       * Последние непрочитанные алерты клиента (P1.5).
+       * Топ-5 по дате создания. Ассистент использует это, чтобы
+       * проактивно упомянуть свежие предупреждения в начале диалога.
+       */
+      recentAlerts: Array<{
+        id: string;
+        type: string;
+        title: string;
+        body: string;
+        createdAt: string;
       }>;
     };
 
@@ -80,7 +99,8 @@ export async function loadCabinetSummary(
   }
 
   try {
-    const [user, vehicleList, activeOrders, activePermits] = await Promise.all([
+    const [user, vehicleList, activeOrders, activePermits, recentAlertsRaw] =
+      await Promise.all([
       db.query.users.findFirst({
         where: eq(users.id, userId),
         columns: {
@@ -140,7 +160,37 @@ export async function loadCabinetSummary(
         )
         .orderBy(asc(permits.validUntil))
         .limit(20),
+      // Топ-5 непрочитанных уведомлений для проактивности ассистента (P1.5).
+      db
+        .select({
+          id: notifications.id,
+          type: notifications.type,
+          title: notifications.title,
+          body: notifications.body,
+          createdAt: notifications.createdAt,
+        })
+        .from(notifications)
+        .where(
+          and(
+            eq(notifications.userId, userId),
+            isNull(notifications.readAt),
+          ),
+        )
+        .orderBy(desc(notifications.createdAt))
+        .limit(5),
     ]);
+
+    // Полный счётчик непрочитанных (для counts.unreadAlerts).
+    const unreadCountRows = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(notifications)
+      .where(
+        and(
+          eq(notifications.userId, userId),
+          isNull(notifications.readAt),
+        ),
+      );
+    const unreadAlerts = unreadCountRows[0]?.count ?? 0;
 
     const expiringSoon = activePermits
       .filter((p) => {
@@ -167,6 +217,7 @@ export async function loadCabinetSummary(
         activeOrders: activeOrders.length,
         activePermits: activePermits.length,
         expiringInNext30Days: expiringSoon.length,
+        unreadAlerts,
       },
       vehiclesPreview: vehicleList.slice(0, 5).map((v) => ({
         id: v.id,
@@ -182,6 +233,13 @@ export async function loadCabinetSummary(
         estimatedReadyDate: formatDate(o.estimatedReadyDate),
       })),
       expiringSoon,
+      recentAlerts: recentAlertsRaw.map((n) => ({
+        id: n.id,
+        type: n.type,
+        title: n.title,
+        body: n.body,
+        createdAt: n.createdAt.toISOString(),
+      })),
     };
   } catch (error) {
     logger.warn({ error, userId }, "loadCabinetSummary failed");

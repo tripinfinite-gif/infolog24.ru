@@ -1,10 +1,11 @@
 import { tool } from "ai";
-import { and, asc, desc, eq, gte, lte, or } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNull, lte, or } from "drizzle-orm";
 import { z } from "zod";
 
 import { db } from "@/lib/db";
 import {
   documents,
+  notifications,
   orders,
   permits,
   users,
@@ -856,6 +857,87 @@ export function createChatTools({ userId }: ChatUserContext) {
           return {
             authenticated: true as const,
             error: "Не удалось получить список пропусков.",
+          };
+        }
+      },
+    }),
+
+    getMyNotifications: tool({
+      description:
+        "Получить непрочитанные уведомления авторизованного клиента (анти-аннуляционные алерты, дедлайны пропусков, статусы заявок). " +
+        "Используй, когда клиент спрашивает «есть ли у меня уведомления», «что у меня нового», «какие алерты», или когда нужно проактивно упомянуть свежий алерт.",
+      inputSchema: z.object({
+        type: z
+          .string()
+          .optional()
+          .describe(
+            "Опциональный фильтр по типу уведомления (например, permit_expiring_30days, rnis_silent)",
+          ),
+        limit: z.number().int().min(1).max(20).default(10),
+      }),
+      execute: async ({ type, limit }) => {
+        if (!userId) {
+          return {
+            authenticated: false as const,
+            message: "Нужна авторизация в личном кабинете.",
+          };
+        }
+
+        try {
+          const conditions = [
+            eq(notifications.userId, userId),
+            isNull(notifications.readAt),
+          ];
+          if (type) conditions.push(eq(notifications.type, type));
+
+          const list = await db
+            .select({
+              id: notifications.id,
+              type: notifications.type,
+              title: notifications.title,
+              body: notifications.body,
+              metadata: notifications.metadata,
+              createdAt: notifications.createdAt,
+            })
+            .from(notifications)
+            .where(and(...conditions))
+            .orderBy(desc(notifications.createdAt))
+            .limit(limit);
+
+          const actions: ActionCard[] = list
+            .map<ActionCard | null>((n) => {
+              // Из metadata.permitId формируем кнопку «Продлить пропуск»
+              // для всех типов permit_expiring_*
+              if (!n.type.startsWith("permit_expiring_")) return null;
+              const meta = n.metadata as Record<string, unknown> | null;
+              const permitId =
+                typeof meta?.permitId === "string" ? meta.permitId : null;
+              if (!permitId) return null;
+              return {
+                kind: "extend_permit",
+                permitId,
+                label: `Продлить пропуск`,
+              };
+            })
+            .filter((a): a is ActionCard => a !== null);
+
+          return {
+            authenticated: true as const,
+            count: list.length,
+            notifications: list.map((n) => ({
+              id: n.id,
+              type: n.type,
+              title: n.title,
+              body: n.body,
+              createdAt: n.createdAt.toISOString().slice(0, 10),
+            })),
+            ...(actions.length > 0 ? { actions } : {}),
+          };
+        } catch (error) {
+          logger.warn({ error, userId }, "getMyNotifications failed");
+          return {
+            authenticated: true as const,
+            error: "Не удалось получить уведомления.",
           };
         }
       },
