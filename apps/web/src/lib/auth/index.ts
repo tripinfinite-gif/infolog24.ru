@@ -11,12 +11,15 @@ import * as schema from "@/lib/db/schema";
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
+    // Ключи в schema объекте должны совпадать с modelName, который мы
+    // переопределили ниже на plural-формы, иначе Better Auth не найдёт
+    // таблицу.
     schema: {
-      user: schema.users,
-      session: schema.sessions,
-      account: schema.accounts,
-      verification: schema.verifications,
-      twoFactor: schema.twoFactors,
+      users: schema.users,
+      sessions: schema.sessions,
+      accounts: schema.accounts,
+      verifications: schema.verifications,
+      two_factors: schema.twoFactors,
     },
   }),
   user: { modelName: "users" },

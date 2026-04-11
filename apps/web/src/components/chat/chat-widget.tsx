@@ -28,7 +28,7 @@ type ChatWidgetProps = {
   isAuthenticated?: boolean;
 };
 
-export function ChatWidget({ isAuthenticated = false }: ChatWidgetProps = {}) {
+export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWidgetProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
