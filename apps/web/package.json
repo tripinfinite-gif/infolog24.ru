@@ -14,7 +14,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "analyze": "ANALYZE=true next build",
-    "db:seed": "npx tsx src/lib/db/seed.ts"
+    "db:seed": "tsx src/lib/db/seed.ts",
+    "db:seed:partner": "tsx --env-file=.env.local src/lib/db/seed-test-partner.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.52",
@@ -64,6 +65,7 @@
     "prettier": "^3",
     "prettier-plugin-tailwindcss": "^0.6",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.1.4"
   }

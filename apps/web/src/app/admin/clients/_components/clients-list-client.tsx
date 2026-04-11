@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { formatPriceRub, formatDate } from "../../_components/format-utils";
+import { formatPriceRub } from "../../_components/format-utils";
 import { ExportButton } from "../../_components/export-button";
 
 interface SerializedClient {
