@@ -35,7 +35,7 @@ export default function PartnerRegisterPage() {
         <CardHeader className="text-center">
           <div className="mx-auto mb-2 flex items-center gap-2">
             <Truck className="size-6 text-primary" />
-            <span className="text-lg font-bold">Инфологистик-24</span>
+            <span className="text-lg font-bold">Инфолог24</span>
           </div>
           <CardTitle>Регистрация партнёра</CardTitle>
           <CardDescription>

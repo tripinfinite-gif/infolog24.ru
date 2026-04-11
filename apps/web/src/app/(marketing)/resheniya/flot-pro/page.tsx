@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { packages } from "@/content/packages";
 
 export const metadata: Metadata = {
-  title: "Флот Про — корпоративный пакет от 900 ₽/мес за ТС | Инфологистик-24",
+  title: "Флот Про — корпоративный пакет от 900 ₽/мес за ТС | Инфолог24",
   description:
     "«Флот Про» — корпоративная платформа для парков от 10 машин: API-интеграция с TMS/ERP, SLA 4 часа, выделенный аккаунт-менеджер 24/7, корпоративный ЛК с дашбордом парка. Индивидуальный прайс от 900 ₽/мес за ТС.",
   keywords: [
@@ -23,12 +23,12 @@ export const metadata: Metadata = {
     "SLA 4 часа пропуск",
   ],
   openGraph: {
-    title: "Флот Про — корпоративный пакет | Инфологистик-24",
+    title: "Флот Про — корпоративный пакет | Инфолог24",
     description:
       "API, SLA 4 часа, выделенный аккаунт-менеджер 24/7 и корпоративный ЛК для парка от 10 машин.",
     type: "website",
     url: "https://inlog24.ru/resheniya/flot-pro",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/resheniya/flot-pro",

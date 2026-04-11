@@ -17,6 +17,7 @@ import {
   Wrench,
 } from "lucide-react";
 
+import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,7 +27,7 @@ import {
 } from "@/content/infopilot-scenarios";
 
 export const metadata: Metadata = {
-  title: "ИнфоПилот — ИИ-диспетчер на трассе 24/7 | Инфологистик-24",
+  title: "ИнфоПилот — ИИ-диспетчер на трассе 24/7 | Инфолог24",
   description:
     "ИнфоПилот — ИИ-диспетчер для водителей грузовиков: эвакуация, диагностика, ремонт, мойки, страхование и обжалование штрафов. 6 сценариев, 23 города, бесплатно для подписчиков пакетов.",
   keywords: [
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
       "Эвакуация, ремонт, мойки, страхование и обжалование штрафов — в одном чате. ИИ-агент сам звонит партнёрам и фиксирует цену.",
     type: "website",
     url: "https://inlog24.ru/infopilot",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/infopilot",
@@ -67,7 +68,7 @@ const techIcons: Record<string, typeof Mic> = {
 
 const howItWorksSteps = [
   {
-    title: "Водитель пишет в Telegram",
+    title: "Водитель пишет в чат",
     description:
       "«Встал на М-4, сломался ТНВД, координаты вот такие» — голосом или текстом, на русском.",
   },
@@ -131,7 +132,7 @@ const hubFaq = [
   {
     question: "Что такое ИнфоПилот простыми словами?",
     answer:
-      "Это Telegram-бот с ИИ, который заменяет диспетчера в голове у водителя. Вместо того чтобы самому искать эвакуатор, СТО или мойку, водитель пишет в бота — и тот сам находит проверенного партнёра, договаривается о цене и времени, а потом присылает карточку с адресом и ценой.",
+      "Это AI-ассистент с ИИ, который заменяет диспетчера в голове у водителя. Вместо того чтобы самому искать эвакуатор, СТО или мойку, водитель пишет в чат — и тот сам находит проверенного партнёра, договаривается о цене и времени, а потом присылает карточку с адресом и ценой.",
   },
   {
     question: "Чем он отличается от обычного поиска в Яндекс.Картах?",
@@ -141,7 +142,7 @@ const hubFaq = [
   {
     question: "Нужно ли устанавливать приложение?",
     answer:
-      "Нет, всё работает в Telegram. Водителю достаточно открыть бота @infolog24_bot, нажать «старт», привязать ТС и госномер. Можно отправлять голосовые — SpeechKit их распознаёт.",
+      "Нет, всё работает в браузере. Достаточно открыть чат с AI-ассистентом прямо на сайте, привязать ТС и госномер. Можно отправлять голосовые — SpeechKit их распознаёт.",
   },
   {
     question: "Что если в моём городе нет партнёров?",
@@ -179,19 +180,17 @@ export default function InfopilotHubPage() {
           <p className="mx-auto mt-6 max-w-3xl text-lg leading-relaxed text-muted-foreground">
             Водитель в два часа ночи на М-5 с поломкой тормозов. Он не знает,
             где ближайший эвакуатор, кто чинит по-честному и как вернуть груз к
-            утру. Он открывает Telegram, говорит в бота — и через 10 минут у
-            него адрес проверенного партнёра, цена договором и время прибытия.
-            Это ИнфоПилот.
+            утру. Он открывает чат с AI-ассистентом — и через 10 минут у него
+            адрес проверенного партнёра, цена договором и время прибытия. Это
+            ИнфоПилот.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="https://t.me/infolog24_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Открыть в Telegram
-            </a>
+            <OpenChatTrigger className="inline-flex h-12 w-auto items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90">
+              <span className="inline-flex items-center gap-2">
+                <Bot className="size-4" />
+                Открыть AI-ассистента
+              </span>
+            </OpenChatTrigger>
             <Link
               href="#scenarios"
               className="inline-flex h-12 items-center justify-center rounded-xl border border-border bg-background px-8 text-base font-semibold text-foreground transition-colors hover:bg-muted"
@@ -211,7 +210,7 @@ export default function InfopilotHubPage() {
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               Всё, что может случиться с грузовиком на трассе — закрывается
-              одним чатом в Telegram
+              одним чатом с AI-ассистентом
             </p>
           </div>
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -402,19 +401,17 @@ export default function InfopilotHubPage() {
             Попробуйте прямо сейчас
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-base text-primary-foreground/80">
-            Откройте бота в Telegram — тестовый доступ активируется за минуту.
-            Если вы — партнёр (СТО, эвакуатор, мойка), оставьте заявку на
-            сотрудничество.
+            Откройте AI-ассистента прямо на сайте — тестовый доступ активируется
+            за минуту. Если вы — партнёр (СТО, эвакуатор, мойка), оставьте
+            заявку на сотрудничество.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="https://t.me/infolog24_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Открыть в Telegram
-            </a>
+            <OpenChatTrigger className="inline-flex h-12 w-auto items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90">
+              <span className="inline-flex items-center gap-2">
+                <Bot className="size-4" />
+                Открыть AI-ассистента
+              </span>
+            </OpenChatTrigger>
             <Link
               href="/contacts"
               className="inline-flex h-12 items-center justify-center rounded-xl border border-primary-foreground/30 bg-transparent px-8 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"

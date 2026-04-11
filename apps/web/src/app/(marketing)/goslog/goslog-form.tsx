@@ -1,9 +1,12 @@
 "use client";
 
 import { CheckCircle, Loader2, Shield } from "lucide-react";
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,9 +20,14 @@ import {
 export function GoslogForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [consent, setConsent] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!consent) {
+      toast.error("Необходимо согласие на обработку персональных данных");
+      return;
+    }
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -128,10 +136,40 @@ export function GoslogForm() {
           </Select>
         </div>
 
+        <div className="flex items-start gap-2 text-xs text-primary-foreground/70">
+          <Checkbox
+            id="consent-goslog"
+            checked={consent}
+            onCheckedChange={(checked) => setConsent(checked === true)}
+            required
+            className="mt-0.5 border-primary-foreground/40 data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground"
+          />
+          <Label
+            htmlFor="consent-goslog"
+            className="cursor-pointer text-xs font-normal leading-relaxed text-primary-foreground/70"
+          >
+            Я согласен на обработку персональных данных в соответствии с{" "}
+            <Link
+              href="/privacy"
+              className="text-accent underline-offset-2 hover:underline"
+            >
+              Политикой конфиденциальности
+            </Link>{" "}
+            и принимаю условия{" "}
+            <Link
+              href="/terms"
+              className="text-accent underline-offset-2 hover:underline"
+            >
+              публичной оферты
+            </Link>
+            .
+          </Label>
+        </div>
+
         <Button
           type="submit"
           size="lg"
-          disabled={loading}
+          disabled={loading || !consent}
           className="h-12 w-full rounded-xl bg-accent text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
         >
           {loading ? (

@@ -26,7 +26,7 @@ export function CtaSection({
   description,
   ctaText,
   ctaHref,
-  phone = "+7 (495) XXX-XX-XX",
+  phone = "+7 (499) 110-55-49",
   className,
 }: CtaSectionProps) {
   // Simple mode for other pages
@@ -152,11 +152,11 @@ function CtaFormSection({ className }: { className?: string }) {
           </div>
 
           <a
-            href="tel:+74951234567"
+            href="tel:+74991105549"
             className="mt-6 flex items-center gap-2 text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-80 lg:hidden"
           >
             <Phone className="size-5" />
-            +7 (495) XXX-XX-XX
+            +7 (499) 110-55-49
           </a>
         </div>
 

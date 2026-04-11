@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { blogArticles } from "@/content/blog-articles";
 
 export const metadata: Metadata = {
-  title: "Блог о грузоперевозках в Москве — Инфологистик-24",
+  title: "Блог о грузоперевозках в Москве — Инфолог24",
   description:
     "Полезные статьи о пропусках в Москву, штрафах за проезд без пропуска, документах и требованиях к транспорту. Актуальные новости для грузоперевозчиков.",
   keywords: [
@@ -18,16 +18,16 @@ export const metadata: Metadata = {
     "новости пропуска Москва",
   ],
   openGraph: {
-    title: "Блог о грузоперевозках в Москве — Инфологистик-24",
+    title: "Блог о грузоперевозках в Москве — Инфолог24",
     description:
       "Полезные статьи о пропусках в Москву для грузового транспорта.",
     type: "website",
     url: "https://inlog24.ru/blog",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Блог о грузоперевозках в Москве — Инфологистик-24",
+    title: "Блог о грузоперевозках в Москве — Инфолог24",
     description:
       "Полезные статьи о пропусках в Москву для грузового транспорта.",
   },

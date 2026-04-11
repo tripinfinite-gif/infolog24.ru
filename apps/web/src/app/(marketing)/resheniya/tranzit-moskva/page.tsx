@@ -12,7 +12,7 @@ import { PackageDetail } from "../_components/package-detail";
 
 export const metadata: Metadata = {
   title:
-    "Транзит Москва — пакет для 5–20 машин от 52 000 ₽ | Инфологистик-24",
+    "Транзит Москва — пакет для 5–20 машин от 52 000 ₽ | Инфолог24",
   description:
     "Пакет «Транзит Москва»: пропуск, РНИС, ЭТрН, ГосЛог, Антиштраф, юрист и ИнфоПилот с безлимитным SOS. Для 5–20 машин. От 52 000 ₽ разово + 1 500 ₽/мес за ТС. Экономия до 22%.",
   keywords: [
@@ -23,12 +23,12 @@ export const metadata: Metadata = {
     "пакет с юристом для перевозчика",
   ],
   openGraph: {
-    title: "Транзит Москва — пакет для 5–20 машин | Инфологистик-24",
+    title: "Транзит Москва — пакет для 5–20 машин | Инфолог24",
     description:
       "Полная регуляторная защита: пропуск, РНИС, ЭТрН, ГосЛог, Антиштраф, юрист и ИнфоПилот. Рекомендуем для растущей ТК.",
     type: "website",
     url: "https://inlog24.ru/resheniya/tranzit-moskva",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/resheniya/tranzit-moskva",

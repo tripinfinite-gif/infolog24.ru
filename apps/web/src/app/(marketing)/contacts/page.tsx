@@ -1,11 +1,11 @@
 import {
+  Bot,
   Building2,
   Clock,
   Mail,
   MapPin,
-  MessageCircle,
+  MessageSquare,
   Phone,
-  Send,
 } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -14,6 +14,7 @@ import {
   StaggerChildren,
   StaggerItem,
 } from "@/components/motion/stagger-children";
+import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { companyInfo } from "@/content/company";
@@ -21,25 +22,25 @@ import { companyInfo } from "@/content/company";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
-  title: "Контакты — Инфологистик-24, ответим за 5 минут",
+  title: "Контакты — Инфолог24, ответим за 5 минут",
   description:
-    "Свяжитесь с Инфологистик-24 для оформления пропуска в Москву. Телефон, WhatsApp, Telegram, email. Ответим за 5 минут в рабочее время. Пн-Пт: 9:00-20:00, Сб: 10:00-17:00.",
+    "Свяжитесь с Инфолог24 для оформления пропуска в Москву. Телефон, MAX, AI-ассистент, email. Ответим за 5 минут в рабочее время. Пн–Пт: 9:00–20:00.",
   keywords: [
-    "контакты Инфологистик-24",
+    "контакты Инфолог24",
     "телефон пропуска Москва",
     "заказать пропуск",
   ],
   openGraph: {
-    title: "Контакты — Инфологистик-24",
+    title: "Контакты — Инфолог24",
     description:
       "Свяжитесь с нами для оформления пропуска в Москву. Ответим за 5 минут.",
     type: "website",
     url: "https://inlog24.ru/contacts",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Контакты — Инфологистик-24",
+    title: "Контакты — Инфолог24",
     description:
       "Свяжитесь с нами для оформления пропуска в Москву. Ответим за 5 минут.",
   },
@@ -52,36 +53,36 @@ const contactCards = [
   {
     icon: Phone,
     title: "Телефон",
-    value: "+7 (495) 123-45-67",
-    href: "tel:+74951234567",
+    value: companyInfo.contacts.phoneFormatted,
+    href: `tel:${companyInfo.contacts.phoneTel}`,
     description: "Звоните в рабочее время",
     color: "bg-primary/10 text-primary",
   },
   {
-    icon: MessageCircle,
-    title: "WhatsApp",
-    value: "Написать в WhatsApp",
-    href: "https://wa.me/74951234567",
-    description: "Быстрый ответ в мессенджере",
-    color: "bg-green-500/10 text-green-600",
-    external: true,
+    icon: Bot,
+    title: "AI-ассистент",
+    value: "Открыть чат",
+    href: "#open-chat",
+    description: "Ответит за 60 секунд, 24/7",
+    color: "bg-accent/15 text-accent",
+    aiChat: true,
   },
   {
-    icon: Send,
-    title: "Telegram",
+    icon: MessageSquare,
+    title: "MAX",
     value: "@infolog24",
-    href: "https://t.me/infolog24",
-    description: "Напишите нам в Telegram",
-    color: "bg-blue-500/10 text-blue-600",
+    href: companyInfo.social.find((s) => s.name === "MAX")?.url ?? "https://max.ru/infolog24",
+    description: "Российский мессенджер",
+    color: "bg-primary/10 text-primary",
     external: true,
   },
   {
     icon: Mail,
     title: "Email",
-    value: "info@infolog24.ru",
-    href: "mailto:info@infolog24.ru",
+    value: companyInfo.contacts.email,
+    href: `mailto:${companyInfo.contacts.email}`,
     description: "Для документов и запросов",
-    color: "bg-amber-500/10 text-amber-600",
+    color: "bg-foreground/10 text-foreground",
   },
 ];
 
@@ -111,35 +112,47 @@ export default function ContactsPage() {
       <section className="px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <StaggerChildren className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {contactCards.map((card) => (
-              <StaggerItem key={card.title}>
-                <a
-                  href={card.href}
-                  target={card.external ? "_blank" : undefined}
-                  rel={card.external ? "noopener noreferrer" : undefined}
-                  className="block h-full"
-                >
-                  <Card className="h-full rounded-2xl border-0 bg-card shadow-sm transition-all hover:shadow-md hover:-translate-y-1">
-                    <CardContent className="flex flex-col items-center p-6 sm:p-8 text-center">
-                      <div
-                        className={`flex size-14 items-center justify-center rounded-2xl ${card.color}`}
-                      >
-                        <card.icon className="size-7" />
-                      </div>
-                      <h3 className="mt-4 text-sm font-semibold text-foreground">
-                        {card.title}
-                      </h3>
-                      <p className="mt-1 text-base font-bold text-primary">
-                        {card.value}
-                      </p>
-                      <p className="mt-1 text-xs text-muted-foreground">
-                        {card.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </a>
-              </StaggerItem>
-            ))}
+            {contactCards.map((card) => {
+              const inner = (
+                <Card className="h-full rounded-2xl border-0 bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+                  <CardContent className="flex flex-col items-center p-6 text-center sm:p-8">
+                    <div
+                      className={`flex size-14 items-center justify-center rounded-2xl ${card.color}`}
+                    >
+                      <card.icon className="size-7" />
+                    </div>
+                    <h3 className="mt-4 text-sm font-semibold text-foreground">
+                      {card.title}
+                    </h3>
+                    <p className="mt-1 text-base font-bold text-primary">
+                      {card.value}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {card.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+
+              return (
+                <StaggerItem key={card.title}>
+                  {card.aiChat ? (
+                    <OpenChatTrigger className="block h-full rounded-2xl">
+                      {inner}
+                    </OpenChatTrigger>
+                  ) : (
+                    <a
+                      href={card.href}
+                      target={card.external ? "_blank" : undefined}
+                      rel={card.external ? "noopener noreferrer" : undefined}
+                      className="block h-full"
+                    >
+                      {inner}
+                    </a>
+                  )}
+                </StaggerItem>
+              );
+            })}
           </StaggerChildren>
         </div>
       </section>
@@ -219,7 +232,7 @@ export default function ContactsPage() {
                     <div className="flex items-start gap-3">
                       <MapPin className="mt-0.5 size-4 shrink-0 text-accent" />
                       <p className="text-sm text-primary-foreground/70">
-                        {companyInfo.contacts.address}
+                        {companyInfo.contacts.physicalAddress}
                       </p>
                     </div>
                   </CardContent>
@@ -245,32 +258,54 @@ export default function ContactsPage() {
                   </h2>
                 </div>
                 <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl bg-background px-4 py-3">
+                  <div className="rounded-2xl bg-background px-4 py-3 sm:col-span-2">
                     <p className="text-xs text-muted-foreground">
-                      Полное название
+                      Полное наименование
                     </p>
                     <p className="mt-0.5 text-sm font-medium text-foreground">
-                      {companyInfo.fullName}
+                      {companyInfo.legal.legalName}
                     </p>
                   </div>
                   <div className="rounded-2xl bg-background px-4 py-3">
                     <p className="text-xs text-muted-foreground">ИНН</p>
                     <p className="mt-0.5 text-sm font-medium text-foreground">
-                      7714XXXXXX
+                      {companyInfo.legal.inn}
                     </p>
                   </div>
                   <div className="rounded-2xl bg-background px-4 py-3">
+                    <p className="text-xs text-muted-foreground">КПП</p>
+                    <p className="mt-0.5 text-sm font-medium text-foreground">
+                      {companyInfo.legal.kpp}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-background px-4 py-3 sm:col-span-2">
                     <p className="text-xs text-muted-foreground">ОГРН</p>
                     <p className="mt-0.5 text-sm font-medium text-foreground">
-                      116XXXXXXXXXXX
+                      {companyInfo.legal.ogrn}
                     </p>
                   </div>
-                  <div className="rounded-2xl bg-background px-4 py-3">
+                  <div className="rounded-2xl bg-background px-4 py-3 sm:col-span-2">
                     <p className="text-xs text-muted-foreground">
                       Юридический адрес
                     </p>
                     <p className="mt-0.5 text-sm font-medium text-foreground">
-                      {companyInfo.contacts.address}
+                      {companyInfo.contacts.legalAddress}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-background px-4 py-3">
+                    <p className="text-xs text-muted-foreground">
+                      Генеральный директор
+                    </p>
+                    <p className="mt-0.5 text-sm font-medium text-foreground">
+                      {companyInfo.legal.director}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-background px-4 py-3">
+                    <p className="text-xs text-muted-foreground">
+                      Дата регистрации
+                    </p>
+                    <p className="mt-0.5 text-sm font-medium text-foreground">
+                      {companyInfo.legal.registrationDate}
                     </p>
                   </div>
                   <div className="rounded-2xl bg-background px-4 py-3">
@@ -280,11 +315,18 @@ export default function ContactsPage() {
                     </p>
                   </div>
                   <div className="rounded-2xl bg-background px-4 py-3">
+                    <p className="text-xs text-muted-foreground">Телефон</p>
+                    <p className="mt-0.5 text-sm font-medium text-foreground">
+                      {companyInfo.contacts.phoneFormatted}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl bg-background px-4 py-3 sm:col-span-2">
                     <p className="text-xs text-muted-foreground">
-                      Год основания
+                      Основной ОКВЭД
                     </p>
                     <p className="mt-0.5 text-sm font-medium text-foreground">
-                      {companyInfo.foundedYear}
+                      {companyInfo.legal.okved} —{" "}
+                      {companyInfo.legal.okvedDescription}
                     </p>
                   </div>
                 </div>

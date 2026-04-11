@@ -102,7 +102,7 @@ export function ReliabilityBlock() {
           >
             <div className="flex items-center gap-2 text-primary">
               <Shield className="size-5" />
-              <h3 className="text-lg font-bold">Инфологистик-24</h3>
+              <h3 className="text-lg font-bold">Инфолог24</h3>
             </div>
             <ul className="mt-6 space-y-6">
               {ourAdvantages.map((advantage) => (

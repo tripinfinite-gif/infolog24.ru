@@ -20,16 +20,24 @@ export function LocalBusinessJsonLd() {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         name: companyInfo.name,
+        legalName: companyInfo.legal.legalNameShort,
         description: companyInfo.description,
         telephone: companyInfo.contacts.phone,
         email: companyInfo.contacts.email,
         url: "https://inlog24.ru",
         priceRange: "₽₽",
+        taxID: companyInfo.legal.inn,
+        vatID: companyInfo.legal.inn,
+        identifier: [
+          { "@type": "PropertyValue", propertyID: "ИНН", value: companyInfo.legal.inn },
+          { "@type": "PropertyValue", propertyID: "КПП", value: companyInfo.legal.kpp },
+          { "@type": "PropertyValue", propertyID: "ОГРН", value: companyInfo.legal.ogrn },
+        ],
         address: {
           "@type": "PostalAddress",
           addressLocality: "Москва",
           addressCountry: "RU",
-          streetAddress: companyInfo.contacts.address,
+          streetAddress: companyInfo.contacts.physicalAddress,
         },
         geo: {
           "@type": "GeoCoordinates",
@@ -47,12 +55,6 @@ export function LocalBusinessJsonLd() {
             dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
             opens: "09:00",
             closes: "20:00",
-          },
-          {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: "Saturday",
-            opens: "10:00",
-            closes: "17:00",
           },
         ],
         aggregateRating: {

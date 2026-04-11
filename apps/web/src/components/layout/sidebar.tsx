@@ -77,7 +77,7 @@ export function Sidebar({ className }: SidebarProps) {
         <div className="flex h-16 items-center gap-2 border-b px-6 lg:h-[72px]">
           <Truck className="size-6 text-sidebar-primary" />
           <span className="text-lg font-bold text-sidebar-foreground">
-            Инфологистик-24
+            Инфолог24
           </span>
         </div>
 

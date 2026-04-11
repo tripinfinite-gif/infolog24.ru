@@ -7,7 +7,7 @@ import { ScenarioTemplate } from "../_components/scenario-template";
 
 export const metadata: Metadata = {
   title:
-    "ИнфоПилот: Обжалование штрафов перевозчиков | Инфологистик-24",
+    "ИнфоПилот: Обжалование штрафов перевозчиков | Инфолог24",
   description:
     "Фото постановления в Telegram — ИИ распознаёт состав, юрист в штате готовит жалобу и ведёт её до результата. Платите только при экономии: фиксированная ставка или процент от сохранённого.",
   keywords: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
       "ИИ + юрист в штате. Отмена или снижение штрафов с камер МАДИ, АМПП, ГИБДД. Платите только за результат.",
     type: "website",
     url: "https://inlog24.ru/infopilot/obzhalovanie",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/infopilot/obzhalovanie",

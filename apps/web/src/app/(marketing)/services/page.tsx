@@ -740,10 +740,10 @@ function CtaFormSection() {
         <div className="mt-8 flex items-center justify-center gap-2 text-primary-foreground/70">
           <Phone className="size-4" />
           <a
-            href="tel:+74951234567"
+            href="tel:+74991105549"
             className="text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-80"
           >
-            +7 (495) 123-45-67
+            +7 (499) 110-55-49
           </a>
         </div>
       </div>

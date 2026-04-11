@@ -57,8 +57,10 @@ export function generateActHtml(data: ActData): string {
 </head>
 <body>
   <div class="header">
-    <h1>ООО &laquo;Инфологистик-24&raquo;</h1>
-    <p>Москва | infolog24.ru | info@infolog24.ru</p>
+    <h1>ООО &laquo;Инфологистик 24&raquo;</h1>
+    <p>109044, г. Москва, 2-й Крутицкий пер., д. 18, стр. 1, помещ. 2/1</p>
+    <p>ИНН 9701049890 / КПП 772301001 / ОГРН 1167746879486</p>
+    <p>infolog24.ru | info@infolog24.ru | +7 (499) 110-55-49</p>
   </div>
 
   <div class="title">
@@ -69,7 +71,7 @@ export function generateActHtml(data: ActData): string {
     <table>
       <tr>
         <td class="label">Исполнитель:</td>
-        <td>ООО &laquo;Инфологистик-24&raquo;</td>
+        <td>ООО &laquo;Инфологистик 24&raquo;, ИНН 9701049890, КПП 772301001</td>
       </tr>
       <tr>
         <td class="label">Заказчик:</td>

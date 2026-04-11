@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -63,6 +64,7 @@ export function NewOrderForm({ vehicles }: NewOrderFormProps) {
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [notes, setNotes] = useState("");
+  const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedPassData = passTypes.find((p) => p.id === selectedPass);
@@ -92,6 +94,10 @@ export function NewOrderForm({ vehicles }: NewOrderFormProps) {
 
   async function handleSubmit() {
     if (!selectedPassData || !selectedVehicle) return;
+    if (!consent) {
+      toast.error("Необходимо согласие на обработку персональных данных");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -427,6 +433,36 @@ export function NewOrderForm({ vehicles }: NewOrderFormProps) {
                   </span>
                 </div>
               </div>
+
+              <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                <Checkbox
+                  id="consent-order"
+                  checked={consent}
+                  onCheckedChange={(checked) => setConsent(checked === true)}
+                  required
+                  className="mt-0.5"
+                />
+                <Label
+                  htmlFor="consent-order"
+                  className="cursor-pointer text-xs font-normal leading-relaxed text-muted-foreground"
+                >
+                  Я согласен на обработку персональных данных в соответствии с{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-primary underline-offset-2 hover:underline"
+                  >
+                    Политикой конфиденциальности
+                  </Link>{" "}
+                  и принимаю условия{" "}
+                  <Link
+                    href="/terms"
+                    className="text-primary underline-offset-2 hover:underline"
+                  >
+                    публичной оферты
+                  </Link>
+                  .
+                </Label>
+              </div>
             </CardContent>
           </>
         )}
@@ -449,7 +485,7 @@ export function NewOrderForm({ vehicles }: NewOrderFormProps) {
               <ArrowRight className="size-4" />
             </Button>
           ) : (
-            <Button onClick={handleSubmit} disabled={isSubmitting}>
+            <Button onClick={handleSubmit} disabled={isSubmitting || !consent}>
               {isSubmitting ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (

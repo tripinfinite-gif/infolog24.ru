@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
-  title: "Спасибо за заявку | Инфологистик-24",
+  title: "Спасибо за заявку | Инфолог24",
   description: "Ваша заявка принята. Мы свяжемся с вами в ближайшее время.",
 };
 

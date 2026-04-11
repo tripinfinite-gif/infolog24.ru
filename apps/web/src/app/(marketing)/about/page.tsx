@@ -23,26 +23,26 @@ import { companyInfo } from "@/content/company";
 import { stats } from "@/content/stats";
 
 export const metadata: Metadata = {
-  title: "О компании Инфологистик-24 — 10 лет помогаем грузоперевозчикам",
+  title: "О компании Инфолог24 — 10 лет помогаем грузоперевозчикам",
   description:
-    "Инфологистик-24 — сервис оформления пропусков в Москву с 2016 года. 50 000+ оформленных пропусков, 98% одобрение, 30-50 специалистов в команде.",
+    "Инфолог24 — сервис оформления пропусков в Москву с 2016 года. 50 000+ оформленных пропусков, 98% одобрение, 30-50 специалистов в команде.",
   keywords: [
-    "Инфологистик-24",
+    "Инфолог24",
     "о компании",
     "оформление пропусков Москва",
     "сервис пропусков",
   ],
   openGraph: {
-    title: "О компании Инфологистик-24 — 10 лет помогаем грузоперевозчикам",
+    title: "О компании Инфолог24 — 10 лет помогаем грузоперевозчикам",
     description:
       "Сервис оформления пропусков в Москву с 2016 года. 50 000+ пропусков, 98% одобрение.",
     type: "website",
     url: "https://inlog24.ru/about",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   twitter: {
     card: "summary_large_image",
-    title: "О компании Инфологистик-24 — 10 лет помогаем грузоперевозчикам",
+    title: "О компании Инфолог24 — 10 лет помогаем грузоперевозчикам",
     description:
       "Сервис оформления пропусков в Москву с 2016 года. 50 000+ пропусков, 98% одобрение.",
   },
@@ -340,7 +340,7 @@ export default function AboutPage() {
             <div className="relative mx-auto mt-12 max-w-3xl overflow-hidden rounded-3xl aspect-[16/9]">
               <Image
                 src="/images/team-office.jpg"
-                alt="Команда Инфологистик-24 в офисе"
+                alt="Команда Инфолог24 в офисе"
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 768px"
@@ -389,13 +389,13 @@ export default function AboutPage() {
                     </p>
                     <p>
                       <span className="font-medium text-foreground">ИНН:</span>{" "}
-                      7714XXXXXX
+                      {companyInfo.legal.inn}
                     </p>
                     <p>
                       <span className="font-medium text-foreground">
                         ОГРН:
                       </span>{" "}
-                      116XXXXXXXXXXX
+                      {companyInfo.legal.ogrn}
                     </p>
                     <p>
                       <span className="font-medium text-foreground">

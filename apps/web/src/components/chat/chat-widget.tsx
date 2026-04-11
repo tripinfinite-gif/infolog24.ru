@@ -48,6 +48,14 @@ export function ChatWidget() {
     }
   }, [isOpen]);
 
+  // Global event listener: позволяет открывать виджет из любого компонента
+  // через window.dispatchEvent(new Event("infopilot:open"))
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener("infopilot:open", handleOpen);
+    return () => window.removeEventListener("infopilot:open", handleOpen);
+  }, []);
+
   const handleSend = useCallback(() => {
     const text = input.trim();
     if (!text || isStreaming) return;
@@ -79,7 +87,7 @@ export function ChatWidget() {
               <MessageCircle className="size-5" />
               <div>
                 <p className="text-sm font-semibold">AI-консультант</p>
-                <p className="text-xs opacity-80">Инфологистик-24</p>
+                <p className="text-xs opacity-80">Инфолог24</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -144,7 +152,7 @@ export function ChatWidget() {
                 href="tel:+74950000000"
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
-                Связаться с менеджером: +7 (495) XXX-XX-XX
+                Связаться с менеджером: +7 (499) 110-55-49
               </a>
             </div>
           </div>

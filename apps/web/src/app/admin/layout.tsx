@@ -5,8 +5,8 @@ import { AdminShell } from "./_components/admin-shell";
 
 export const metadata: Metadata = {
   title: {
-    default: "Панель управления — Инфологистик-24",
-    template: "%s — Админ — Инфологистик-24",
+    default: "Панель управления — Инфолог24",
+    template: "%s — Админ — Инфолог24",
   },
 };
 

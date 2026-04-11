@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Авторизация — Инфологистик-24",
+  title: "Авторизация — Инфолог24",
 };
 
 export default function AuthLayout({
@@ -18,7 +18,7 @@ export default function AuthLayout({
         className="mb-8 flex items-center gap-2 text-xl font-bold"
       >
         <Truck className="size-7 text-primary" />
-        Инфологистик-24
+        Инфолог24
       </Link>
       <div className="w-full max-w-md">{children}</div>
     </div>

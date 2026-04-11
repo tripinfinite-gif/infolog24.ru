@@ -6,7 +6,7 @@ import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import { ScenarioTemplate } from "../_components/scenario-template";
 
 export const metadata: Metadata = {
-  title: "ИнфоПилот: Ремонт грузовиков и тягачей | Инфологистик-24",
+  title: "ИнфоПилот: Ремонт грузовиков и тягачей | Инфолог24",
   description:
     "Подберём СТО под марку вашего грузовика и тип поломки. Только мастерские с рейтингом 4.5+ и прозрачным прайсом. ИИ звонит в СТО, уточняет цену и наличие запчастей до приезда водителя.",
   keywords: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
       "СТО с прозрачным прайсом и рейтингом 4.5+. Цена и сроки — до приезда водителя.",
     type: "website",
     url: "https://inlog24.ru/infopilot/remont",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/infopilot/remont",

@@ -99,7 +99,7 @@ export async function POST(req: Request) {
     return new Response(
       JSON.stringify({
         error:
-          "AI-ассистент временно недоступен. Пожалуйста, свяжитесь с менеджером: +7 (495) XXX-XX-XX.",
+          "AI-ассистент временно недоступен. Пожалуйста, свяжитесь с менеджером: +7 (499) 110-55-49.",
       }),
       { status: 503, headers: { "Content-Type": "application/json" } },
     );

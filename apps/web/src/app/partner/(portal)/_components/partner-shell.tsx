@@ -81,7 +81,7 @@ export function PartnerShell({ children }: { children: React.ReactNode }) {
           <Truck className="size-6 text-sidebar-primary" />
           <div className="flex flex-col">
             <span className="text-lg font-bold leading-tight text-sidebar-foreground">
-              Инфологистик-24
+              Инфолог24
             </span>
             <span className="text-xs text-muted-foreground">
               Партнёрский портал

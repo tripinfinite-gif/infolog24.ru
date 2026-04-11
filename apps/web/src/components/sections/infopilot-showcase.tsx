@@ -1,5 +1,6 @@
 import {
   ArrowRight,
+  Bot,
   ClipboardCheck,
   Droplets,
   History,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { Button } from "@/components/ui/button";
 import {
   infopilotScenarios,
@@ -72,28 +74,21 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
-            Водитель говорит в Telegram: «Встал, Воронежская, 230-й километр,
-            мост через Дон, не заводится». Через 2 минуты у него в чате —
-            карточка с проверенным эвакуатором: ETA 27 минут, цена зафиксирована
+            Водитель говорит в чате: «Встал, Воронежская, 230-й километр, мост
+            через Дон, не заводится». Через 2 минуты у него в чате — карточка с
+            проверенным эвакуатором: ETA 27 минут, цена зафиксирована
             8&nbsp;500&nbsp;₽, наш робот уже созвонился с диспетчером партнёра.
             Водитель нажимает «Подтверждаю». Всё.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Button
-              asChild
-              size="lg"
-              className="h-13 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
-            >
-              <Link
-                href="https://t.me/infolog24_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Открыть ИнфоПилота в Telegram
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
+            <OpenChatTrigger className="inline-flex h-13 w-auto items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl">
+              <span className="inline-flex items-center gap-2">
+                <Bot className="size-4" />
+                Открыть AI-ассистента ИнфоПилот
+                <ArrowRight className="ml-1 size-4" />
+              </span>
+            </OpenChatTrigger>
             <Button
               asChild
               variant="outline"
@@ -113,8 +108,8 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
             6 сценариев на запуске MVP
           </h3>
           <p className="mt-3 text-base text-muted-foreground sm:text-lg">
-            Всё, что может случиться в рейсе — теперь решает один бот
-            в&nbsp;Telegram.
+            Всё, что может случиться в рейсе — теперь решает один AI-ассистент
+            прямо в&nbsp;чате на сайте.
           </p>
         </div>
 

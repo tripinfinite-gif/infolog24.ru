@@ -17,8 +17,10 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { Logo } from "@/components/brand/logo";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { Button } from "@/components/ui/button";
+import { companyInfo } from "@/content/company";
 import { cn } from "@/lib/utils";
 
 // ----- Типы -----
@@ -307,32 +309,41 @@ export function Header({ className }: HeaderProps) {
         className
       )}
     >
-      {/* Top Bar — Desktop only */}
-      <div className="hidden border-b border-border/60 bg-background/80 lg:block">
+      {/* Top Bar — Desktop only, shrinks to 0 on scroll */}
+      <div
+        className={cn(
+          "hidden overflow-hidden border-b border-border/60 bg-background/80 transition-all duration-300 lg:block",
+          scrolled
+            ? "h-0 border-b-0 opacity-0"
+            : "h-9 opacity-100"
+        )}
+        aria-hidden={scrolled}
+      >
         <div className="mx-auto flex h-9 max-w-7xl items-center justify-between px-4 text-xs text-muted-foreground sm:px-6 lg:px-8">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1.5">
               <Clock className="size-3.5" />
-              Пн-Пт 9:00-20:00
+              {companyInfo.contacts.workingHours}
             </span>
             <a
-              href="mailto:info@infolog24.ru"
+              href={`mailto:${companyInfo.contacts.email}`}
               className="flex items-center gap-1.5 transition-colors hover:text-primary"
             >
               <Mail className="size-3.5" />
-              info@infolog24.ru
+              {companyInfo.contacts.email}
             </a>
           </div>
           <button
             type="button"
             className="flex items-center gap-1.5 font-medium transition-colors hover:text-primary"
             onClick={() => {
-              const el = document.getElementById("callback-widget-trigger");
-              if (el) el.click();
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new Event("infopilot:open"));
+              }
             }}
           >
             <PhoneCall className="size-3.5" />
-            Перезвоните мне
+            Спросить AI-ассистента
           </button>
         </div>
       </div>
@@ -341,14 +352,7 @@ export function Header({ className }: HeaderProps) {
       <div className="border-b border-border/60 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:h-[72px] lg:px-6 xl:px-8">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary lg:size-9">
-              <Truck className="size-5 text-white lg:size-5" />
-            </div>
-            <span className="font-[family-name:var(--font-manrope)] text-lg font-extrabold tracking-tight text-foreground lg:text-xl">
-              Инфологистик-24
-            </span>
-          </Link>
+          <Logo size={36} />
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-0 lg:flex">
@@ -495,7 +499,7 @@ export function Header({ className }: HeaderProps) {
           {/* Desktop Right Side */}
           <div className="hidden items-center gap-3 lg:flex xl:gap-4">
             <a
-              href="tel:+74951234567"
+              href={`tel:${companyInfo.contacts.phoneTel}`}
               className="group hidden items-center gap-2 xl:flex"
             >
               <div className="flex size-9 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
@@ -503,7 +507,7 @@ export function Header({ className }: HeaderProps) {
               </div>
               <div className="flex flex-col">
                 <span className="text-sm font-bold leading-tight text-foreground">
-                  +7 (495) 123-45-67
+                  {companyInfo.contacts.phoneFormatted}
                 </span>
                 <span className="text-[11px] text-muted-foreground">
                   Бесплатная консультация
@@ -522,7 +526,10 @@ export function Header({ className }: HeaderProps) {
           {/* Mobile Right Side */}
           <div className="flex items-center gap-1.5 lg:hidden">
             <Button variant="ghost" size="icon" asChild>
-              <a href="tel:+74951234567" aria-label="Позвонить">
+              <a
+                href={`tel:${companyInfo.contacts.phoneTel}`}
+                aria-label="Позвонить"
+              >
                 <Phone className="size-5 text-primary" />
               </a>
             </Button>

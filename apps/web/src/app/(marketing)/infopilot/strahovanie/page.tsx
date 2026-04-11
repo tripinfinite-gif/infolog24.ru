@@ -7,7 +7,7 @@ import { ScenarioTemplate } from "../_components/scenario-template";
 
 export const metadata: Metadata = {
   title:
-    "ИнфоПилот: Страхование грузовиков — ОСАГО, КАСКО, ОСГОП | Инфологистик-24",
+    "ИнфоПилот: Страхование грузовиков — ОСАГО, КАСКО, ОСГОП | Инфолог24",
   description:
     "ОСАГО, КАСКО, ОСГОП и страхование ответственности экспедитора от проверенных партнёров. Оформление онлайн через Telegram-бот за несколько минут. Тарифы страховщиков напрямую — без наценок.",
   keywords: [
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
       "ОСАГО, КАСКО, ОСГОП и ответственность экспедитора от партнёров — онлайн за минуты.",
     type: "website",
     url: "https://inlog24.ru/infopilot/strahovanie",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/infopilot/strahovanie",

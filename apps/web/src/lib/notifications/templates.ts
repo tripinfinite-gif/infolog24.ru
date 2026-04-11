@@ -125,7 +125,7 @@ export const notificationTemplates: NotificationTemplate[] = [
     channels: ["email", "sms", "telegram", "push"],
     variants: {
       sms: {
-        text: "Инфологистик-24: по заявке №{{orderNumber}} нужны документы. Откройте личный кабинет.",
+        text: "Инфолог24: по заявке №{{orderNumber}} нужны документы. Откройте личный кабинет.",
       },
     },
   },
@@ -136,7 +136,7 @@ export const notificationTemplates: NotificationTemplate[] = [
     channels: ["email", "sms", "telegram", "push"],
     variants: {
       sms: {
-        text: "Инфологистик-24: оплатите заявку №{{orderNumber}} ({{amount}} ₽) в личном кабинете.",
+        text: "Инфолог24: оплатите заявку №{{orderNumber}} ({{amount}} ₽) в личном кабинете.",
       },
     },
   },
@@ -159,7 +159,7 @@ export const notificationTemplates: NotificationTemplate[] = [
     channels: ["email", "sms", "telegram", "push"],
     variants: {
       sms: {
-        text: "Инфологистик-24: заявка №{{orderNumber}} одобрена! Пропуск оформлен.",
+        text: "Инфолог24: заявка №{{orderNumber}} одобрена! Пропуск оформлен.",
       },
     },
   },
@@ -259,14 +259,14 @@ export const notificationTemplates: NotificationTemplate[] = [
   // ── Account ─────────────────────────────────────────────────────────────
   {
     event: "welcome",
-    title: "Добро пожаловать в Инфологистик-24!",
+    title: "Добро пожаловать в Инфолог24!",
     body: "Здравствуйте, {{userName}}! Мы поможем вам быстро оформить пропуска в Москву. Создайте первую заявку в личном кабинете.",
     channels: ["email", "telegram"],
     variants: {
       email: {
-        subject: "Добро пожаловать в Инфологистик-24",
-        html: "<h2>Здравствуйте, {{userName}}!</h2><p>Спасибо за регистрацию в <b>Инфологистик-24</b>. Мы поможем вам оформить пропуска МКАД, ТТК и Садового кольца быстро и без лишних забот.</p>",
-        text: "Здравствуйте, {{userName}}! Спасибо за регистрацию в Инфологистик-24.",
+        subject: "Добро пожаловать в Инфолог24",
+        html: "<h2>Здравствуйте, {{userName}}!</h2><p>Спасибо за регистрацию в <b>Инфолог24</b>. Мы поможем вам оформить пропуска МКАД, ТТК и Садового кольца быстро и без лишних забот.</p>",
+        text: "Здравствуйте, {{userName}}! Спасибо за регистрацию в Инфолог24.",
       },
     },
   },
@@ -343,7 +343,7 @@ export const notificationTemplates: NotificationTemplate[] = [
   {
     event: "review_request",
     title: "Оцените наш сервис",
-    body: "Спасибо, что воспользовались Инфологистик-24! Поделитесь впечатлениями — это поможет нам стать лучше: {{reviewUrl}}",
+    body: "Спасибо, что воспользовались Инфолог24! Поделитесь впечатлениями — это поможет нам стать лучше: {{reviewUrl}}",
     channels: ["email"],
   },
   {

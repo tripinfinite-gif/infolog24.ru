@@ -6,7 +6,7 @@ import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import { ScenarioTemplate } from "../_components/scenario-template";
 
 export const metadata: Metadata = {
-  title: "ИнфоПилот: Мойки грузовых на маршруте | Инфологистик-24",
+  title: "ИнфоПилот: Мойки грузовых на маршруте | Инфолог24",
   description:
     "Актуальные точки моек грузовиков на маршруте, цены зафиксированы договором. Без «развода на трассе». Подбор ближайшей мойки по координатам — через Telegram-бот.",
   keywords: [
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
       "Ближайшая мойка на маршруте, цены договорные — без сюрпризов.",
     type: "website",
     url: "https://inlog24.ru/infopilot/mojki",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/infopilot/mojki",

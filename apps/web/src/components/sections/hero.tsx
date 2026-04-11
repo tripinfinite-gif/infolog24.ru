@@ -1,7 +1,8 @@
-import { ArrowRight, Send, Sparkles, Truck } from "lucide-react";
+import { ArrowRight, Bot, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
+import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -86,15 +87,12 @@ export function Hero({ className }: HeroProps) {
           </div>
 
           <div className="mt-4">
-            <Link
-              href="https://t.me/infolog24_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-primary-foreground/70 underline-offset-4 transition-colors hover:text-accent hover:underline"
-            >
-              <Send className="size-4" />
-              Открыть ИнфоПилота в Telegram
-            </Link>
+            <OpenChatTrigger className="inline-flex w-auto items-center gap-2 text-sm text-primary-foreground/70 underline-offset-4 transition-colors hover:text-accent hover:underline">
+              <span className="inline-flex items-center gap-2">
+                <Bot className="size-4" />
+                Открыть AI-ассистента ИнфоПилот
+              </span>
+            </OpenChatTrigger>
           </div>
 
           <div className="mt-10 flex flex-wrap gap-x-8 gap-y-4">

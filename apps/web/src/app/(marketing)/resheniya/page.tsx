@@ -19,7 +19,7 @@ import { packages } from "@/content/packages";
 import { CalculatorPicker } from "./_components/calculator-picker";
 
 export const metadata: Metadata = {
-  title: "Пакеты решений для перевозчиков — Инфологистик-24",
+  title: "Пакеты решений для перевозчиков — Инфолог24",
   description:
     "Три пакета под размер парка: Пропуск+ для 1–4 машин от 12 500 ₽, Транзит Москва для 5–20 машин от 52 000 ₽, Флот Про для 10+ машин от 900 ₽/мес за ТС. Всё, чтобы возить грузы в Москву легально.",
   keywords: [
@@ -31,12 +31,12 @@ export const metadata: Metadata = {
     "тарифы пропусков",
   ],
   openGraph: {
-    title: "Пакеты решений для перевозчиков — Инфологистик-24",
+    title: "Пакеты решений для перевозчиков — Инфолог24",
     description:
       "Три пакета под размер парка: от частника до корпоративного клиента. Пропуск, РНИС, ЭТрН, ГосЛог, Антиштраф и юрист — в одной подписке.",
     type: "website",
     url: "https://inlog24.ru/resheniya",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/resheniya",

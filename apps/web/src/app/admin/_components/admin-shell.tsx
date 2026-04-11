@@ -109,7 +109,7 @@ export function AdminShell({ children, userName, userRole }: AdminShellProps) {
           <Truck className="size-6 text-sidebar-primary" />
           <div className="flex flex-col">
             <span className="text-lg font-bold leading-tight text-sidebar-foreground">
-              Инфологистик-24
+              Инфолог24
             </span>
             <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
               Панель управления

@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, MessageCircle, Phone, Search, Send } from "lucide-react";
+import { Bot, Loader2, MessageSquare, Phone, Search } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { companyInfo } from "@/content/company";
+
+const maxUrl = companyInfo.social.find((s) => s.name === "MAX")?.url;
 
 export default function CheckStatusPage() {
   const [loading, setLoading] = useState(false);
@@ -70,7 +73,7 @@ export default function CheckStatusPage() {
                   <Input
                     id="query"
                     name="query"
-                    placeholder="Например: +7 (495) 123-45-67"
+                    placeholder={`Например: ${companyInfo.contacts.phoneFormatted}`}
                     required
                     className="h-12"
                   />
@@ -108,30 +111,31 @@ export default function CheckStatusPage() {
             </p>
             <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
               <a
-                href="tel:+74951234567"
+                href={`tel:${companyInfo.contacts.phoneTel}`}
                 className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80"
               >
                 <Phone className="size-4" />
-                +7 (495) 123-45-67
+                {companyInfo.contacts.phoneFormatted}
               </a>
-              <a
-                href="https://wa.me/74951234567"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm font-medium text-green-600 hover:text-green-700"
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new Event("infopilot:open"))}
+                className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80"
               >
-                <MessageCircle className="size-4" />
-                WhatsApp
-              </a>
-              <a
-                href="https://t.me/infolog24"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700"
-              >
-                <Send className="size-4" />
-                Telegram
-              </a>
+                <Bot className="size-4" />
+                AI-ассистент
+              </button>
+              {maxUrl && (
+                <a
+                  href={maxUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80"
+                >
+                  <MessageSquare className="size-4" />
+                  MAX
+                </a>
+              )}
             </div>
           </div>
         </div>

@@ -5,8 +5,8 @@ import { DashboardShell } from "./_components/dashboard-shell";
 
 export const metadata: Metadata = {
   title: {
-    default: "Личный кабинет — Инфологистик-24",
-    template: "%s — Инфологистик-24",
+    default: "Личный кабинет — Инфолог24",
+    template: "%s — Инфолог24",
   },
 };
 

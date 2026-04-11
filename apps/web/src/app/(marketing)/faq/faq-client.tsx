@@ -2,11 +2,11 @@
 
 import {
   ArrowRight,
+  Bot,
   HelpCircle,
-  MessageCircle,
+  MessageSquare,
   Phone,
   Search,
-  Send,
 } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -22,7 +22,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { companyInfo } from "@/content/company";
 import { faqCategories, faqItems } from "@/content/faq";
+
+const maxUrl = companyInfo.social.find((s) => s.name === "MAX")?.url;
 
 const categoryIcons: Record<string, string> = {
   general: "📋",
@@ -245,21 +248,22 @@ export function FaqClient() {
             <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
               <Card className="rounded-2xl border-0 bg-primary-foreground/10 shadow-none transition-shadow hover:shadow-md">
                 <CardContent className="flex items-center gap-4 p-5">
-                  <div className="flex size-12 items-center justify-center rounded-2xl bg-green-500/20">
-                    <MessageCircle className="size-6 text-green-400" />
+                  <div className="flex size-12 items-center justify-center rounded-2xl bg-accent/20">
+                    <Bot className="size-6 text-accent" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-primary-foreground">
-                      WhatsApp
+                      AI-ассистент
                     </p>
-                    <a
-                      href="https://wa.me/7495XXXXXXX"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() =>
+                        window.dispatchEvent(new Event("infopilot:open"))
+                      }
                       className="text-sm text-accent hover:underline"
                     >
-                      Написать
-                    </a>
+                      Открыть чат
+                    </button>
                   </div>
                 </CardContent>
               </Card>
@@ -267,20 +271,22 @@ export function FaqClient() {
               <Card className="rounded-2xl border-0 bg-primary-foreground/10 shadow-none transition-shadow hover:shadow-md">
                 <CardContent className="flex items-center gap-4 p-5">
                   <div className="flex size-12 items-center justify-center rounded-2xl bg-accent/20">
-                    <Send className="size-6 text-accent" />
+                    <MessageSquare className="size-6 text-accent" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-primary-foreground">
-                      Telegram
+                      MAX
                     </p>
-                    <a
-                      href="https://t.me/infolog24"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-accent hover:underline"
-                    >
-                      @infolog24
-                    </a>
+                    {maxUrl && (
+                      <a
+                        href={maxUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-accent hover:underline"
+                      >
+                        Написать
+                      </a>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -295,10 +301,10 @@ export function FaqClient() {
                       Телефон
                     </p>
                     <a
-                      href="tel:+74951234567"
+                      href={`tel:${companyInfo.contacts.phoneTel}`}
                       className="text-sm text-accent hover:underline"
                     >
-                      +7 (495) 123-45-67
+                      {companyInfo.contacts.phoneFormatted}
                     </a>
                   </div>
                 </CardContent>

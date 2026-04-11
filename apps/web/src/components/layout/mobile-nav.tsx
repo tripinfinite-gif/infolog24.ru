@@ -1,14 +1,14 @@
 "use client";
 
 import {
+  Bot,
   Building2,
   ChevronDown,
   Clock,
   Layers,
   LogIn,
-  MessageCircle,
+  MessageSquare,
   Phone,
-  Send,
   Shield,
   Sparkles,
   Truck,
@@ -19,6 +19,7 @@ import { useState } from "react";
 
 import { cn } from "@/lib/utils";
 
+import { LogoMark } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -28,6 +29,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { companyInfo } from "@/content/company";
 
 // ----- Типы -----
 type MobileMenuItem = {
@@ -165,11 +167,9 @@ export function MobileNav({ children }: MobileNavProps) {
               className="flex items-center gap-2.5"
               onClick={() => setOpen(false)}
             >
-              <div className="flex size-8 items-center justify-center rounded-lg bg-primary">
-                <Truck className="size-5 text-white" />
-              </div>
+              <LogoMark size={36} className="text-accent" />
               <span className="font-[family-name:var(--font-manrope)] text-lg font-extrabold tracking-tight">
-                Инфологистик-24
+                Инфолог<span className="text-accent">24</span>
               </span>
             </Link>
           </SheetTitle>
@@ -178,7 +178,7 @@ export function MobileNav({ children }: MobileNavProps) {
         {/* Phone */}
         <div className="px-4 pt-4">
           <a
-            href="tel:+74951234567"
+            href={`tel:${companyInfo.contacts.phoneTel}`}
             className="flex items-center gap-3 rounded-xl bg-primary/5 p-3"
           >
             <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
@@ -186,7 +186,7 @@ export function MobileNav({ children }: MobileNavProps) {
             </div>
             <div>
               <span className="block text-base font-bold text-foreground">
-                +7 (495) 123-45-67
+                {companyInfo.contacts.phoneFormatted}
               </span>
               <span className="text-xs text-muted-foreground">
                 Бесплатная консультация
@@ -296,29 +296,37 @@ export function MobileNav({ children }: MobileNavProps) {
           {/* Working hours */}
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Clock className="size-4" />
-            <span>Пн-Пт 9:00-20:00</span>
+            <span>{companyInfo.contacts.workingHours}</span>
           </div>
 
-          {/* Social / bot links */}
+          {/* AI ассистент + MAX */}
           <div className="flex items-center gap-2">
-            <a
-              href="https://t.me/infolog24_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#229ED9]/10 px-3 py-2.5 text-sm font-semibold text-[#229ED9] transition-colors hover:bg-[#229ED9]/20"
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new Event("infopilot:open"));
+                  setOpen(false);
+                }
+              }}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-accent/10 px-3 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/20"
             >
-              <Send className="size-4" />
-              Бот ИнфоПилота
-            </a>
-            <a
-              href="https://wa.me/74951234567"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex size-11 items-center justify-center rounded-xl bg-[#25D366]/10 text-[#25D366] transition-colors hover:bg-[#25D366]/20"
-              aria-label="WhatsApp"
-            >
-              <MessageCircle className="size-5" />
-            </a>
+              <Bot className="size-4" />
+              AI-ассистент в чате
+            </button>
+            {companyInfo.social.find((s) => s.name === "MAX") && (
+              <a
+                href={
+                  companyInfo.social.find((s) => s.name === "MAX")?.url ?? "#"
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors hover:bg-primary/20"
+                aria-label="Написать в MAX"
+              >
+                <MessageSquare className="size-5" />
+              </a>
+            )}
           </div>
 
           {/* CTA */}

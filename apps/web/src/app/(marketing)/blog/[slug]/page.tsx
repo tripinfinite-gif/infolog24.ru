@@ -30,7 +30,7 @@ export async function generateMetadata({
   if (!article) return {};
 
   return {
-    title: `${article.title} | Инфологистик-24`,
+    title: `${article.title} | Инфолог24`,
     description: article.excerpt,
     keywords: article.tags,
     openGraph: {
@@ -38,7 +38,7 @@ export async function generateMetadata({
       description: article.excerpt,
       type: "article",
       url: `https://inlog24.ru/blog/${slug}`,
-      siteName: "Инфологистик-24",
+      siteName: "Инфолог24",
     },
     twitter: {
       card: "summary_large_image",

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { BellRing } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -12,11 +14,16 @@ export function SubscribeForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!consent) {
+      toast.error("Необходимо согласие на обработку персональных данных");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/contacts", {
@@ -110,11 +117,40 @@ export function SubscribeForm() {
             className="rounded-xl"
           />
         </div>
+        <div className="flex items-start gap-2 text-xs text-muted-foreground">
+          <Checkbox
+            id="consent-subscribe"
+            checked={consent}
+            onCheckedChange={(checked) => setConsent(checked === true)}
+            required
+            className="mt-0.5"
+          />
+          <Label
+            htmlFor="consent-subscribe"
+            className="cursor-pointer text-xs font-normal leading-relaxed text-muted-foreground"
+          >
+            Я согласен на обработку персональных данных в соответствии с{" "}
+            <Link
+              href="/privacy"
+              className="text-primary underline-offset-2 hover:underline"
+            >
+              Политикой конфиденциальности
+            </Link>{" "}
+            и принимаю условия{" "}
+            <Link
+              href="/terms"
+              className="text-primary underline-offset-2 hover:underline"
+            >
+              публичной оферты
+            </Link>
+            .
+          </Label>
+        </div>
       </div>
       <Button
         type="submit"
         size="lg"
-        disabled={loading}
+        disabled={loading || !consent}
         className="mt-6 h-12 w-full rounded-xl bg-accent text-base font-semibold text-accent-foreground hover:bg-accent/90"
       >
         {loading ? "Отправка..." : "Подписаться на напоминания"}

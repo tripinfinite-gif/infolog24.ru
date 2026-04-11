@@ -53,7 +53,7 @@ export function StickyCTA({ className }: StickyCTAProps) {
                 className="flex-1 gap-2"
                 asChild
               >
-                <a href="tel:+74951234567">
+                <a href="tel:+74991105549">
                   <Phone className="size-4" />
                   Позвонить
                 </a>

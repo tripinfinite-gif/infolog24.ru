@@ -12,7 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title:
-    "Юрист-перевозчик — подписочная юридическая поддержка | Инфологистик-24",
+    "Юрист-перевозчик — подписочная юридическая поддержка | Инфолог24",
   description:
     "Юрист-перевозчик: консультации, обжалование штрафов, проверка договоров, представительство в судах. Подписка от 5 000 ₽/мес. Юристы в штате с 8+ годами опыта в транспортной отрасли.",
   keywords: [
@@ -23,12 +23,12 @@ export const metadata: Metadata = {
     "юрист по грузоперевозкам",
   ],
   openGraph: {
-    title: "Юрист-перевозчик от Инфологистик-24",
+    title: "Юрист-перевозчик от Инфолог24",
     description:
       "Подписочная юридическая поддержка: консультации, обжалование, договоры, суды.",
     type: "website",
     url: "https://inlog24.ru/regulatorika/yurist",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/regulatorika/yurist",

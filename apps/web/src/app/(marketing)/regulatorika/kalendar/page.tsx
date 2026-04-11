@@ -14,7 +14,7 @@ import { SubscribeForm } from "./_components/subscribe-form";
 
 export const metadata: Metadata = {
   title:
-    "Календарь регуляторных дедлайнов 2026–2028 для перевозчиков | Инфологистик-24",
+    "Календарь регуляторных дедлайнов 2026–2028 для перевозчиков | Инфолог24",
   description:
     "Все дедлайны грузоперевозчика в одном календаре: ГосЛог, ЭТрН, РНИС, экокласс. Что касается, какой штраф, как подготовиться. Подписка на напоминания — бесплатно.",
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
       "ГосЛог, ЭТрН, РНИС и экокласс — все важные даты в одном календаре.",
     type: "website",
     url: "https://inlog24.ru/regulatorika/kalendar",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/regulatorika/kalendar",

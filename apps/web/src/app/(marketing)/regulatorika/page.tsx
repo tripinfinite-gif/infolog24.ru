@@ -19,7 +19,7 @@ import { regulatoryTimeline } from "@/content/regulatory-timeline";
 
 export const metadata: Metadata = {
   title:
-    "Регуляторика грузоперевозчика — ГосЛог, ЭТрН, РНИС, Антиштраф | Инфологистик-24",
+    "Регуляторика грузоперевозчика — ГосЛог, ЭТрН, РНИС, Антиштраф | Инфолог24",
   description:
     "Сроки, которые могут остановить бизнес: ГосЛог 30 апреля 2026, ЭТрН 1 сентября 2026, перевозчики 1 марта 2027. Обзор всей регуляторики, календарь дедлайнов и 6 продуктов под ключ.",
   keywords: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
       "ГосЛог, ЭТрН, РНИС, Антиштраф, юрист и календарь дедлайнов — всё, что нужно перевозчику для соответствия закону.",
     type: "website",
     url: "https://inlog24.ru/regulatorika",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/regulatorika",

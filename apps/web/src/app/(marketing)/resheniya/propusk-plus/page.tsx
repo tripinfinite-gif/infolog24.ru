@@ -11,7 +11,7 @@ import { packages } from "@/content/packages";
 import { PackageDetail } from "../_components/package-detail";
 
 export const metadata: Metadata = {
-  title: "Пропуск+ — пакет для 1–4 машин от 12 500 ₽ | Инфологистик-24",
+  title: "Пропуск+ — пакет для 1–4 машин от 12 500 ₽ | Инфолог24",
   description:
     "Пакет «Пропуск+» для частников и микро-ТК: пропуск в Москву, РНИС, ЭТрН, мониторинг штрафов и доступ к ИнфоПилоту. От 12 500 ₽ разово + 800 ₽/мес за ТС. Экономия до 15% против покупки по отдельности.",
   keywords: [
@@ -22,12 +22,12 @@ export const metadata: Metadata = {
     "микро ТК пропуск",
   ],
   openGraph: {
-    title: "Пропуск+ — пакет для 1–4 машин | Инфологистик-24",
+    title: "Пропуск+ — пакет для 1–4 машин | Инфолог24",
     description:
       "Всё, чтобы ездить в Москву легально: пропуск, РНИС, ЭТрН, мониторинг штрафов и ИнфоПилот. От 12 500 ₽.",
     type: "website",
     url: "https://inlog24.ru/resheniya/propusk-plus",
-    siteName: "Инфологистик-24",
+    siteName: "Инфолог24",
   },
   alternates: {
     canonical: "https://inlog24.ru/resheniya/propusk-plus",

@@ -41,7 +41,7 @@ export async function generateMetadata({
 
   if (!zone) return { title: "Услуга не найдена" };
 
-  const title = `${zone.fullName} — оформление за ${zone.processingDays} дн. | Инфологистик-24`;
+  const title = `${zone.fullName} — оформление за ${zone.processingDays} дн. | Инфолог24`;
   const description = `${zone.zoneDescription} Оформляем ${zone.fullName.toLowerCase()} за ${zone.processingDays} рабочих дня. Цена ${zone.priceLabel} ${zone.priceUnit}. Гарантия результата. Бесплатный временный пропуск.`;
 
   return {
@@ -58,7 +58,7 @@ export async function generateMetadata({
       description,
       type: "website",
       url: `https://inlog24.ru/services/${slug}`,
-      siteName: "Инфологистик-24",
+      siteName: "Инфолог24",
     },
     twitter: {
       card: "summary_large_image",
@@ -172,7 +172,7 @@ export default async function ServiceDetailPage({
                   </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="w-full">
-                  <a href="tel:+74951234567">
+                  <a href="tel:+74991105549">
                     Позвонить
                   </a>
                 </Button>
@@ -351,7 +351,7 @@ export default async function ServiceDetailPage({
             description: zone.zoneDescription,
             provider: {
               "@type": "Organization",
-              name: "Инфологистик-24",
+              name: "Инфолог24",
               url: "https://infolog24.ru",
             },
             areaServed: {

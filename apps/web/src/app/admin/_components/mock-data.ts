@@ -118,11 +118,11 @@ export interface MockAuditEntry {
 // ── Mock managers ────────────────────────────────────────────────────────
 
 export const MANAGERS: MockUser[] = [
-  { id: "m1", email: "petrov@infolog24.ru", name: "Петров Алексей", phone: "+7 (999) 111-22-33", company: "Инфологистик-24", inn: "", role: "manager", image: null, createdAt: "2024-01-15" },
-  { id: "m2", email: "sidorova@infolog24.ru", name: "Сидорова Мария", phone: "+7 (999) 222-33-44", company: "Инфологистик-24", inn: "", role: "manager", image: null, createdAt: "2024-03-01" },
-  { id: "m3", email: "kozlov@infolog24.ru", name: "Козлов Дмитрий", phone: "+7 (999) 333-44-55", company: "Инфологистик-24", inn: "", role: "manager", image: null, createdAt: "2024-06-10" },
-  { id: "m4", email: "volkova@infolog24.ru", name: "Волкова Екатерина", phone: "+7 (999) 444-55-66", company: "Инфологистик-24", inn: "", role: "manager", image: null, createdAt: "2025-01-20" },
-  { id: "admin1", email: "admin@infolog24.ru", name: "Администратор", phone: "+7 (999) 000-00-00", company: "Инфологистик-24", inn: "", role: "admin", image: null, createdAt: "2024-01-01" },
+  { id: "m1", email: "petrov@infolog24.ru", name: "Петров Алексей", phone: "+7 (999) 111-22-33", company: "Инфолог24", inn: "", role: "manager", image: null, createdAt: "2024-01-15" },
+  { id: "m2", email: "sidorova@infolog24.ru", name: "Сидорова Мария", phone: "+7 (999) 222-33-44", company: "Инфолог24", inn: "", role: "manager", image: null, createdAt: "2024-03-01" },
+  { id: "m3", email: "kozlov@infolog24.ru", name: "Козлов Дмитрий", phone: "+7 (999) 333-44-55", company: "Инфолог24", inn: "", role: "manager", image: null, createdAt: "2024-06-10" },
+  { id: "m4", email: "volkova@infolog24.ru", name: "Волкова Екатерина", phone: "+7 (999) 444-55-66", company: "Инфолог24", inn: "", role: "manager", image: null, createdAt: "2025-01-20" },
+  { id: "admin1", email: "admin@infolog24.ru", name: "Администратор", phone: "+7 (999) 000-00-00", company: "Инфолог24", inn: "", role: "admin", image: null, createdAt: "2024-01-01" },
 ];
 
 // ── Mock clients ─────────────────────────────────────────────────────────

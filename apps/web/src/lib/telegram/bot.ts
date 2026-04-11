@@ -31,7 +31,7 @@ const typeLabels: Record<"annual_day" | "annual_night" | "temporary", string> = 
 };
 
 const WELCOME_TEXT =
-  "Здравствуйте! Я бот «Инфологистик-24».\n\n" +
+  "Здравствуйте! Я бот «Инфолог24».\n\n" +
   "Помогу оформить пропуск в Москву для грузового транспорта: МКАД, ТТК, Садовое кольцо.\n\n" +
   "Выберите действие в меню или используйте команды:\n" +
   "/price — рассчитать стоимость\n" +
@@ -83,7 +83,7 @@ async function startOrderFlow(ctx: Context, chatId: number): Promise<void> {
 async function showContacts(ctx: Context): Promise<void> {
   await ctx.reply(
     "Связаться с менеджером:\n\n" +
-      "Телефон: +7 (495) XXX-XX-XX\n" +
+      "Телефон: +7 (499) 110-55-49\n" +
       "Email: info@infolog24.ru\n" +
       "Сайт: infolog24.ru\n\n" +
       "Режим работы: Пн-Пт 9:00-20:00, Сб 10:00-17:00",
@@ -387,7 +387,7 @@ export function createBot(token: string): Bot {
         await ctx.reply(
           `Ищу заявку по запросу: ${text}.\n\n` +
             "Онлайн-проверка статусов находится в разработке. Пока вы можете отслеживать статус в личном кабинете: infolog24.ru/dashboard\n" +
-            "Или позвоните нам: +7 (495) XXX-XX-XX.",
+            "Или позвоните нам: +7 (499) 110-55-49.",
           { reply_markup: mainMenuKeyboard() },
         );
         return;
@@ -445,7 +445,7 @@ export function createBot(token: string): Bot {
           );
         } else {
           await ctx.reply(
-            "Не удалось автоматически создать заявку. Пожалуйста, позвоните нам: +7 (495) XXX-XX-XX.",
+            "Не удалось автоматически создать заявку. Пожалуйста, позвоните нам: +7 (499) 110-55-49.",
             { reply_markup: mainMenuKeyboard() },
           );
         }

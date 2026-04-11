@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Bot, CheckCircle2 } from "lucide-react";
 
+import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -95,14 +96,12 @@ export function ScenarioTemplate({
             {story}
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="https://t.me/infolog24_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Открыть в Telegram
-            </a>
+            <OpenChatTrigger className="inline-flex h-12 w-auto items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90">
+              <span className="inline-flex items-center gap-2">
+                <Bot className="size-4" />
+                Открыть AI-ассистента
+              </span>
+            </OpenChatTrigger>
             <Link
               href="/infopilot"
               className="inline-flex h-12 items-center justify-center rounded-xl border border-border bg-background px-8 text-base font-semibold text-foreground transition-colors hover:bg-muted"
@@ -267,14 +266,12 @@ export function ScenarioTemplate({
             Для всех остальных — pay-as-you-go или SOS-подписка 990 ₽/мес.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <a
-              href="https://t.me/infolog24_bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Открыть в Telegram
-            </a>
+            <OpenChatTrigger className="inline-flex h-12 w-auto items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90">
+              <span className="inline-flex items-center gap-2">
+                <Bot className="size-4" />
+                Открыть AI-ассистента
+              </span>
+            </OpenChatTrigger>
             <Link
               href="/resheniya"
               className="inline-flex h-12 items-center justify-center rounded-xl border border-primary-foreground/30 bg-transparent px-8 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10"

@@ -1,12 +1,14 @@
 "use client";
 
 import { CheckCircle, Loader2, ShieldCheck } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,10 +16,15 @@ import { Textarea } from "@/components/ui/textarea";
 export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [consent, setConsent] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!consent) {
+      toast.error("Необходимо согласие на обработку персональных данных");
+      return;
+    }
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -136,9 +143,39 @@ export function ContactForm() {
             />
           </div>
 
+          <div className="flex items-start gap-2 text-xs text-muted-foreground">
+            <Checkbox
+              id="consent-contact"
+              checked={consent}
+              onCheckedChange={(checked) => setConsent(checked === true)}
+              required
+              className="mt-0.5"
+            />
+            <Label
+              htmlFor="consent-contact"
+              className="cursor-pointer text-xs font-normal leading-relaxed text-muted-foreground"
+            >
+              Я согласен на обработку персональных данных в соответствии с{" "}
+              <Link
+                href="/privacy"
+                className="text-primary underline-offset-2 hover:underline"
+              >
+                Политикой конфиденциальности
+              </Link>{" "}
+              и принимаю условия{" "}
+              <Link
+                href="/terms"
+                className="text-primary underline-offset-2 hover:underline"
+              >
+                публичной оферты
+              </Link>
+              .
+            </Label>
+          </div>
+
           <Button
             type="submit"
-            disabled={loading}
+            disabled={loading || !consent}
             className="h-12 w-full bg-accent text-base text-accent-foreground hover:bg-accent/90"
           >
             {loading ? (

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
-  title: "Страница не найдена — Инфологистик-24",
+  title: "Страница не найдена — Инфолог24",
   description: "404 — запрашиваемая страница не существует.",
   robots: { index: false, follow: false },
 };
@@ -21,7 +21,7 @@ const popularLinks = [
 const notFoundJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: "Страница не найдена — Инфологистик-24",
+  name: "Страница не найдена — Инфолог24",
   description: "404 — запрашиваемая страница не существует",
   url: "https://inlog24.ru/404",
 };

@@ -24,7 +24,7 @@ export interface SendEmailResult {
   error?: string;
 }
 
-const DEFAULT_FROM = "Инфологистик-24 <noreply@inlog24.ru>";
+const DEFAULT_FROM = "Инфолог24 <noreply@inlog24.ru>";
 const DEFAULT_REPLY_TO = "support@inlog24.ru";
 
 let client: Resend | null = null;

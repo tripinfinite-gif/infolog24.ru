@@ -2,7 +2,7 @@
 
 import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Phone, MessageCircle, Send, CheckCircle, Lock } from "lucide-react";
+import { Bot, CheckCircle, Lock, MessageSquare, Phone } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -16,10 +16,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { companyInfo } from "@/content/company";
 import { cn } from "@/lib/utils";
 
-const WHATSAPP_URL = "https://wa.me/74951234567";
-const TELEGRAM_URL = "https://t.me/infologistic24";
+const MAX_URL =
+  companyInfo.social.find((s) => s.name === "MAX")?.url ?? "https://max.ru/infolog24";
 
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "");
@@ -105,12 +106,11 @@ export function FloatingActions({ className }: FloatingActionsProps) {
               >
                 <Button
                   size="icon-lg"
-                  className="size-14 rounded-full bg-[#25D366] text-white shadow-lg hover:bg-[#25D366]/90"
-                  asChild
+                  className="size-14 rounded-full bg-accent text-accent-foreground shadow-lg hover:bg-accent/90"
+                  onClick={() => window.dispatchEvent(new Event("infopilot:open"))}
+                  aria-label="Открыть AI-ассистента"
                 >
-                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
-                    <MessageCircle className="size-6" />
-                  </a>
+                  <Bot className="size-6" />
                 </Button>
               </motion.div>
 
@@ -121,11 +121,11 @@ export function FloatingActions({ className }: FloatingActionsProps) {
               >
                 <Button
                   size="icon-lg"
-                  className="size-14 rounded-full bg-[#0088cc] text-white shadow-lg hover:bg-[#0088cc]/90"
+                  className="size-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
                   asChild
                 >
-                  <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Telegram">
-                    <Send className="size-6" />
+                  <a href={MAX_URL} target="_blank" rel="noopener noreferrer" aria-label="MAX">
+                    <MessageSquare className="size-6" />
                   </a>
                 </Button>
               </motion.div>
@@ -156,23 +156,21 @@ export function FloatingActions({ className }: FloatingActionsProps) {
             >
               <Button
                 size="lg"
-                className="flex-1 gap-2 rounded-full bg-[#25D366] text-white hover:bg-[#25D366]/90"
-                asChild
+                className="flex-1 gap-2 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
+                onClick={() => window.dispatchEvent(new Event("infopilot:open"))}
               >
-                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="size-5" />
-                  <span className="sr-only sm:not-sr-only">WhatsApp</span>
-                </a>
+                <Bot className="size-5" />
+                <span className="sr-only sm:not-sr-only">AI-чат</span>
               </Button>
 
               <Button
                 size="lg"
-                className="flex-1 gap-2 rounded-full bg-[#0088cc] text-white hover:bg-[#0088cc]/90"
+                className="flex-1 gap-2 rounded-full bg-primary text-primary-foreground hover:bg-primary/90"
                 asChild
               >
-                <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">
-                  <Send className="size-5" />
-                  <span className="sr-only sm:not-sr-only">Telegram</span>
+                <a href={MAX_URL} target="_blank" rel="noopener noreferrer">
+                  <MessageSquare className="size-5" />
+                  <span className="sr-only sm:not-sr-only">MAX</span>
                 </a>
               </Button>
 

@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowRight, MessageCircle, Phone, Send, Shield } from "lucide-react";
+import { ArrowRight, Bot, MessageSquare, Phone, Shield } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { companyInfo } from "@/content/company";
 import { cn } from "@/lib/utils";
 
 interface FinalCtaFormProps {
@@ -42,8 +44,11 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
   const [phone, setPhone] = useState("");
   const [fleet, setFleet] = useState<FleetOption>("1");
   const [needs, setNeeds] = useState<string[]>([]);
+  const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const maxLink = companyInfo.social.find((s) => s.name === "MAX");
 
   const toggleNeed = (id: string) => {
     setNeeds((prev) =>
@@ -53,6 +58,12 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!consent) {
+      toast.error("Необходимо согласие на обработку персональных данных");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -145,30 +156,35 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
               Или напишите сразу
             </p>
             <div className="flex flex-wrap gap-3">
-              <a
-                href="https://wa.me/74951234567"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#25D366]/15 px-4 py-2.5 text-sm font-semibold text-[#25D366] transition-colors hover:bg-[#25D366]/25"
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    window.dispatchEvent(new Event("infopilot:open"));
+                  }
+                }}
+                className="inline-flex items-center gap-2 rounded-xl bg-accent/15 px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/25"
               >
-                <MessageCircle className="size-4" />
-                WhatsApp
-              </a>
+                <Bot className="size-4" />
+                AI-ассистент
+              </button>
+              {maxLink && (
+                <a
+                  href={maxLink.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
+                >
+                  <MessageSquare className="size-4" />
+                  MAX
+                </a>
+              )}
               <a
-                href="https://t.me/infolog24_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#229ED9]/15 px-4 py-2.5 text-sm font-semibold text-[#229ED9] transition-colors hover:bg-[#229ED9]/25"
-              >
-                <Send className="size-4" />
-                Telegram
-              </a>
-              <a
-                href="tel:+74951234567"
+                href={`tel:${companyInfo.contacts.phoneTel}`}
                 className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
               >
                 <Phone className="size-4" />
-                +7 (495) 123-45-67
+                {companyInfo.contacts.phoneFormatted}
               </a>
             </div>
           </div>
@@ -281,10 +297,42 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 </div>
               </fieldset>
 
+              {/* 152-ФЗ согласие на обработку персональных данных */}
+              <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                <Checkbox
+                  id="consent-final"
+                  checked={consent}
+                  onCheckedChange={(checked) => setConsent(checked === true)}
+                  required
+                  className="mt-0.5"
+                />
+                <Label
+                  htmlFor="consent-final"
+                  className="cursor-pointer text-xs font-normal leading-relaxed text-muted-foreground"
+                >
+                  Я согласен на обработку персональных данных в соответствии
+                  с{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-primary underline-offset-2 hover:underline"
+                  >
+                    Политикой конфиденциальности
+                  </Link>{" "}
+                  и принимаю условия{" "}
+                  <Link
+                    href="/terms"
+                    className="text-primary underline-offset-2 hover:underline"
+                  >
+                    публичной оферты
+                  </Link>
+                  .
+                </Label>
+              </div>
+
               <Button
                 type="submit"
                 size="lg"
-                disabled={loading}
+                disabled={loading || !consent}
                 className="h-12 w-full rounded-xl bg-accent text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
               >
                 {loading ? "Отправка..." : "Получить расчёт"}

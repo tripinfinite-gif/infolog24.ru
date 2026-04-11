@@ -146,7 +146,7 @@ export function createChatTools({ userId }: ChatUserContext) {
             return {
               found: false as const,
               message:
-                "Заявка не найдена. Возможно, номер введён с ошибкой. Свяжитесь с менеджером: +7 (495) XXX-XX-XX.",
+                "Заявка не найдена. Возможно, номер введён с ошибкой. Свяжитесь с менеджером: +7 (499) 110-55-49.",
             };
           }
 
@@ -278,7 +278,7 @@ export function createChatTools({ userId }: ChatUserContext) {
             return {
               success: false as const,
               message:
-                "Не удалось оставить заявку автоматически. Пожалуйста, позвоните нам: +7 (495) XXX-XX-XX.",
+                "Не удалось оставить заявку автоматически. Пожалуйста, позвоните нам: +7 (499) 110-55-49.",
             };
           }
 
@@ -291,7 +291,7 @@ export function createChatTools({ userId }: ChatUserContext) {
           return {
             success: false as const,
             message:
-              "Не удалось оставить заявку. Пожалуйста, свяжитесь с нами напрямую: +7 (495) XXX-XX-XX.",
+              "Не удалось оставить заявку. Пожалуйста, свяжитесь с нами напрямую: +7 (499) 110-55-49.",
           };
         }
       },

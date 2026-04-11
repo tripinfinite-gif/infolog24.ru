@@ -57,7 +57,7 @@ function buildAdminEmailHtml(data: ContactInput): string {
       <h2>Новая заявка с сайта</h2>
       <table style="border-collapse:collapse;border:1px solid #ddd;">${trs}</table>
       <p style="color:#666;font-size:12px;margin-top:16px;">
-        Сформировано автоматически сервисом Инфологистик-24.
+        Сформировано автоматически сервисом Инфолог24.
       </p>
     </div>
   `;

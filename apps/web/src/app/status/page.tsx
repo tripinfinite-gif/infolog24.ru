@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 
+import { companyInfo } from "@/content/company";
+
+const maxUrl = companyInfo.social.find((s) => s.name === "MAX")?.url;
+
 export const metadata: Metadata = {
-  title: "Статус системы — Инфологистик-24",
-  description: "Текущий статус всех систем Инфологистик-24",
+  title: "Статус системы — Инфолог24",
+  description: "Текущий статус всех систем Инфолог24",
 };
 
 interface SystemStatus {
@@ -16,7 +20,7 @@ const systems: SystemStatus[] = [
   { name: "API", status: "operational", label: "Работает" },
   { name: "База данных", status: "operational", label: "Работает" },
   { name: "Платежи", status: "operational", label: "Работает" },
-  { name: "Telegram-бот", status: "operational", label: "Работает" },
+  { name: "AI-ассистент", status: "operational", label: "Работает" },
 ];
 
 const statusColors: Record<SystemStatus["status"], string> = {
@@ -77,17 +81,19 @@ export default function StatusPage() {
 
       <div className="mt-8 text-sm text-gray-500">
         <p>Обновлено: {now} (МСК)</p>
-        <p className="mt-2">
-          Следите за обновлениями в нашем{" "}
-          <a
-            href="https://t.me/infolog24"
-            className="text-blue-600 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Telegram-канале
-          </a>
-        </p>
+        {maxUrl && (
+          <p className="mt-2">
+            Следите за обновлениями в нашем{" "}
+            <a
+              href={maxUrl}
+              className="text-blue-600 hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              канале в MAX
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );

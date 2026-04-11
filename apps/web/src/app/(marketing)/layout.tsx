@@ -6,6 +6,7 @@ import { PopupProvider } from "@/components/popups/popup-provider";
 import { CookieConsent } from "@/components/cookie-consent";
 import { JivoChat } from "@/components/integrations/jivochat";
 import { Calltouch } from "@/components/integrations/calltouch";
+import { ChatWidget } from "@/components/chat/chat-widget";
 
 export default function MarketingLayout({
   children,
@@ -24,6 +25,7 @@ export default function MarketingLayout({
       <CookieConsent />
       <JivoChat />
       <Calltouch />
+      <ChatWidget />
     </>
   );
 }
