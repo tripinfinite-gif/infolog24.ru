@@ -26,7 +26,18 @@ export const auth = betterAuth({
     provider: "pg",
     schema: drizzleSchema,
   }),
-  user: { modelName: "users" },
+  user: {
+    modelName: "users",
+    // Кастомные колонки в users, которые мы хотим видеть в session.user.
+    // Без этого Better Auth не читает их и role у партнёра в session
+    // остаётся undefined → verifyPartnerRoleAction отвечает «не партнёр».
+    additionalFields: {
+      role: { type: "string", input: false },
+      phone: { type: "string", input: false },
+      company: { type: "string", input: false },
+      inn: { type: "string", input: false },
+    },
+  },
   session: {
     modelName: "sessions",
     expiresIn: 60 * 60 * 24 * 7, // 7 days
