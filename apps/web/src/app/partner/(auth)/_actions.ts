@@ -88,11 +88,21 @@ export type VerifyPartnerRoleResult = {
 export async function verifyPartnerRoleAction(): Promise<VerifyPartnerRoleResult> {
   try {
     const session = await requireSession();
-    const role = (session.user as Record<string, unknown>).role as
-      | string
-      | undefined;
+    const userObj = session.user as Record<string, unknown>;
+    const role = userObj.role as string | undefined;
+    logger.info(
+      {
+        userId: session.user.id,
+        email: session.user.email,
+        role,
+        userKeys: Object.keys(userObj),
+        userObj,
+      },
+      "verifyPartnerRoleAction debug",
+    );
     return { ok: role === "partner", role };
-  } catch {
+  } catch (err) {
+    logger.error({ err }, "verifyPartnerRoleAction failed");
     return { ok: false };
   }
 }
