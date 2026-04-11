@@ -62,9 +62,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── Защита dashboard/admin ────────────────────────────────────────────
-  // Лёгкая cookie-проверка. Полная валидация сессии — в layout.tsx
+  // Лёгкая cookie-проверка. Полная валидация сессии — в layout.tsx.
+  // Better Auth ставит cookie с префиксом '__Secure-' на HTTPS (продакшен)
+  // и без префикса на HTTP (локальная разработка) — проверяем оба варианта.
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
-    const sessionCookie = request.cookies.get("better-auth.session_token");
+    const sessionCookie =
+      request.cookies.get("__Secure-better-auth.session_token") ??
+      request.cookies.get("better-auth.session_token");
     if (!sessionCookie) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
@@ -79,7 +83,9 @@ export async function middleware(request: NextRequest) {
     !pathname.startsWith("/partner/register") &&
     !pathname.startsWith("/partner/forgot-password")
   ) {
-    const sessionCookie = request.cookies.get("better-auth.session_token");
+    const sessionCookie =
+      request.cookies.get("__Secure-better-auth.session_token") ??
+      request.cookies.get("better-auth.session_token");
     if (!sessionCookie) {
       return NextResponse.redirect(new URL("/partner/login", request.url));
     }
