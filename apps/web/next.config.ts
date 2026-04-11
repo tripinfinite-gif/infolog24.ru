@@ -1,4 +1,9 @@
+import withBundleAnalyzer from "@next/bundle-analyzer";
 import type { NextConfig } from "next";
+
+const withAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 /**
  * Content-Security-Policy.
@@ -59,6 +64,24 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@infolog24/shared"],
+  images: {
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.s3.ru-1.storage.selcloud.ru",
+      },
+      {
+        protocol: "https",
+        hostname: "*.selcdn.ru",
+      },
+      {
+        protocol: "https",
+        hostname: "infolog24-documents.s3.ru-1.storage.selcloud.ru",
+      },
+    ],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+  },
   async headers() {
     return [
       {
@@ -67,6 +90,28 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // Старые русские пути → новые английские
+      { source: "/uslugi/:slug", destination: "/services/:slug", permanent: true },
+      { source: "/uslugi", destination: "/services", permanent: true },
+      { source: "/ceny", destination: "/pricing", permanent: true },
+      { source: "/o-kompanii", destination: "/about", permanent: true },
+      { source: "/otzyvy", destination: "/reviews", permanent: true },
+      { source: "/kontakty", destination: "/contacts", permanent: true },
+      // Старые опечатки и legacy
+      { source: "/propuskm", destination: "/services/propusk-mkad", permanent: true },
+      { source: "/propusk-mkad", destination: "/services/propusk-mkad", permanent: true },
+      { source: "/propusk-ttk", destination: "/services/propusk-ttk", permanent: true },
+      { source: "/propusk-sk", destination: "/services/propusk-sk", permanent: true },
+      { source: "/vremennyj-propusk", destination: "/services/vremennyj-propusk", permanent: true },
+      { source: "/godovoj-propusk", destination: "/services/godovoj-propusk", permanent: true },
+      // Прочее legacy
+      { source: "/proverit-propusk", destination: "/check-status", permanent: true },
+      { source: "/sotrudnichestvo", destination: "/partners", permanent: true },
+      { source: "/blagotvoritelnost/:rest*", destination: "/about", permanent: true },
+    ];
+  },
 };
 
-export default nextConfig;
+export default withAnalyzer(nextConfig);

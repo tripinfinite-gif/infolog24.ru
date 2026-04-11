@@ -1,6 +1,3 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { ArrowRight, Send, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface HeroProps {
+interface HeroV2Props {
   className?: string;
 }
 
@@ -19,18 +16,21 @@ const heroStats = [
   { value: "24/7", label: "ИИ-диспетчер" },
 ];
 
-export function Hero({ className }: HeroProps) {
+const trustItems = [
+  "Контур • Астрал",
+  "Яндекс 4.7",
+  "2ГИС 4.6",
+  "15 000+ кейсов",
+];
+
+export function HeroV2({ className }: HeroV2Props) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
+    <section
       className={cn(
         "relative overflow-hidden rounded-3xl bg-primary p-6 sm:p-10 lg:p-14",
         className
       )}
     >
-      {/* Subtle gradient overlay */}
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary via-primary to-foreground/80 opacity-90"
         aria-hidden="true"
@@ -41,52 +41,31 @@ export function Hero({ className }: HeroProps) {
       />
 
       <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-12">
-        {/* Left: text content */}
         <div className="max-w-2xl">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-sm text-primary-foreground/80"
-          >
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-sm text-primary-foreground/80">
             <Sparkles className="size-3.5 text-accent" />
             Платформа для перевозчика — больше чем пропуск
-          </motion.div>
+          </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl"
-          >
+          <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
             Больше чем пропуск.{" "}
             <span className="text-accent">
-              Вся операционка перевозчика в одном окне
+              Вся операционка грузоперевозчика в одном окне
             </span>{" "}
             — и ИИ-диспетчер на трассе 24/7.
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.25 }}
-            className="mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/70 sm:text-lg"
-          >
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
             Пропуск + РНИС + ЭТрН + ГосЛог + мониторинг штрафов + эвакуация,
-            ремонт, мойка и страхование через проверенных партнёров. С 2016
-            года, 15 000+ оформленных пропусков.
-          </motion.p>
+            ремонт, мойка и страхование через проверенных партнёров. Работаем
+            с&nbsp;2016 года, 15&nbsp;000+ оформленных пропусков.
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.35 }}
-            className="mt-8 flex flex-col gap-3 sm:flex-row"
-          >
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button
               asChild
               size="lg"
-              className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
+              className="h-13 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
             >
               <Link href="#packages">
                 Подобрать пакет за 30 секунд
@@ -97,21 +76,16 @@ export function Hero({ className }: HeroProps) {
               asChild
               variant="outline"
               size="lg"
-              className="h-12 rounded-xl border-primary-foreground/20 px-8 text-base text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+              className="h-13 rounded-xl border-primary-foreground/20 px-8 text-base text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
             >
               <Link href="#passes">
                 <Truck className="mr-2 size-4" />
                 Просто оформить пропуск
               </Link>
             </Button>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-4"
-          >
+          <div className="mt-4">
             <Link
               href="https://t.me/infolog24_bot"
               target="_blank"
@@ -121,15 +95,9 @@ export function Hero({ className }: HeroProps) {
               <Send className="size-4" />
               Открыть ИнфоПилота в Telegram
             </Link>
-          </motion.div>
+          </div>
 
-          {/* Mini stats row */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.55 }}
-            className="mt-10 flex flex-wrap gap-x-8 gap-y-4"
-          >
+          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-4">
             {heroStats.map((stat) => (
               <div key={stat.label}>
                 <div className="text-2xl font-bold text-primary-foreground sm:text-3xl">
@@ -140,10 +108,9 @@ export function Hero({ className }: HeroProps) {
                 </div>
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
 
-        {/* Right: hero image */}
         <div className="hidden lg:block">
           <div className="relative h-[400px] w-[340px] overflow-hidden rounded-2xl">
             <Image
@@ -157,6 +124,21 @@ export function Hero({ className }: HeroProps) {
           </div>
         </div>
       </div>
-    </motion.div>
+
+      {/* Trust bar */}
+      <div className="relative mt-10 border-t border-primary-foreground/10 pt-6">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-primary-foreground/60 sm:text-sm">
+          <span className="font-semibold text-primary-foreground/80">
+            Нам доверяют:
+          </span>
+          {trustItems.map((item) => (
+            <span key={item} className="flex items-center gap-2">
+              <span className="size-1 rounded-full bg-accent" aria-hidden="true" />
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

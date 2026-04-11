@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 
-import { ComparisonTable } from "@/components/sections/comparison-table";
-import { CtaSection } from "@/components/sections/cta-section";
-import { FaqSection } from "@/components/sections/faq-section";
-import { Guarantees } from "@/components/sections/guarantees";
-import { Hero } from "@/components/sections/hero";
-import { HowItWorks } from "@/components/sections/how-it-works";
-import { PainPoints } from "@/components/sections/pain-points";
-import { ServicesOverview } from "@/components/sections/services-overview";
-import { Stats } from "@/components/sections/stats";
+import { FaqMini } from "@/components/sections/v2/faq-mini";
+import { FinalCtaForm } from "@/components/sections/v2/final-cta-form";
+import { HeroV2 } from "@/components/sections/v2/hero-v2";
+import { HowItWorksV2 } from "@/components/sections/v2/how-it-works-v2";
+import { InfopilotHeroSection } from "@/components/sections/v2/infopilot-hero-section";
+import { PackagesGridV2 } from "@/components/sections/v2/packages-grid";
+import { PainSystemsGrid } from "@/components/sections/v2/pain-systems-grid";
+import { RegulatoryTimelineV2 } from "@/components/sections/v2/regulatory-timeline-v2";
+import { SimplePassSection } from "@/components/sections/v2/simple-pass-section";
+import { WhyUsTiles } from "@/components/sections/v2/why-us-tiles";
 import { Testimonials } from "@/components/sections/testimonials";
 import {
   BreadcrumbJsonLd,
@@ -17,42 +17,58 @@ import {
   ServiceJsonLd,
 } from "@/components/seo/json-ld";
 import { faqItems } from "@/content/faq";
-import { stats } from "@/content/stats";
 import { testimonials } from "@/content/testimonials";
 
-import { Calculator } from "./calculator";
-
 export const metadata: Metadata = {
-  title: "Пропуска в Москву для грузового транспорта — от 3 500 ₽ | Инфологистик-24",
+  title:
+    "Инфологистик-24 — платформа для грузоперевозчиков. Пропуска, регуляторика, ИИ-диспетчер 24/7",
   description:
-    "Оформим пропуск на МКАД, ТТК и Садовое кольцо за 3 дня. 98% одобрение, 50 000+ пропусков, гарантия результата. Временный пропуск — бесплатно при заказе годового.",
+    "Больше чем пропуск. Пропуск + РНИС + ЭТрН + ГосЛог + мониторинг штрафов + ИИ-диспетчер 24/7 (эвакуация, ремонт, мойка, страхование). Пакеты «Пропуск+», «Транзит Москва», «Флот Про». С 2016 года, 15 000+ оформленных пропусков.",
   keywords: [
     "пропуск в Москву",
     "пропуск на МКАД",
     "пропуск на ТТК",
     "пропуск Садовое кольцо",
     "грузовой пропуск Москва",
-    "оформление пропуска",
-    "пропуск для грузовиков",
+    "платформа перевозчика",
+    "ИИ-диспетчер для грузовиков",
+    "ГосЛог регистрация",
+    "ЭТрН переход",
+    "РНИС подключение",
+    "Пропуск+",
+    "Транзит Москва",
+    "Флот Про",
+    "ИнфоПилот",
+    "эвакуация грузовиков",
   ],
   openGraph: {
-    title: "Пропуска в Москву для грузового транспорта | Инфологистик-24",
+    title:
+      "Инфологистик-24 — платформа для грузоперевозчиков. Пропуска + регуляторика + ИИ-диспетчер",
     description:
-      "Оформим пропуск на МКАД, ТТК и Садовое кольцо за 3 дня. 98% одобрение, гарантия результата или возврат денег.",
+      "Вся операционка перевозчика в одном окне. Пакеты «Пропуск+», «Транзит Москва», «Флот Про» + ИнфоПилот — ИИ-диспетчер на трассе 24/7.",
     type: "website",
     url: "https://inlog24.ru",
     siteName: "Инфологистик-24",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Пропуска в Москву для грузового транспорта | Инфологистик-24",
+    title:
+      "Инфологистик-24 — платформа для грузоперевозчиков. Пропуска + регуляторика + ИИ-диспетчер",
     description:
-      "Оформим пропуск на МКАД, ТТК и Садовое кольцо за 3 дня. 98% одобрение, гарантия результата.",
+      "Больше чем пропуск. 6 систем регуляторики в одном окне + ИИ-диспетчер на трассе 24/7.",
   },
   alternates: {
     canonical: "https://inlog24.ru",
   },
 };
+
+const HOMEPAGE_FAQ_IDS = [
+  "what-is-pass",
+  "zones-difference",
+  "who-needs-pass",
+  "pass-validity",
+  "payment-methods",
+];
 
 export default function HomePage() {
   const testimonialsData = testimonials.slice(0, 6).map((t) => ({
@@ -63,93 +79,65 @@ export default function HomePage() {
     source: t.source,
   }));
 
-  const faqData = faqItems.slice(0, 8).map((item) => ({
-    question: item.question,
-    answer: item.answer,
-  }));
+  const faqItemsByPriority = HOMEPAGE_FAQ_IDS.map((id) =>
+    faqItems.find((item) => item.id === id)
+  ).filter((item): item is (typeof faqItems)[number] => Boolean(item));
+
+  const faqData = (
+    faqItemsByPriority.length >= 5 ? faqItemsByPriority : faqItems.slice(0, 5)
+  )
+    .slice(0, 5)
+    .map((item) => ({
+      question: item.question,
+      answer: item.answer,
+    }));
 
   return (
     <>
       {/* Structured data */}
       <LocalBusinessJsonLd />
       <ServiceJsonLd
-        name="Оформление пропусков для грузового транспорта"
-        description="Оформление пропусков на МКАД, ТТК и Садовое кольцо для грузового транспорта свыше 3,5 тонн"
+        name="Платформа для грузоперевозчика: пропуска, регуляторика, ИИ-диспетчер"
+        description="Комплексная платформа для управления операционкой грузоперевозчика: пропуска на МКАД/ТТК/СК, РНИС, ЭТрН, ГосЛог, мониторинг штрафов и ИИ-диспетчер на трассе 24/7"
         price={3500}
         url="/"
       />
       <BreadcrumbJsonLd items={[{ name: "Главная", href: "/" }]} />
 
-      {/* === BENTO GRID LAYOUT === */}
-      <div className="mx-auto max-w-7xl space-y-4 px-4 py-6 sm:space-y-6 sm:px-6 sm:py-8 lg:px-8">
+      {/* === HOMEPAGE v2 — PLATFORM === */}
+      <div className="mx-auto max-w-7xl space-y-10 px-4 py-6 sm:space-y-14 sm:px-6 sm:py-10 lg:px-8">
+        {/* 1. Hero */}
+        <HeroV2 />
 
-        {/* Row 1: Hero — full width dark card */}
-        <Hero />
+        {/* 2. Pain: 6 systems */}
+        <PainSystemsGrid />
 
-        {/* Row 2: Stats (2/3) + MKAD photo (1/3) */}
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
-          <Stats stats={stats} className="lg:col-span-2" />
-          <div className="relative overflow-hidden rounded-3xl aspect-[4/3] lg:aspect-auto lg:min-h-[250px]">
-            <Image
-              src="/images/mkad-aerial.jpg"
-              alt="МКАД с высоты птичьего полёта"
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 33vw"
-            />
-          </div>
-        </div>
+        {/* 3. Three packages — main conversion block */}
+        <PackagesGridV2 />
 
-        {/* Row 3: Pain points — 3 equal cards */}
-        <PainPoints />
+        {/* 4. InfoPilot — flagship AI dispatcher */}
+        <InfopilotHeroSection />
 
-        {/* Row 4: Photo (1/3) + How it works (2/3) */}
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
-          <div className="relative overflow-hidden rounded-3xl aspect-[4/3] lg:aspect-auto lg:min-h-[250px]">
-            <Image
-              src="/images/permit-documents.jpg"
-              alt="Документы на оформление пропуска"
-              fill
-              className="object-cover"
-              sizes="(max-width: 1024px) 100vw, 33vw"
-            />
-          </div>
-          <HowItWorks className="lg:col-span-2" />
-        </div>
+        {/* 5. Regulatory timeline */}
+        <RegulatoryTimelineV2 />
 
-        {/* Row 5: Services — 4 cards */}
-        <ServicesOverview />
+        {/* 6. "Just a pass" door */}
+        <SimplePassSection />
 
-        {/* Row 6: Calculator (standalone section) */}
-        <Calculator />
+        {/* 7. How it works */}
+        <HowItWorksV2 />
 
-        {/* Row 7: Comparison table (2/3) + Guarantees (1/3) */}
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
-          <ComparisonTable className="lg:col-span-2" />
-          <Guarantees />
-        </div>
+        {/* 8. Why us */}
+        <WhyUsTiles />
 
-        {/* Row 8: Testimonials — horizontal scroll */}
+        {/* 9. Testimonials (existing) */}
         <Testimonials testimonials={testimonialsData} />
 
-        {/* Row 9: FAQ (1/2) + Team photo (1/2) */}
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2">
-          <FaqSection items={faqData} />
-          <div className="flex flex-col gap-4 sm:gap-6">
-            <div className="relative flex-1 overflow-hidden rounded-3xl min-h-[200px]">
-              <Image
-                src="/images/team-office.jpg"
-                alt="Команда Инфологистик-24 в офисе"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
-            </div>
-          </div>
-        </div>
+        {/* 10. FAQ mini */}
+        <FaqMini items={faqData} />
 
-        {/* Row 10: Final CTA — full width dark card */}
-        <CtaSection />
+        {/* 11. Final CTA with form */}
+        <FinalCtaForm />
       </div>
     </>
   );

@@ -2,12 +2,16 @@
 
 import { useState, useEffect, useRef } from "react";
 import {
+  Building2,
   ChevronDown,
   Clock,
+  Layers,
   Mail,
   Menu,
   Phone,
   PhoneCall,
+  Shield,
+  Sparkles,
   Truck,
 } from "lucide-react";
 import Link from "next/link";
@@ -17,51 +21,248 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const navLinks = [
-  { href: "/pricing", label: "Тарифы" },
-  { href: "/about", label: "О компании" },
-  { href: "/reviews", label: "Отзывы" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contacts", label: "Контакты" },
-  { href: "/blog", label: "Блог" },
-];
+// ----- Типы -----
+type MenuItem = {
+  href: string;
+  title: string;
+  description?: string;
+  badge?: "hit" | "new";
+  deadline?: string;
+};
 
-const passTypes = [
+type MenuSection = {
+  key: string;
+  label: string;
+  href: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  badge?: "new";
+  matchPrefix?: string;
+  items?: MenuItem[];
+  columns?: 1 | 2;
+  promo?: {
+    title: string;
+    description: string;
+    ctaLabel: string;
+    ctaHref: string;
+  };
+};
+
+// ----- Данные меню -----
+const sections: MenuSection[] = [
   {
-    href: "/services/propusk-mkad",
-    title: "Пропуск на МКАД",
-    price: "от 12 000 ₽",
-    description: "Для грузовиков свыше 3,5 тонн",
+    key: "resheniya",
+    label: "Решения",
+    href: "/resheniya",
+    icon: Layers,
+    matchPrefix: "/resheniya",
+    columns: 1,
+    items: [
+      {
+        href: "/resheniya/propusk-plus",
+        title: "Пропуск+",
+        description: "Пропуск + РНИС + ЭТрН. Для 1–4 машин.",
+      },
+      {
+        href: "/resheniya/tranzit-moskva",
+        title: "Транзит Москва",
+        description: "+ ГосЛог + Антиштраф. Для 5–20 машин.",
+        badge: "hit",
+      },
+      {
+        href: "/resheniya/flot-pro",
+        title: "Флот Про",
+        description: "Корпоративный ЛК, API, SLA. Для парков 10+.",
+      },
+      {
+        href: "/resheniya#podbor",
+        title: "Подобрать пакет",
+        description: "Калькулятор под размер автопарка",
+      },
+    ],
+    promo: {
+      title: "Пакетная экономия до 25%",
+      description:
+        "Внутри пакета услуги дешевле, чем покупать по отдельности.",
+      ctaLabel: "Смотреть все решения",
+      ctaHref: "/resheniya",
+    },
   },
   {
-    href: "/services/propusk-ttk",
-    title: "Пропуск на ТТК",
-    price: "от 12 000 ₽",
-    description: "Третье транспортное кольцо",
+    key: "propuska",
+    label: "Пропуска",
+    href: "/services",
+    icon: Truck,
+    matchPrefix: "/services",
+    columns: 2,
+    items: [
+      {
+        href: "/services/propusk-mkad",
+        title: "Пропуск на МКАД",
+        description: "Для грузовиков свыше 3,5 тонн",
+      },
+      {
+        href: "/services/propusk-ttk",
+        title: "Пропуск на ТТК",
+        description: "Третье транспортное кольцо",
+      },
+      {
+        href: "/services/propusk-sk",
+        title: "Пропуск на Садовое",
+        description: "Садовое кольцо и центр",
+      },
+      {
+        href: "/services/vremennyj-propusk",
+        title: "Временный пропуск",
+        description: "Разовый въезд на 1–5 дней",
+      },
+      {
+        href: "/services/godovoj-propusk",
+        title: "Годовой пропуск",
+        description: "Максимальная экономия",
+      },
+      {
+        href: "/check-status",
+        title: "Проверить статус",
+        description: "Узнать готовность пропуска",
+      },
+      {
+        href: "/pricing",
+        title: "Калькулятор стоимости",
+        description: "Расчёт под ваш маршрут",
+      },
+    ],
   },
   {
-    href: "/services/propusk-sk",
-    title: "Пропуск на Садовое",
-    price: "от 12 000 ₽",
-    description: "Садовое кольцо и центр",
+    key: "infopilot",
+    label: "ИнфоПилот",
+    href: "/infopilot",
+    icon: Sparkles,
+    badge: "new",
+    matchPrefix: "/infopilot",
+    columns: 1,
+    items: [
+      {
+        href: "/infopilot",
+        title: "Как работает ИнфоПилот",
+        description: "ИИ-диспетчер на трассе 24/7",
+      },
+      {
+        href: "/infopilot/evakuaciya",
+        title: "Эвакуация 24/7",
+        description: "Вызов эвакуатора одной кнопкой",
+      },
+      {
+        href: "/infopilot/diagnostika",
+        title: "Диагностическая карта",
+        description: "Оформление без очередей",
+      },
+      {
+        href: "/infopilot/remont",
+        title: "Ремонт грузовиков",
+        description: "Проверенные СТО по маршруту",
+      },
+      {
+        href: "/infopilot/mojki",
+        title: "Мойки грузовых",
+        description: "Сеть моек с фикс-ценой",
+      },
+      {
+        href: "/infopilot/strahovanie",
+        title: "Страхование",
+        description: "ОСАГО, КАСКО, грузы",
+      },
+      {
+        href: "/infopilot/obzhalovanie",
+        title: "Обжалование штрафов",
+        description: "Юрист по дорожным штрафам",
+      },
+    ],
+    promo: {
+      title: "Открыть ИнфоПилот в Telegram",
+      description: "Диспетчер ответит за 60 секунд. Онлайн 24/7.",
+      ctaLabel: "Запустить бота",
+      ctaHref: "https://t.me/infolog24_bot",
+    },
   },
   {
-    href: "/services/vremennyj-propusk",
-    title: "Временный пропуск",
-    price: "от 3 500 ₽",
-    description: "Разовый въезд на 1-5 дней",
+    key: "regulatorika",
+    label: "Регуляторика",
+    href: "/regulatorika",
+    icon: Shield,
+    matchPrefix: "/regulatorika",
+    columns: 1,
+    items: [
+      {
+        href: "/goslog",
+        title: "ГосЛог — регистрация",
+        description: "Экспедиторы — до 30.04.2026",
+        deadline: "30.04.2026",
+      },
+      {
+        href: "/etrn",
+        title: "ЭТрН — переход",
+        description: "Обязательна с 01.09.2026",
+        deadline: "01.09.2026",
+      },
+      {
+        href: "/regulatorika/rnis",
+        title: "РНИС — подключение",
+        description: "Строго обязательна",
+      },
+      {
+        href: "/regulatorika/antishraf",
+        title: "Антиштраф",
+        description: "Мониторинг штрафов, подписка",
+      },
+      {
+        href: "/regulatorika/yurist",
+        title: "Юрист-перевозчик",
+        description: "Юрподдержка на подписке",
+      },
+      {
+        href: "/regulatorika/kalendar",
+        title: "Календарь дедлайнов",
+        description: "Вся шкала регуляторики в одной линии",
+      },
+    ],
+    promo: {
+      title: "Сроки горят",
+      description: "До обязательного ГосЛог осталось меньше месяца.",
+      ctaLabel: "Смотреть календарь",
+      ctaHref: "/regulatorika/kalendar",
+    },
   },
   {
-    href: "/goslog",
-    title: "Регистрация в ГосЛог",
-    price: "от 15 000 ₽",
-    description: "Под ключ, дедлайн 30 апреля",
+    key: "pricing",
+    label: "Тарифы",
+    href: "/pricing",
+    matchPrefix: "/pricing",
   },
   {
-    href: "/etrn",
-    title: "Переход на ЭТрН",
-    price: "от 25 000 ₽",
-    description: "УКЭП + ЭДО + обучение",
+    key: "company",
+    label: "Компания",
+    href: "/about",
+    icon: Building2,
+    matchPrefix: "/about",
+    columns: 2,
+    items: [
+      {
+        href: "/about",
+        title: "О нас",
+        description: "10 лет, 15 000+ пропусков",
+      },
+      { href: "/reviews", title: "Отзывы", description: "Реальные кейсы" },
+      { href: "/blog", title: "Блог и база знаний" },
+      { href: "/partners", title: "Партнёрам", description: "Агентская программа" },
+      {
+        href: "/partners/infopilot",
+        title: "Стать партнёром ИнфоПилота",
+        description: "Для СТО, эвакуаторов, моек",
+      },
+      { href: "/blagotvoritelnost", title: "Благотворительность" },
+      { href: "/contacts", title: "Контакты" },
+      { href: "/faq", title: "FAQ" },
+    ],
   },
 ];
 
@@ -71,8 +272,7 @@ interface HeaderProps {
 
 export function Header({ className }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [activeKey, setActiveKey] = useState<string | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
 
@@ -84,13 +284,19 @@ export function Header({ className }: HeaderProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const openDropdown = () => {
+  const openDropdown = (key: string) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setDropdownOpen(true);
+    setActiveKey(key);
   };
 
   const closeDropdown = () => {
-    timeoutRef.current = setTimeout(() => setDropdownOpen(false), 150);
+    timeoutRef.current = setTimeout(() => setActiveKey(null), 150);
+  };
+
+  const isActive = (section: MenuSection) => {
+    if (!section.matchPrefix) return false;
+    if (section.matchPrefix === "/pricing") return pathname === "/pricing";
+    return pathname.startsWith(section.matchPrefix);
   };
 
   return (
@@ -133,7 +339,7 @@ export function Header({ className }: HeaderProps) {
 
       {/* Main Bar */}
       <div className="border-b border-border/60 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-[72px] lg:px-8">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:px-6 lg:h-[72px] lg:px-6 xl:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex size-8 items-center justify-center rounded-lg bg-primary lg:size-9">
@@ -145,99 +351,158 @@ export function Header({ className }: HeaderProps) {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-0.5 lg:flex">
-            {/* Пропуска dropdown */}
-            <div
-              ref={dropdownRef}
-              className="relative"
-              onMouseEnter={openDropdown}
-              onMouseLeave={closeDropdown}
-            >
-              <Link
-                href="/services"
-                className={cn(
-                  "inline-flex items-center gap-1 rounded-md px-3 py-2 text-[15px] font-medium transition-colors hover:bg-muted hover:text-foreground",
-                  pathname.startsWith("/services")
-                    ? "text-primary"
-                    : "text-foreground/80"
-                )}
-              >
-                Услуги
-                <ChevronDown
-                  className={cn(
-                    "size-3.5 transition-transform duration-200",
-                    dropdownOpen && "rotate-180"
-                  )}
-                />
-              </Link>
+          <nav className="hidden items-center gap-0 lg:flex">
+            {sections.map((section) => {
+              const active = isActive(section);
+              const hasDropdown = section.items && section.items.length > 0;
+              const open = activeKey === section.key;
 
-              {/* Mega Menu Dropdown */}
-              {dropdownOpen && (
-                <div className="absolute left-1/2 top-full z-50 w-[560px] -translate-x-1/2 pt-2">
-                  <div className="rounded-2xl border border-border/60 bg-card p-2 shadow-[0_8px_30px_-4px_rgba(28,28,30,0.12)]">
-                    <div className="grid grid-cols-2 gap-1">
-                      {passTypes.map((pass) => (
-                        <Link
-                          key={pass.href}
-                          href={pass.href}
-                          className="group rounded-lg p-3 transition-colors hover:bg-primary/5"
-                          onClick={() => setDropdownOpen(false)}
+              if (!hasDropdown) {
+                return (
+                  <Link
+                    key={section.key}
+                    href={section.href}
+                    className={cn(
+                      "rounded-md px-2.5 py-2 text-[14px] font-medium transition-colors hover:bg-muted hover:text-foreground xl:px-3 xl:text-[15px]",
+                      active ? "text-primary" : "text-foreground/80"
+                    )}
+                  >
+                    {section.label}
+                  </Link>
+                );
+              }
+
+              return (
+                <div
+                  key={section.key}
+                  className="relative"
+                  onMouseEnter={() => openDropdown(section.key)}
+                  onMouseLeave={closeDropdown}
+                >
+                  <Link
+                    href={section.href}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-md px-2.5 py-2 text-[14px] font-medium transition-colors hover:bg-muted hover:text-foreground xl:px-3 xl:text-[15px]",
+                      active ? "text-primary" : "text-foreground/80"
+                    )}
+                  >
+                    {section.label}
+                    {section.badge === "new" && (
+                      <span className="ml-1 rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wider text-accent">
+                        NEW
+                      </span>
+                    )}
+                    <ChevronDown
+                      className={cn(
+                        "size-3.5 transition-transform duration-200",
+                        open && "rotate-180"
+                      )}
+                    />
+                  </Link>
+
+                  {open && (
+                    <div
+                      className={cn(
+                        "absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2",
+                        section.promo
+                          ? "w-[720px]"
+                          : section.columns === 2
+                            ? "w-[640px]"
+                            : "w-[420px]"
+                      )}
+                    >
+                      <div className="rounded-2xl border border-border/60 bg-card p-3 shadow-[0_8px_30px_-4px_rgba(28,28,30,0.12)]">
+                        <div
+                          className={cn(
+                            "grid gap-3",
+                            section.promo
+                              ? "grid-cols-[1fr_220px]"
+                              : "grid-cols-1"
+                          )}
                         >
-                          <div className="flex items-baseline justify-between">
-                            <span className="text-sm font-semibold text-foreground group-hover:text-primary">
-                              {pass.title}
-                            </span>
+                          <div
+                            className={cn(
+                              "grid gap-1",
+                              section.columns === 2
+                                ? "grid-cols-2"
+                                : "grid-cols-1"
+                            )}
+                          >
+                            {section.items!.map((item) => (
+                              <Link
+                                key={item.href}
+                                href={item.href}
+                                className="group rounded-lg p-2.5 transition-colors hover:bg-primary/5"
+                                onClick={() => setActiveKey(null)}
+                              >
+                                <div className="flex items-baseline justify-between gap-2">
+                                  <span className="text-sm font-semibold text-foreground group-hover:text-primary">
+                                    {item.title}
+                                  </span>
+                                  {item.badge === "hit" && (
+                                    <span className="rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-bold uppercase leading-none tracking-wider text-accent">
+                                      Хит
+                                    </span>
+                                  )}
+                                  {item.deadline && (
+                                    <span className="whitespace-nowrap rounded bg-destructive/10 px-1.5 py-0.5 text-[10px] font-bold leading-none text-destructive">
+                                      {item.deadline}
+                                    </span>
+                                  )}
+                                </div>
+                                {item.description && (
+                                  <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                                    {item.description}
+                                  </p>
+                                )}
+                              </Link>
+                            ))}
                           </div>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            {pass.description}
-                          </p>
-                          <span className="mt-1.5 inline-block text-sm font-bold text-accent">
-                            {pass.price}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
-                    <div className="mt-1 border-t pt-2">
-                      <Link
-                        href="/services"
-                        className="flex items-center justify-center rounded-lg p-2 text-sm font-medium text-primary transition-colors hover:bg-primary/5"
-                        onClick={() => setDropdownOpen(false)}
-                      >
-                        Все услуги
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
 
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "rounded-md px-3 py-2 text-[15px] font-medium transition-colors hover:bg-muted hover:text-foreground",
-                  pathname === link.href
-                    ? "text-primary"
-                    : "text-foreground/80"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+                          {section.promo && (
+                            <div className="flex flex-col justify-between rounded-xl bg-primary/5 p-4">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  {section.icon ? (
+                                    <section.icon className="size-4 text-primary" />
+                                  ) : null}
+                                  <span className="text-sm font-bold text-foreground">
+                                    {section.promo.title}
+                                  </span>
+                                </div>
+                                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                                  {section.promo.description}
+                                </p>
+                              </div>
+                              <Link
+                                href={section.promo.ctaHref}
+                                className="mt-3 inline-flex items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                                onClick={() => setActiveKey(null)}
+                              >
+                                {section.promo.ctaLabel}
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
           {/* Desktop Right Side */}
-          <div className="hidden items-center gap-5 lg:flex">
+          <div className="hidden items-center gap-2 lg:flex xl:gap-3">
             <a
               href="tel:+74951234567"
-              className="group flex items-center gap-2"
+              className="group hidden items-center gap-2 xl:flex"
             >
               <div className="flex size-9 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
                 <Phone className="size-4 text-primary" />
               </div>
               <div className="flex flex-col">
-                <span className="text-base font-bold leading-tight text-foreground">
+                <span className="text-sm font-bold leading-tight text-foreground">
                   +7 (495) 123-45-67
                 </span>
                 <span className="text-[11px] text-muted-foreground">
@@ -247,7 +512,15 @@ export function Header({ className }: HeaderProps) {
             </a>
             <Button
               asChild
-              size="lg"
+              variant="outline"
+              size="sm"
+              className="rounded-xl border-border/70"
+            >
+              <Link href="/dashboard">Личный кабинет</Link>
+            </Button>
+            <Button
+              asChild
+              size="sm"
               className="rounded-xl bg-accent text-accent-foreground shadow-sm hover:bg-accent/90"
             >
               <Link href="#zayavka">Оформить пропуск</Link>

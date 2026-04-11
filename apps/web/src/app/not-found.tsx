@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { ArrowRight, Home } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "Страница не найдена — Инфологистик-24",
+  description: "404 — запрашиваемая страница не существует.",
+  robots: { index: false, follow: false },
+};
 
 const popularLinks = [
   { href: "/services/propusk-mkad", label: "Пропуск на МКАД" },
@@ -11,9 +18,21 @@ const popularLinks = [
   { href: "/contacts", label: "Контакты" },
 ];
 
+const notFoundJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Страница не найдена — Инфологистик-24",
+  description: "404 — запрашиваемая страница не существует",
+  url: "https://inlog24.ru/404",
+};
+
 export default function NotFound() {
   return (
     <section className="flex min-h-[60vh] flex-col items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(notFoundJsonLd) }}
+      />
       <div className="text-center">
         <p className="text-8xl font-bold text-primary">404</p>
         <h1 className="mt-4 font-heading text-2xl font-bold text-foreground sm:text-3xl">
