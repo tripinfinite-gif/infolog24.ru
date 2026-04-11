@@ -16,6 +16,7 @@
     "analyze": "ANALYZE=true next build",
     "db:seed": "tsx src/lib/db/seed.ts",
     "db:seed:partner": "tsx --env-file=.env.local src/lib/db/seed-test-partner.ts",
+    "db:seed:client": "tsx --env-file=.env.local src/lib/db/seed-test-client.ts",
     "rag:build-embeddings": "tsx --env-file=.env.local scripts/build-knowledge-embeddings.ts"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2",
     "drizzle-orm": "^0.41",
+    "fflate": "^0.8.2",
     "framer-motion": "^12.38.0",
     "grammy": "^1.42.0",
     "ioredis": "^5.10.1",

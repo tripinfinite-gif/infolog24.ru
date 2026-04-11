@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   ExternalLink,
+  FileArchive,
   FileText,
   Phone,
   PhoneCall,
@@ -25,6 +26,7 @@ import {
 const ICON_MAP: Record<string, LucideIcon> = {
   RefreshCw,
   Plus,
+  FileArchive,
   Upload,
   FileText,
   ScrollText,

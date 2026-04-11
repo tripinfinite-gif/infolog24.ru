@@ -403,6 +403,54 @@ export const chatConversations = pgTable("chat_conversations", {
 ]);
 
 /**
+ * Integration outbox — асинхронная доставка событий во внешние системы
+ * (Bitrix24, email, будущая собственная CRM, MAX/Telegram-бот менеджеров).
+ *
+ * Принцип: при создании заявки/документа/etc. бизнес-код пишет событие
+ * сюда (в той же транзакции, что и основное действие). Cron-воркер
+ * читает pending события и доставляет их в нужные каналы. При сбое —
+ * exponential backoff retry. После max_attempts — статус 'dead' + алерт.
+ *
+ * Это гарантирует:
+ *   1. Создание заявки никогда не блокируется недоступностью CRM.
+ *   2. События не теряются — даже если Bitrix лежит сутки, после
+ *      восстановления retry доставит всё, что накопилось.
+ *   3. Идемпотентность — уникальный индекс по (event_type, payload->orderId, channel)
+ *      не позволит создать дубль для одного и того же события.
+ *
+ * Подключение нового канала = новый адаптер + строка в EVENT_CHANNELS
+ * registry. Бизнес-код менять не надо.
+ */
+export const integrationOutbox = pgTable(
+  "integration_outbox",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    eventType: varchar("event_type", { length: 100 }).notNull(),
+    payload: jsonb("payload").notNull(),
+    channel: varchar("channel", { length: 50 }).notNull(),
+    status: varchar("status", { length: 20 }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    maxAttempts: integer("max_attempts").notNull().default(5),
+    nextRetryAt: timestamp("next_retry_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    lastError: text("last_error"),
+    deliveredAt: timestamp("delivered_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => new Date()),
+  },
+  (table) => [
+    index("idx_outbox_pending").on(table.status, table.nextRetryAt),
+    index("idx_outbox_event_type").on(table.eventType),
+  ],
+);
+
+/**
  * P5 — Vector RAG для базы знаний AI-помощника.
  *
  * Хранит embedding каждого пункта knowledge-base.ts (или его чанков).

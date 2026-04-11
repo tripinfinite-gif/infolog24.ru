@@ -29,6 +29,13 @@
       "when": 1775921049907,
       "tag": "0003_p5_knowledge_chunks",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1775937809046,
+      "tag": "0004_integration_outbox",
+      "breakpoints": true
     }
   ]
 }

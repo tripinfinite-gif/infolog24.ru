@@ -34,6 +34,8 @@ export type ActionCard =
   | { kind: "view_vehicle"; vehicleId: string; label?: string }
   /** Связаться с менеджером (callback), опциональный приоритет. */
   | { kind: "contact_manager"; reason?: string; priority?: "normal" | "high"; label?: string }
+  /** Открыть форму загрузки архива документов (P-archive). */
+  | { kind: "upload_archive"; vehicleId?: string; zone?: PermitZone; label?: string }
   /** Произвольная навигация. Используется редко, для нестандартных случаев. */
   | { kind: "open_link"; href: string; label: string };
 
@@ -79,6 +81,12 @@ export function resolveActionHref(action: ActionCard): string | null {
       const params = new URLSearchParams({ upload: action.documentType ?? "any" });
       return `/dashboard/orders/${action.orderId}?${params.toString()}`;
     }
+    case "upload_archive": {
+      const params = new URLSearchParams({ tab: "archive" });
+      if (action.vehicleId) params.set("vehicleId", action.vehicleId);
+      if (action.zone) params.set("zone", action.zone);
+      return `/dashboard/orders/new?${params.toString()}`;
+    }
     case "view_order":
       return `/dashboard/orders/${action.orderId}`;
     case "view_permit":
@@ -106,6 +114,8 @@ export function getActionLabel(action: ActionCard): string {
       return "Продлить пропуск";
     case "create_order":
       return "Оформить заявку";
+    case "upload_archive":
+      return "Загрузить архив документов";
     case "upload_document":
       return "Загрузить документ";
     case "view_order":
@@ -135,6 +145,8 @@ export function getActionIconName(action: ActionCard): string {
       return "RefreshCw";
     case "create_order":
       return "Plus";
+    case "upload_archive":
+      return "FileArchive";
     case "upload_document":
       return "Upload";
     case "view_order":
@@ -169,6 +181,7 @@ function isValidActionCard(value: unknown): value is ActionCard {
   return [
     "extend_permit",
     "create_order",
+    "upload_archive",
     "upload_document",
     "view_order",
     "view_permit",
