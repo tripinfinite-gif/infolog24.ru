@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
-import * as ordersDAL from "@/lib/dal/orders";
+import * as adminDAL from "@/lib/dal/admin";
 import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
@@ -13,12 +13,24 @@ export async function GET() {
     }
 
     const userRole = (session.user as Record<string, unknown>).role as string;
-    if (userRole !== "admin") {
+    if (!["admin", "manager"].includes(userRole)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const stats = await ordersDAL.getOrderStats();
-    return NextResponse.json(stats);
+    const [stats, recentOrders, managerWorkload, staleOrders] =
+      await Promise.all([
+        adminDAL.getDashboardStats(),
+        adminDAL.getRecentOrders(10),
+        adminDAL.getManagerWorkload(),
+        adminDAL.getStaleOrders(24),
+      ]);
+
+    return NextResponse.json({
+      stats,
+      recentOrders,
+      managerWorkload,
+      staleOrders,
+    });
   } catch (error) {
     logger.error(error, "Failed to get admin stats");
     return NextResponse.json(

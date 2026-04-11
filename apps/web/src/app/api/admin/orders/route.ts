@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth/session";
-import * as ordersDAL from "@/lib/dal/orders";
+import * as adminDAL from "@/lib/dal/admin";
 import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
@@ -20,26 +20,21 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") ?? "1", 10);
     const pageSize = parseInt(url.searchParams.get("pageSize") ?? "20", 10);
-    const status = url.searchParams.get("status") as import("@/lib/types").OrderFilters["status"];
-    const zone = url.searchParams.get("zone") as import("@/lib/types").OrderFilters["zone"];
+    const status = url.searchParams.get("status") ?? undefined;
+    const zone = url.searchParams.get("zone") ?? undefined;
+    const search = url.searchParams.get("search") ?? undefined;
+    const managerId = url.searchParams.get("managerId") ?? undefined;
 
-    let result;
-    if (userRole === "manager") {
-      result = await ordersDAL.getOrdersByManager(session.user.id, {
-        page,
-        pageSize,
-        status: status ?? undefined,
-        zone: zone ?? undefined,
-      });
-    } else {
-      result = await ordersDAL.getAllOrders({
-        page,
-        pageSize,
-        status: status ?? undefined,
-        zone: zone ?? undefined,
-      });
-    }
+    const filters: adminDAL.AdminOrderFilters = {
+      page,
+      pageSize,
+      status,
+      zone,
+      search,
+      managerId: userRole === "manager" ? session.user.id : managerId,
+    };
 
+    const result = await adminDAL.getAdminOrders(filters);
     return NextResponse.json(result);
   } catch (error) {
     logger.error(error, "Failed to list admin orders");

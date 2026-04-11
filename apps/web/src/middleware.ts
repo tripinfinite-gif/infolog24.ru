@@ -1,63 +1,103 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { validateCsrf } from "@/lib/security/csrf";
+import { getClientIp, rateLimit, rateLimitResponse } from "@/lib/security/rate-limit";
 
-// Rate limiting using in-memory map (simple, for MVP)
-const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
+// ── CORS конфигурация ────────────────────────────────────────────────────
 
-function rateLimit(
-  ip: string,
-  limit: number = 60,
-  windowMs: number = 60000,
-): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(ip);
+const ALLOWED_ORIGINS = new Set([
+  "https://inlog24.ru",
+  "https://www.inlog24.ru",
+  "https://test.inlog24.ru",
+  "https://infolog24.ru",
+  "https://www.infolog24.ru",
+  "http://localhost:3000",
+]);
 
-  if (!entry || now - entry.timestamp > windowMs) {
-    rateLimitMap.set(ip, { count: 1, timestamp: now });
-    return false;
+const CORS_METHODS = "GET, POST, PATCH, DELETE, OPTIONS";
+const CORS_HEADERS = "Content-Type, Authorization, X-CSRF-Token";
+const CORS_MAX_AGE = "86400";
+
+function buildCorsHeaders(origin: string | null): Headers {
+  const headers = new Headers();
+  if (origin && ALLOWED_ORIGINS.has(origin)) {
+    headers.set("Access-Control-Allow-Origin", origin);
+    headers.set("Vary", "Origin");
+    headers.set("Access-Control-Allow-Credentials", "true");
+    headers.set("Access-Control-Allow-Methods", CORS_METHODS);
+    headers.set("Access-Control-Allow-Headers", CORS_HEADERS);
+    headers.set("Access-Control-Max-Age", CORS_MAX_AGE);
   }
-
-  entry.count++;
-  return entry.count > limit;
+  return headers;
 }
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+function applyCors(response: NextResponse, origin: string | null): NextResponse {
+  const cors = buildCorsHeaders(origin);
+  cors.forEach((value, key) => response.headers.set(key, value));
+  return response;
+}
 
-  // CSRF-проверка для мутирующих API-запросов
+// ── Пути, исключённые из rate-limit через middleware ───────────────────
+// (имеют свои точечные лимиты или критичны для мониторинга)
+const RATE_LIMIT_SKIP_PATHS = [
+  "/api/health",
+  "/api/auth/", // rate limit ставится локально
+  "/api/chat", // rate limit ставится локально (anonymous vs auth)
+  "/api/contacts", // rate limit ставится локально (contact-form)
+  "/api/payments/webhook", // IP allowlist
+  "/api/telegram", // secret header
+  "/api/cron/", // CRON_SECRET
+  "/api/documents/upload-url", // file-upload
+  "/api/documents", // file-upload
+];
+
+export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const origin = request.headers.get("origin");
+
+  // ── CORS preflight ────────────────────────────────────────────────────
+  if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
+    const response = new NextResponse(null, { status: 204 });
+    return applyCors(response, origin);
+  }
+
+  // ── CSRF для мутирующих API-запросов ──────────────────────────────────
   if (pathname.startsWith("/api/")) {
     const csrf = validateCsrf(request);
     if (!csrf.valid) {
-      return NextResponse.json(
-        { error: "CSRF validation failed" },
+      const response = NextResponse.json(
+        { error: "CSRF validation failed", reason: csrf.reason },
         { status: 403 },
       );
+      return applyCors(response, origin);
     }
   }
 
-  // Rate limit API routes
-  if (pathname.startsWith("/api/") && !pathname.startsWith("/api/health")) {
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
-    if (rateLimit(ip)) {
-      return NextResponse.json(
-        { error: "Too many requests" },
-        { status: 429 },
-      );
+  // ── Общий rate-limit для API ──────────────────────────────────────────
+  if (pathname.startsWith("/api/")) {
+    const skip = RATE_LIMIT_SKIP_PATHS.some((p) => pathname.startsWith(p));
+    if (!skip) {
+      const ip = getClientIp(request);
+      const result = await rateLimit("api-general", ip);
+      if (!result.success) {
+        return applyCors(rateLimitResponse(result), origin);
+      }
     }
   }
 
-  // Protect dashboard routes
+  // ── Защита dashboard/admin ────────────────────────────────────────────
   if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
-    // Auth check will be done in layout/page level with Better Auth
-    // Middleware just ensures the cookie exists
     const sessionCookie = request.cookies.get("better-auth.session_token");
     if (!sessionCookie) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (pathname.startsWith("/api/")) {
+    return applyCors(response, origin);
+  }
+  return response;
 }
 
 export const config = {

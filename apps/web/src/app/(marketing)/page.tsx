@@ -11,7 +11,11 @@ import { PainPoints } from "@/components/sections/pain-points";
 import { ServicesOverview } from "@/components/sections/services-overview";
 import { Stats } from "@/components/sections/stats";
 import { Testimonials } from "@/components/sections/testimonials";
-import { companyInfo } from "@/content/company";
+import {
+  BreadcrumbJsonLd,
+  LocalBusinessJsonLd,
+  ServiceJsonLd,
+} from "@/components/seo/json-ld";
 import { faqItems } from "@/content/faq";
 import { stats } from "@/content/stats";
 import { testimonials } from "@/content/testimonials";
@@ -22,11 +26,31 @@ export const metadata: Metadata = {
   title: "Пропуска в Москву для грузового транспорта — от 3 500 ₽ | Инфологистик-24",
   description:
     "Оформим пропуск на МКАД, ТТК и Садовое кольцо за 3 дня. 98% одобрение, 50 000+ пропусков, гарантия результата. Временный пропуск — бесплатно при заказе годового.",
+  keywords: [
+    "пропуск в Москву",
+    "пропуск на МКАД",
+    "пропуск на ТТК",
+    "пропуск Садовое кольцо",
+    "грузовой пропуск Москва",
+    "оформление пропуска",
+    "пропуск для грузовиков",
+  ],
   openGraph: {
     title: "Пропуска в Москву для грузового транспорта | Инфологистик-24",
     description:
       "Оформим пропуск на МКАД, ТТК и Садовое кольцо за 3 дня. 98% одобрение, гарантия результата или возврат денег.",
     type: "website",
+    url: "https://inlog24.ru",
+    siteName: "Инфологистик-24",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Пропуска в Москву для грузового транспорта | Инфологистик-24",
+    description:
+      "Оформим пропуск на МКАД, ТТК и Садовое кольцо за 3 дня. 98% одобрение, гарантия результата.",
+  },
+  alternates: {
+    canonical: "https://inlog24.ru",
   },
 };
 
@@ -47,74 +71,14 @@ export default function HomePage() {
   return (
     <>
       {/* Structured data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            name: companyInfo.name,
-            description: companyInfo.description,
-            telephone: companyInfo.contacts.phone,
-            email: companyInfo.contacts.email,
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: "Москва",
-              addressCountry: "RU",
-            },
-            url: "https://infolog24.ru",
-            foundingDate: "2016",
-            areaServed: "Москва",
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: "4.9",
-              reviewCount: "150",
-              bestRating: "5",
-            },
-          }),
-        }}
+      <LocalBusinessJsonLd />
+      <ServiceJsonLd
+        name="Оформление пропусков для грузового транспорта"
+        description="Оформление пропусков на МКАД, ТТК и Садовое кольцо для грузового транспорта свыше 3,5 тонн"
+        price={3500}
+        url="/"
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Service",
-            serviceType: "Оформление пропусков для грузового транспорта",
-            provider: {
-              "@type": "Organization",
-              name: companyInfo.name,
-            },
-            areaServed: "Москва",
-            offers: [
-              {
-                "@type": "Offer",
-                name: "Пропуск на МКАД",
-                price: "12000",
-                priceCurrency: "RUB",
-              },
-              {
-                "@type": "Offer",
-                name: "Пропуск на ТТК",
-                price: "12000",
-                priceCurrency: "RUB",
-              },
-              {
-                "@type": "Offer",
-                name: "Пропуск на Садовое кольцо",
-                price: "12000",
-                priceCurrency: "RUB",
-              },
-              {
-                "@type": "Offer",
-                name: "Временный пропуск",
-                price: "3500",
-                priceCurrency: "RUB",
-              },
-            ],
-          }),
-        }}
-      />
+      <BreadcrumbJsonLd items={[{ name: "Главная", href: "/" }]} />
 
       {/* === BENTO GRID LAYOUT === */}
       <div className="mx-auto max-w-7xl space-y-4 px-4 py-6 sm:space-y-6 sm:px-6 sm:py-8 lg:px-8">

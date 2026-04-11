@@ -1,7 +1,9 @@
 "use client";
 
 import { CheckCircle, Loader2, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,15 +14,43 @@ import { Textarea } from "@/components/ui/textarea";
 export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    // TODO: integrate with backend
-    setTimeout(() => {
-      setLoading(false);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name") as string,
+      phone: formData.get("phone") as string,
+      email: formData.get("email") as string,
+      message: formData.get("message") as string,
+      source: "contact-page",
+    };
+
+    try {
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        toast.error(json.error || "Ошибка отправки. Попробуйте позже.");
+        return;
+      }
+
       setSubmitted(true);
-    }, 800);
+      toast.success("Заявка отправлена! Мы свяжемся с вами в ближайшее время.");
+      router.push("/thank-you");
+    } catch {
+      toast.error("Ошибка сети. Попробуйте позже или позвоните нам.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (submitted) {

@@ -2,7 +2,10 @@
 
 import { Clock, MessageCircle, Phone, Send, Truck } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
+
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,10 +28,10 @@ const navLinks = [
 ];
 
 const passLinks = [
-  { href: "/services/mkad", label: "МКАД", price: "от 4 800 ₽" },
-  { href: "/services/ttk", label: "ТТК", price: "от 9 500 ₽" },
-  { href: "/services/sadovoe", label: "Садовое", price: "от 14 000 ₽" },
-  { href: "/services/temporary", label: "Временный", price: "от 3 500 ₽" },
+  { href: "/services/propusk-mkad", label: "МКАД", price: "от 12 000 ₽" },
+  { href: "/services/propusk-ttk", label: "ТТК", price: "от 12 000 ₽" },
+  { href: "/services/propusk-sk", label: "Садовое", price: "от 12 000 ₽" },
+  { href: "/services/vremennyj-propusk", label: "Временный", price: "от 3 500 ₽" },
 ];
 
 interface MobileNavProps {
@@ -37,6 +40,7 @@ interface MobileNavProps {
 
 export function MobileNav({ children }: MobileNavProps) {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
@@ -85,7 +89,12 @@ export function MobileNav({ children }: MobileNavProps) {
             <SheetClose asChild key={link.href}>
               <Link
                 href={link.href}
-                className="rounded-lg px-3 py-3 text-base font-medium text-foreground transition-colors hover:bg-muted"
+                className={cn(
+                  "rounded-lg px-3 py-3 text-base font-medium transition-colors hover:bg-muted",
+                  pathname === link.href
+                    ? "text-primary bg-primary/5"
+                    : "text-foreground"
+                )}
               >
                 {link.label}
               </Link>

@@ -3,7 +3,9 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Phone, Shield } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,10 +77,35 @@ function CtaFormSection({ className }: { className?: string }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, source: "cta-form" }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        toast.error(json.error || "Ошибка отправки. Попробуйте позже.");
+        return;
+      }
+
+      setSubmitted(true);
+      toast.success("Заявка принята! Перезвоним вам в течение 5 минут.");
+      router.push("/thank-you");
+    } catch {
+      toast.error("Ошибка сети. Попробуйте позже или позвоните нам.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -186,10 +213,11 @@ function CtaFormSection({ className }: { className?: string }) {
               <Button
                 type="submit"
                 size="lg"
+                disabled={loading}
                 className="h-12 w-full rounded-xl text-base font-semibold bg-accent text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
               >
-                Получить расчёт бесплатно
-                <ArrowRight className="ml-2 size-4" />
+                {loading ? "Отправка..." : "Получить расчёт бесплатно"}
+                {!loading && <ArrowRight className="ml-2 size-4" />}
               </Button>
 
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">

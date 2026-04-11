@@ -8,14 +8,32 @@ interface CreatePaymentParams {
   returnUrl: string;
   customerEmail?: string;
   customerPhone?: string;
+  /**
+   * Payment method hint. "sbp" triggers Система быстрых платежей (SBP / QR).
+   * Any other value (or undefined) uses the default YooKassa hosted checkout.
+   */
+  paymentMethod?: "sbp" | "bank_card" | "yoo_money";
+  /**
+   * 54-ФЗ receipt item type. Defaults to "service".
+   * Use "commodity" for physical goods.
+   */
+  itemType?: "service" | "commodity";
 }
 
 export interface YooKassaPayment {
   id: string;
   status: "pending" | "waiting_for_capture" | "succeeded" | "canceled";
   amount: { value: string; currency: string };
-  confirmation?: { type: string; confirmation_url: string };
+  confirmation?: {
+    type: string;
+    confirmation_url?: string;
+    confirmation_data?: string;
+  };
   metadata?: Record<string, string>;
+  payment_method?: {
+    type: string;
+    id?: string;
+  };
 }
 
 interface CreateRefundParams {
@@ -62,24 +80,45 @@ export class YooKassaClient {
       metadata: { order_id: params.orderId },
     };
 
-    if (params.customerEmail) {
+    // SBP (Система быстрых платежей) — force payment method type
+    if (params.paymentMethod === "sbp") {
+      body.payment_method_data = { type: "sbp" };
+    } else if (params.paymentMethod) {
+      body.payment_method_data = { type: params.paymentMethod };
+    }
+
+    // 54-ФЗ fiscalization: receipt is mandatory for Russian merchants.
+    // VAT rate 20% = vat_code 4 in YooKassa:
+    //   1 = без НДС, 2 = 0%, 3 = 10%, 4 = 20%, 5 = 10/110, 6 = 20/120
+    // payment_subject: "service" для услуг (оформление пропусков)
+    // payment_mode: "full_payment" — полный расчёт
+    const customerEmail = params.customerEmail;
+    const customerPhone = params.customerPhone;
+    if (customerEmail || customerPhone) {
       body.receipt = {
         customer: {
-          email: params.customerEmail,
-          ...(params.customerPhone ? { phone: params.customerPhone } : {}),
+          ...(customerEmail ? { email: customerEmail } : {}),
+          ...(customerPhone ? { phone: customerPhone } : {}),
         },
         items: [
           {
             description: params.description.slice(0, 128),
-            quantity: "1",
+            quantity: "1.00",
             amount: {
               value: params.amount.toFixed(2),
               currency: "RUB",
             },
-            vat_code: 1,
+            vat_code: 4, // 20% НДС
+            payment_subject: params.itemType ?? "service",
+            payment_mode: "full_payment",
           },
         ],
       };
+    } else {
+      logger.warn(
+        { orderId: params.orderId },
+        "YooKassa payment created without receipt — 54-ФЗ compliance requires email or phone",
+      );
     }
 
     const response = await fetch(`${this.baseUrl}/payments`, {

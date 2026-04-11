@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { notifications } from "@/lib/db/schema";
 import type { NewNotification, Notification } from "@/lib/types";
@@ -41,6 +41,31 @@ export async function markAsRead(id: string): Promise<Notification> {
 
   if (!updated) throw new Error("Notification not found");
   return updated;
+}
+
+export async function getUnreadCount(userId: string): Promise<number> {
+  const result = await db
+    .select({ count: count() })
+    .from(notifications)
+    .where(
+      and(
+        eq(notifications.userId, userId),
+        sql`${notifications.readAt} IS NULL`,
+      ),
+    );
+  return result[0]?.count ?? 0;
+}
+
+export async function markAllAsRead(userId: string): Promise<void> {
+  await db
+    .update(notifications)
+    .set({ status: "read", readAt: new Date() })
+    .where(
+      and(
+        eq(notifications.userId, userId),
+        sql`${notifications.readAt} IS NULL`,
+      ),
+    );
 }
 
 export async function getPendingNotifications(

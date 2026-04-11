@@ -6,7 +6,7 @@ export interface NavItem {
 
 export const mainNav: NavItem[] = [
   {
-    title: "Пропуска",
+    title: "Услуги",
     href: "/services",
     children: [
       { title: "Пропуск на МКАД", href: "/services/propusk-mkad" },
@@ -15,7 +15,9 @@ export const mainNav: NavItem[] = [
         title: "Пропуск на Садовое кольцо",
         href: "/services/propusk-sk",
       },
-      { title: "Временный пропуск", href: "/services/temp" },
+      { title: "Временный пропуск", href: "/services/vremennyj-propusk" },
+      { title: "Регистрация в ГосЛог", href: "/goslog" },
+      { title: "Переход на ЭТрН", href: "/etrn" },
     ],
   },
   { title: "Тарифы", href: "/pricing" },
@@ -39,7 +41,7 @@ export const dashboardNav: NavItem[] = [
 
 export const footerNav: NavItem[] = [
   {
-    title: "Пропуска",
+    title: "Услуги",
     href: "/services",
     children: [
       { title: "Пропуск на МКАД", href: "/services/propusk-mkad" },
@@ -48,11 +50,9 @@ export const footerNav: NavItem[] = [
         title: "Пропуск на Садовое кольцо",
         href: "/services/propusk-sk",
       },
-      { title: "Временный пропуск", href: "/services/temp" },
-      {
-        title: "Строительная техника",
-        href: "/services/propusk-stroitelnaya-tekhnika",
-      },
+      { title: "Временный пропуск", href: "/services/vremennyj-propusk" },
+      { title: "Регистрация в ГосЛог", href: "/goslog" },
+      { title: "Переход на ЭТрН", href: "/etrn" },
     ],
   },
   {
@@ -71,7 +71,7 @@ export const footerNav: NavItem[] = [
     children: [
       { title: "FAQ", href: "/faq" },
       { title: "Тарифы", href: "/pricing" },
-      { title: "Личный кабинет", href: "/dashboard" },
+      { title: "Проверить статус", href: "/check-status" },
       {
         title: "Политика конфиденциальности",
         href: "/privacy",

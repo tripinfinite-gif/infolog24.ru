@@ -5,7 +5,7 @@ import { checkExpiringPermits } from "@/lib/automation/permit-expiration";
 /**
  * GET /api/cron/expiring-permits
  *
- * Check for permits expiring within 30/14/7/0 days and send notifications.
+ * Check for permits expiring within 30/7/1 days and dispatch notifications.
  * Called by an external cron service daily.
  */
 export async function GET(request: NextRequest) {
@@ -18,9 +18,13 @@ export async function GET(request: NextRequest) {
 
   try {
     const result = await checkExpiringPermits();
-
-    logger.info(result, "Expiring permits check complete");
-    return NextResponse.json(result);
+    const summary = {
+      processed: result.checked,
+      succeeded: result.notified,
+      failed: Math.max(0, result.checked - result.notified),
+    };
+    logger.info(summary, "Expiring permits check complete");
+    return NextResponse.json(summary);
   } catch (error) {
     logger.error({ error }, "Error checking expiring permits");
     return NextResponse.json(

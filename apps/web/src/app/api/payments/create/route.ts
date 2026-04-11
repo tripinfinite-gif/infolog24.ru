@@ -10,6 +10,7 @@ const createPaymentSchema = z.object({
   orderId: z.string().uuid(),
   promoCode: z.string().max(50).optional(),
   returnUrl: z.string().url().optional(),
+  paymentMethod: z.enum(["sbp", "bank_card", "yoo_money"]).optional(),
 });
 
 export async function POST(request: Request) {
@@ -37,6 +38,7 @@ export async function POST(request: Request) {
         promoCode: parsed.data.promoCode,
         returnUrl: parsed.data.returnUrl,
         customerEmail: session.user.email,
+        paymentMethod: parsed.data.paymentMethod,
       },
     );
 

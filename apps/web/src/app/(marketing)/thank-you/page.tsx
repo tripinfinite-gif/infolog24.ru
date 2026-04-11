@@ -30,7 +30,11 @@ const nextSteps = [
 
 export default function ThankYouPage() {
   return (
-    <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+    <section
+      className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24"
+      data-conversion="lead-submitted"
+      data-conversion-page="thank-you"
+    >
       <div className="mx-auto max-w-2xl text-center">
         <CheckCircle className="mx-auto size-20 text-primary" />
         <h1 className="mt-6 font-heading text-3xl font-bold text-foreground sm:text-4xl">
@@ -76,6 +80,22 @@ export default function ThankYouPage() {
           </Button>
         </div>
       </div>
+
+      {/* Conversion tracking placeholder */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            // Analytics conversion event — replace with actual tracking code
+            if (typeof window !== 'undefined') {
+              window.dataLayer = window.dataLayer || [];
+              window.dataLayer.push({
+                event: 'lead_submitted',
+                page: 'thank-you',
+              });
+            }
+          `,
+        }}
+      />
     </section>
   );
 }

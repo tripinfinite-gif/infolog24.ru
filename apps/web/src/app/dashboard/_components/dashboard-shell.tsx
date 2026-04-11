@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Badge } from "@/components/ui/badge";
+import { authClient } from "@/lib/auth/client";
 
 const breadcrumbMap: Record<string, string> = {
   "/dashboard": "Дашборд",
@@ -48,9 +48,30 @@ function getBreadcrumbs(pathname: string) {
   return crumbs;
 }
 
-export function DashboardShell({ children }: { children: React.ReactNode }) {
+function getInitials(name: string): string {
+  return name
+    .split(" ")
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
+interface DashboardShellProps {
+  children: React.ReactNode;
+  userName: string;
+  userEmail: string;
+}
+
+export function DashboardShell({ children, userName, userEmail }: DashboardShellProps) {
   const pathname = usePathname();
   const crumbs = getBreadcrumbs(pathname);
+
+  async function handleSignOut() {
+    await authClient.signOut();
+    window.location.href = "/";
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -87,9 +108,6 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             <Link href="/dashboard/notifications">
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="size-5" />
-                <Badge className="absolute -top-1 -right-1 flex size-5 items-center justify-center p-0 text-[10px]">
-                  3
-                </Badge>
               </Button>
             </Link>
 
@@ -101,15 +119,20 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   className="flex items-center gap-2 px-2"
                 >
                   <Avatar>
-                    <AvatarFallback>ИИ</AvatarFallback>
+                    <AvatarFallback>{getInitials(userName)}</AvatarFallback>
                   </Avatar>
                   <span className="hidden text-sm font-medium md:inline-block">
-                    Иван Иванов
+                    {userName}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel>Мой аккаунт</DropdownMenuLabel>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium">{userName}</p>
+                    <p className="text-xs text-muted-foreground">{userEmail}</p>
+                  </div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <Link href="/dashboard/settings">
                   <DropdownMenuItem>
@@ -124,7 +147,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
                   </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
+                <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
                   <LogOut className="size-4" />
                   Выйти
                 </DropdownMenuItem>

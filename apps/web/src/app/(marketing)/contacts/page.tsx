@@ -21,14 +21,30 @@ import { companyInfo } from "@/content/company";
 import { ContactForm } from "./contact-form";
 
 export const metadata: Metadata = {
-  title: "Контакты | Инфологистик-24 — ответим за 5 минут",
+  title: "Контакты — Инфологистик-24, ответим за 5 минут",
   description:
     "Свяжитесь с Инфологистик-24 для оформления пропуска в Москву. Телефон, WhatsApp, Telegram, email. Ответим за 5 минут в рабочее время. Пн-Пт: 9:00-20:00, Сб: 10:00-17:00.",
+  keywords: [
+    "контакты Инфологистик-24",
+    "телефон пропуска Москва",
+    "заказать пропуск",
+  ],
   openGraph: {
-    title: "Контакты | Инфологистик-24",
+    title: "Контакты — Инфологистик-24",
     description:
       "Свяжитесь с нами для оформления пропуска в Москву. Ответим за 5 минут.",
     type: "website",
+    url: "https://inlog24.ru/contacts",
+    siteName: "Инфологистик-24",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Контакты — Инфологистик-24",
+    description:
+      "Свяжитесь с нами для оформления пропуска в Москву. Ответим за 5 минут.",
+  },
+  alternates: {
+    canonical: "https://inlog24.ru/contacts",
   },
 };
 

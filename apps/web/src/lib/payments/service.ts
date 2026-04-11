@@ -54,6 +54,7 @@ export class PaymentService {
       returnUrl?: string;
       customerEmail?: string;
       customerPhone?: string;
+      paymentMethod?: "sbp" | "bank_card" | "yoo_money";
     },
   ): Promise<InitiatePaymentResult> {
     // 1. Get order details
@@ -132,6 +133,8 @@ export class PaymentService {
       returnUrl,
       customerEmail: options?.customerEmail ?? order.user.email,
       customerPhone: options?.customerPhone ?? order.user.phone ?? undefined,
+      paymentMethod: options?.paymentMethod,
+      itemType: "service",
     });
 
     // 6. Update payment with external ID

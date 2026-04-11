@@ -3,6 +3,12 @@ import { z } from "zod";
 import { getSession } from "@/lib/auth/session";
 import * as documentsDAL from "@/lib/dal/documents";
 import { logger } from "@/lib/logger";
+import {
+  rateLimit,
+  rateLimitResponse,
+  getClientIp,
+} from "@/lib/security/rate-limit";
+import { logAudit, AuditActions } from "@/lib/security/audit";
 
 export const runtime = "nodejs";
 
@@ -55,6 +61,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const rl = await rateLimit("file-upload", session.user.id);
+    if (!rl.success) return rateLimitResponse(rl);
+
     const body = await request.json();
     const parsed = createDocumentSchema.safeParse(body);
 
@@ -68,6 +77,15 @@ export async function POST(request: Request) {
     const doc = await documentsDAL.uploadDocument({
       ...parsed.data,
       userId: session.user.id,
+    });
+
+    void logAudit({
+      userId: session.user.id,
+      action: AuditActions.DOCUMENT_UPLOAD,
+      entityType: "document",
+      entityId: doc.id,
+      details: { fileName: parsed.data.fileName, type: parsed.data.type },
+      ipAddress: getClientIp(request),
     });
 
     return NextResponse.json(doc, { status: 201 });

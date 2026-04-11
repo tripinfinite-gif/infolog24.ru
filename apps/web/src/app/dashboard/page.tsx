@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,103 +29,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { getSession } from "@/lib/auth/session";
+import { getActiveOrdersCount, getRecentOrders } from "@/lib/dal/orders";
+import { getActivePermitsCount, getExpiringPermits } from "@/lib/dal/permits";
+import { getUnreadCount } from "@/lib/dal/notifications";
+import { getPendingPaymentsCount } from "@/lib/dal/payments";
 
 export const metadata: Metadata = {
   title: "Дашборд",
 };
 
-// -- Mock data ----------------------------------------------------------------
-
-const kpiCards = [
-  {
-    title: "Активные заявки",
-    value: 4,
-    icon: FileText,
-    href: "/dashboard/orders",
-    color: "text-blue-600",
-  },
-  {
-    title: "Действующие пропуска",
-    value: 7,
-    icon: ShieldCheck,
-    href: "/dashboard/permits",
-    color: "text-green-600",
-  },
-  {
-    title: "Ожидает оплаты",
-    value: 2,
-    icon: CreditCard,
-    href: "/dashboard/payments",
-    color: "text-amber-600",
-  },
-  {
-    title: "Уведомления",
-    value: 3,
-    icon: Bell,
-    href: "/dashboard/notifications",
-    color: "text-purple-600",
-  },
-];
-
-const recentOrders = [
-  {
-    id: "ORD-2024-001",
-    date: "09.04.2026",
-    type: "МКАД дневной",
-    zone: "МКАД",
-    status: "processing" as const,
-    price: "10 000 ₽",
-  },
-  {
-    id: "ORD-2024-002",
-    date: "07.04.2026",
-    type: "ТТК",
-    zone: "ТТК",
-    status: "payment_pending" as const,
-    price: "15 000 ₽",
-  },
-  {
-    id: "ORD-2024-003",
-    date: "05.04.2026",
-    type: "Временный МКАД",
-    zone: "МКАД",
-    status: "approved" as const,
-    price: "3 500 ₽",
-  },
-  {
-    id: "ORD-2024-004",
-    date: "03.04.2026",
-    type: "Садовое кольцо",
-    zone: "СК",
-    status: "documents_pending" as const,
-    price: "20 000 ₽",
-  },
-  {
-    id: "ORD-2024-005",
-    date: "01.04.2026",
-    type: "МКАД ночной",
-    zone: "МКАД",
-    status: "approved" as const,
-    price: "8 000 ₽",
-  },
-];
-
-const expiringPermits = [
-  {
-    number: "ПР-2024-0045",
-    zone: "МКАД",
-    expiresAt: "25.04.2026",
-    vehicle: "К 123 АА 77",
-  },
-  {
-    number: "ПР-2024-0032",
-    zone: "ТТК",
-    expiresAt: "30.04.2026",
-    vehicle: "М 456 ВВ 99",
-  },
-];
-
-const statusMap: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const statusMap: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
   draft: { label: "Черновик", variant: "secondary" },
   documents_pending: { label: "Ожидает документов", variant: "outline" },
   payment_pending: { label: "Ожидает оплаты", variant: "destructive" },
@@ -135,9 +53,80 @@ const statusMap: Record<string, { label: string; variant: "default" | "secondary
   cancelled: { label: "Отменена", variant: "secondary" },
 };
 
-// -- Component ----------------------------------------------------------------
+const typeLabels: Record<string, string> = {
+  mkad_day: "МКАД дневной",
+  mkad_night: "МКАД ночной",
+  ttk: "ТТК",
+  sk: "Садовое кольцо",
+  temp: "Временный",
+};
 
-export default function DashboardPage() {
+const zoneLabels: Record<string, string> = {
+  mkad: "МКАД",
+  ttk: "ТТК",
+  sk: "СК",
+};
+
+function formatDate(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function formatPrice(kopeks: number): string {
+  return new Intl.NumberFormat("ru-RU").format(kopeks) + " \u20BD";
+}
+
+export default async function DashboardPage() {
+  const session = await getSession();
+  if (!session) redirect("/auth/login");
+
+  const userId = session.user.id;
+
+  const [activeOrders, activePermits, unreadNotifications, pendingPayments, recentOrders, expiringPermits] =
+    await Promise.all([
+      getActiveOrdersCount(userId),
+      getActivePermitsCount(userId),
+      getUnreadCount(userId),
+      getPendingPaymentsCount(userId),
+      getRecentOrders(userId, 5),
+      getExpiringPermits(userId, 30),
+    ]);
+
+  const kpiCards = [
+    {
+      title: "Активные заявки",
+      value: activeOrders,
+      icon: FileText,
+      href: "/dashboard/orders",
+      color: "text-blue-600",
+    },
+    {
+      title: "Действующие пропуска",
+      value: activePermits,
+      icon: ShieldCheck,
+      href: "/dashboard/permits",
+      color: "text-green-600",
+    },
+    {
+      title: "Ожидает оплаты",
+      value: pendingPayments,
+      icon: CreditCard,
+      href: "/dashboard/payments",
+      color: "text-amber-600",
+    },
+    {
+      title: "Уведомления",
+      value: unreadNotifications,
+      icon: Bell,
+      href: "/dashboard/notifications",
+      color: "text-purple-600",
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
@@ -168,8 +157,9 @@ export default function DashboardPage() {
           <AlertDescription>
             <ul className="mt-1 space-y-1">
               {expiringPermits.map((p) => (
-                <li key={p.number}>
-                  {p.number} ({p.zone}, {p.vehicle}) — до {p.expiresAt}
+                <li key={p.id}>
+                  {p.permitNumber} ({zoneLabels[p.zone] ?? p.zone}) — до{" "}
+                  {formatDate(p.validUntil)}
                 </li>
               ))}
             </ul>
@@ -187,45 +177,55 @@ export default function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Последние заявки</CardTitle>
-            <CardDescription>5 последних заявок</CardDescription>
+            <CardDescription>
+              {recentOrders.length > 0
+                ? `${recentOrders.length} последних заявок`
+                : "У вас пока нет заявок"}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>№</TableHead>
-                  <TableHead>Дата</TableHead>
-                  <TableHead>Тип</TableHead>
-                  <TableHead>Статус</TableHead>
-                  <TableHead className="text-right">Цена</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentOrders.map((order) => {
-                  const s = statusMap[order.status];
-                  return (
-                    <TableRow key={order.id}>
-                      <TableCell className="font-medium">
-                        <Link
-                          href={`/dashboard/orders/${order.id}`}
-                          className="hover:underline"
-                        >
-                          {order.id}
-                        </Link>
-                      </TableCell>
-                      <TableCell>{order.date}</TableCell>
-                      <TableCell>{order.type}</TableCell>
-                      <TableCell>
-                        <Badge variant={s?.variant}>{s?.label}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {order.price}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
+            {recentOrders.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Дата</TableHead>
+                    <TableHead>Тип</TableHead>
+                    <TableHead>Статус</TableHead>
+                    <TableHead className="text-right">Цена</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentOrders.map((order) => {
+                    const s = statusMap[order.status];
+                    return (
+                      <TableRow key={order.id}>
+                        <TableCell>
+                          <Link
+                            href={`/dashboard/orders/${order.id}`}
+                            className="hover:underline"
+                          >
+                            {formatDate(order.createdAt)}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          {typeLabels[order.type] ?? order.type}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={s?.variant}>{s?.label}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {formatPrice(order.price)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="py-8 text-center text-muted-foreground">
+                Создайте первую заявку, чтобы начать работу
+              </p>
+            )}
           </CardContent>
         </Card>
 

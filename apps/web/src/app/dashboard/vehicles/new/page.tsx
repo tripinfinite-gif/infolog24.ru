@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +25,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const vehicleSchema = z.object({
+  brand: z.string().min(1, "Введите марку"),
+  model: z.string().min(1, "Введите модель"),
+  licensePlate: z.string().min(1, "Введите госномер"),
+  vin: z.string().max(17, "VIN не может быть длиннее 17 символов").optional().or(z.literal("")),
+  year: z.union([z.number().int().min(1990).max(2030), z.nan()]).optional(),
+  ecoClass: z
+    .enum(["euro0", "euro1", "euro2", "euro3", "euro4", "euro5", "euro6", ""])
+    .optional(),
+  maxWeight: z.union([z.number().int().positive(), z.nan()]).optional(),
+  category: z.string().optional(),
+});
+
 export default function NewVehiclePage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     brand: "",
     model: "",
@@ -36,11 +55,64 @@ export default function NewVehiclePage() {
 
   function update(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: подключить API
+    setErrors({});
+
+    // Prepare data
+    const data = {
+      brand: form.brand.trim(),
+      model: form.model.trim(),
+      licensePlate: form.licensePlate.trim(),
+      vin: form.vin.trim() || undefined,
+      year: form.year ? parseInt(form.year, 10) : undefined,
+      ecoClass: form.ecoClass || undefined,
+      maxWeight: form.maxWeight ? parseInt(form.maxWeight, 10) : undefined,
+      category: form.category || undefined,
+    };
+
+    // Validate
+    const result = vehicleSchema.safeParse(data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        const key = issue.path[0]?.toString() ?? "";
+        if (key && !fieldErrors[key]) {
+          fieldErrors[key] = issue.message;
+        }
+      }
+      setErrors(fieldErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/vehicles", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const body = await res.json();
+        toast.error(body.error ?? "Не удалось добавить ТС");
+        return;
+      }
+
+      toast.success("Транспортное средство добавлено");
+      router.push("/dashboard/vehicles");
+    } catch {
+      toast.error("Произошла ошибка");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -65,7 +137,7 @@ export default function NewVehiclePage() {
           <CardContent className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="brand">Марка</Label>
+                <Label htmlFor="brand">Марка *</Label>
                 <Input
                   id="brand"
                   placeholder="MAN"
@@ -73,9 +145,12 @@ export default function NewVehiclePage() {
                   onChange={(e) => update("brand", e.target.value)}
                   required
                 />
+                {errors.brand && (
+                  <p className="text-xs text-destructive">{errors.brand}</p>
+                )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="model">Модель</Label>
+                <Label htmlFor="model">Модель *</Label>
                 <Input
                   id="model"
                   placeholder="TGX 18.510"
@@ -83,12 +158,15 @@ export default function NewVehiclePage() {
                   onChange={(e) => update("model", e.target.value)}
                   required
                 />
+                {errors.model && (
+                  <p className="text-xs text-destructive">{errors.model}</p>
+                )}
               </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="licensePlate">Госномер</Label>
+                <Label htmlFor="licensePlate">Госномер *</Label>
                 <Input
                   id="licensePlate"
                   placeholder="К 123 АА 77"
@@ -96,6 +174,11 @@ export default function NewVehiclePage() {
                   onChange={(e) => update("licensePlate", e.target.value)}
                   required
                 />
+                {errors.licensePlate && (
+                  <p className="text-xs text-destructive">
+                    {errors.licensePlate}
+                  </p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="vin">VIN</Label>
@@ -106,6 +189,9 @@ export default function NewVehiclePage() {
                   onChange={(e) => update("vin", e.target.value)}
                   maxLength={17}
                 />
+                {errors.vin && (
+                  <p className="text-xs text-destructive">{errors.vin}</p>
+                )}
               </div>
             </div>
 
@@ -182,7 +268,10 @@ export default function NewVehiclePage() {
                 Отмена
               </Button>
             </Link>
-            <Button type="submit">Сохранить</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="size-4 animate-spin" />}
+              Сохранить
+            </Button>
           </CardFooter>
         </form>
       </Card>

@@ -3,13 +3,18 @@ import type { Metadata } from "next";
 import { privacyPolicy } from "@/content/legal";
 
 export const metadata: Metadata = {
-  title: "Политика конфиденциальности | Инфологистик-24",
+  title: "Политика конфиденциальности — Инфологистик-24",
   description:
-    "Политика конфиденциальности персональных данных ООО «Инфологистик-24».",
+    "Политика конфиденциальности персональных данных ООО «Инфологистик-24». Как мы обрабатываем и защищаем ваши данные.",
   openGraph: {
-    title: "Политика конфиденциальности | Инфологистик-24",
+    title: "Политика конфиденциальности — Инфологистик-24",
     description: "Политика конфиденциальности ООО «Инфологистик-24».",
     type: "website",
+    url: "https://inlog24.ru/privacy",
+    siteName: "Инфологистик-24",
+  },
+  alternates: {
+    canonical: "https://inlog24.ru/privacy",
   },
 };
 

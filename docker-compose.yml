@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: infolog24-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: infolog24
+      POSTGRES_USER: infolog24
+      POSTGRES_PASSWORD: dev_password_secure
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U infolog24 -d infolog24"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - infolog24-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: infolog24-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - infolog24-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  infolog24-network:
+    driver: bridge

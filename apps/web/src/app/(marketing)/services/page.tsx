@@ -4,6 +4,7 @@ import {
   CheckCircle,
   Clock,
   FileText,
+  Loader2,
   MapPin,
   Phone,
   Shield,
@@ -11,7 +12,9 @@ import {
   Truck,
   Users,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 
 import {
@@ -600,11 +603,44 @@ function ZoneFaqSection() {
 
 function CtaFormSection() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedZone, setSelectedZone] = useState("");
+  const router = useRouter();
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // TODO: integrate with backend
-    setSubmitted(true);
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      name: formData.get("name") as string,
+      phone: formData.get("phone") as string,
+      zone: selectedZone,
+      source: "services-page",
+    };
+
+    try {
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        toast.error(json.error || "Ошибка отправки. Попробуйте позже.");
+        return;
+      }
+
+      setSubmitted(true);
+      toast.success("Заявка отправлена! Мы свяжемся с вами в ближайшее время.");
+      router.push("/thank-you");
+    } catch {
+      toast.error("Ошибка сети. Попробуйте позже или позвоните нам.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -667,7 +703,7 @@ function CtaFormSection() {
                 className="h-12 border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
               />
               <div className="sm:col-span-2">
-                <Select name="zone">
+                <Select name="zone" value={selectedZone} onValueChange={setSelectedZone}>
                   <SelectTrigger className="h-12 w-full border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground data-[placeholder]:text-primary-foreground/50">
                     <SelectValue placeholder="Выберите зону" />
                   </SelectTrigger>
@@ -684,9 +720,17 @@ function CtaFormSection() {
                 <Button
                   type="submit"
                   size="lg"
+                  disabled={loading}
                   className="h-12 w-full bg-accent text-base text-accent-foreground hover:bg-accent/90"
                 >
-                  Получить расчёт
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Отправка...
+                    </>
+                  ) : (
+                    "Получить расчёт"
+                  )}
                 </Button>
               </div>
             </form>

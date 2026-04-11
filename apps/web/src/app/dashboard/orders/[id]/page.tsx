@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
 import {
   ArrowLeft,
   Calendar,
@@ -19,46 +20,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { getSession } from "@/lib/auth/session";
+import { getOrderById } from "@/lib/dal/orders";
 
 export const metadata: Metadata = {
   title: "Детали заявки",
 };
 
-// -- Mock data ----------------------------------------------------------------
-
-const orderData = {
-  id: "ORD-2024-001",
-  type: "МКАД дневной",
-  zone: "МКАД",
-  status: "processing",
-  price: "10 000 ₽",
-  createdAt: "09.04.2026",
-  estimatedReadyDate: "14.04.2026",
-  vehicle: "MAN TGX 18.510 — К 123 АА 77",
-};
-
-const statusSteps = [
-  { key: "draft", label: "Черновик", date: "09.04.2026 10:00" },
-  { key: "documents_pending", label: "Загрузка документов", date: "09.04.2026 10:15" },
-  { key: "payment_pending", label: "Оплата", date: "09.04.2026 11:00" },
-  { key: "processing", label: "В обработке", date: "09.04.2026 11:30" },
-  { key: "submitted", label: "Подана в Дептранс", date: null },
-  { key: "approved", label: "Одобрена", date: null },
-];
-
-const documents = [
-  { name: "СТС_К123АА77.pdf", status: "approved", type: "СТС" },
-  { name: "ПТС_К123АА77.pdf", status: "approved", type: "ПТС" },
-  { name: "Доверенность.pdf", status: "pending", type: "Доверенность" },
-];
-
-const statusHistory = [
-  { date: "09.04.2026 11:30", from: "Ожидает оплаты", to: "В обработке", comment: "Оплата подтверждена" },
-  { date: "09.04.2026 11:00", from: "Ожидает документов", to: "Ожидает оплаты", comment: "Документы проверены" },
-  { date: "09.04.2026 10:15", from: "Черновик", to: "Ожидает документов", comment: "Заявка создана" },
-];
-
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const statusConfig: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
   draft: { label: "Черновик", variant: "secondary" },
   documents_pending: { label: "Ожидает документов", variant: "outline" },
   payment_pending: { label: "Ожидает оплаты", variant: "destructive" },
@@ -69,20 +41,117 @@ const statusConfig: Record<string, { label: string; variant: "default" | "second
   cancelled: { label: "Отменена", variant: "secondary" },
 };
 
-const docStatusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const docStatusConfig: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
   pending: { label: "На проверке", variant: "outline" },
   approved: { label: "Одобрен", variant: "secondary" },
   rejected: { label: "Отклонён", variant: "destructive" },
 };
 
-// -- Component ----------------------------------------------------------------
+const paymentStatusConfig: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
+  pending: { label: "Ожидает оплаты", variant: "outline" },
+  succeeded: { label: "Оплачено", variant: "secondary" },
+  cancelled: { label: "Отменён", variant: "destructive" },
+  refunded: { label: "Возврат", variant: "destructive" },
+};
 
-const currentStatusIndex = statusSteps.findIndex(
-  (s) => s.key === orderData.status
-);
+const typeLabels: Record<string, string> = {
+  mkad_day: "МКАД дневной",
+  mkad_night: "МКАД ночной",
+  ttk: "ТТК",
+  sk: "Садовое кольцо",
+  temp: "Временный",
+};
 
-export default function OrderDetailPage() {
-  const s = statusConfig[orderData.status];
+const zoneLabels: Record<string, string> = {
+  mkad: "МКАД",
+  ttk: "ТТК",
+  sk: "СК",
+};
+
+const docTypeLabels: Record<string, string> = {
+  pts: "ПТС",
+  sts: "СТС",
+  driver_license: "Водительское удостоверен��е",
+  power_of_attorney: "Доверенность",
+  application: "Заявление",
+  contract: "Договор",
+  other: "Другое",
+};
+
+const statusStepOrder = [
+  "draft",
+  "documents_pending",
+  "payment_pending",
+  "processing",
+  "submitted",
+  "approved",
+];
+
+const statusStepLabels: Record<string, string> = {
+  draft: "Черновик",
+  documents_pending: "Загрузка документов",
+  payment_pending: "Оплата",
+  processing: "В обработке",
+  submitted: "Подана в Дептранс",
+  approved: "Одобрена",
+};
+
+function formatDate(date: Date | string | null): string {
+  if (!date) return "—";
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function formatDateTime(date: Date | string | null): string {
+  if (!date) return "—";
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString("ru-RU", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function formatPrice(amount: number): string {
+  return new Intl.NumberFormat("ru-RU").format(amount) + " \u20BD";
+}
+
+interface Props {
+  params: Promise<{ id: string }>;
+}
+
+export default async function OrderDetailPage({ params }: Props) {
+  const session = await getSession();
+  if (!session) redirect("/auth/login");
+
+  const { id } = await params;
+  const order = await getOrderById(id);
+
+  if (!order) notFound();
+
+  // Verify ownership for client role
+  const userRole = (session.user as Record<string, unknown>).role as string;
+  if (userRole === "client" && order.userId !== session.user.id) {
+    notFound();
+  }
+
+  const s = statusConfig[order.status];
+  const currentStatusIndex = statusStepOrder.indexOf(order.status);
+
+  // Find the latest payment
+  const latestPayment = order.payments?.[0];
 
   return (
     <div className="space-y-6">
@@ -93,9 +162,9 @@ export default function OrderDetailPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold">Заявка {orderData.id}</h1>
+          <h1 className="text-2xl font-bold">Заявка</h1>
           <p className="text-sm text-muted-foreground">
-            Создана {orderData.createdAt}
+            Создана {formatDate(order.createdAt)}
           </p>
         </div>
         <Badge variant={s?.variant} className="ml-auto text-sm">
@@ -110,7 +179,9 @@ export default function OrderDetailPage() {
             <CardDescription>Тип пропуска</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-lg font-semibold">{orderData.type}</div>
+            <div className="text-lg font-semibold">
+              {typeLabels[order.type] ?? order.type}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -119,7 +190,7 @@ export default function OrderDetailPage() {
           </CardHeader>
           <CardContent>
             <Badge variant="outline" className="text-sm">
-              {orderData.zone}
+              {zoneLabels[order.zone] ?? order.zone}
             </Badge>
           </CardContent>
         </Card>
@@ -128,7 +199,11 @@ export default function OrderDetailPage() {
             <CardDescription>Транспорт</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-sm font-medium">{orderData.vehicle}</div>
+            <div className="text-sm font-medium">
+              {order.vehicle
+                ? `${order.vehicle.brand} ${order.vehicle.model} — ${order.vehicle.licensePlate}`
+                : "—"}
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -137,7 +212,12 @@ export default function OrderDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="text-lg font-bold text-primary">
-              {orderData.price}
+              {formatPrice(order.price)}
+              {order.discount > 0 && (
+                <span className="ml-2 text-sm text-green-600">
+                  (скидка {formatPrice(order.discount)})
+                </span>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -147,52 +227,61 @@ export default function OrderDetailPage() {
       <Card>
         <CardHeader>
           <CardTitle>Прогресс заявки</CardTitle>
-          <CardDescription>
-            Ориентировочная дата готовности: {orderData.estimatedReadyDate}
-          </CardDescription>
+          {order.estimatedReadyDate && (
+            <CardDescription>
+              Ориентировочная дата готовности: {formatDate(order.estimatedReadyDate)}
+            </CardDescription>
+          )}
         </CardHeader>
         <CardContent>
           <div className="flex items-start justify-between">
-            {statusSteps.map((step, i) => (
-              <div
-                key={step.key}
-                className="flex flex-1 flex-col items-center text-center"
-              >
-                <div className="flex w-full items-center">
-                  {i > 0 && (
-                    <div
-                      className={`h-0.5 flex-1 ${
-                        i <= currentStatusIndex ? "bg-primary" : "bg-muted"
-                      }`}
-                    />
-                  )}
-                  <div className="flex-shrink-0">
-                    {i < currentStatusIndex ? (
-                      <CheckCircle2 className="size-6 text-primary" />
-                    ) : i === currentStatusIndex ? (
-                      <Clock className="size-6 text-primary" />
-                    ) : (
-                      <Circle className="size-6 text-muted-foreground" />
+            {statusStepOrder.map((stepKey, i) => {
+              // Find matching history entry for this step
+              const historyEntry = order.statusHistory?.find(
+                (h) => h.toStatus === stepKey,
+              );
+
+              return (
+                <div
+                  key={stepKey}
+                  className="flex flex-1 flex-col items-center text-center"
+                >
+                  <div className="flex w-full items-center">
+                    {i > 0 && (
+                      <div
+                        className={`h-0.5 flex-1 ${
+                          i <= currentStatusIndex ? "bg-primary" : "bg-muted"
+                        }`}
+                      />
+                    )}
+                    <div className="flex-shrink-0">
+                      {i < currentStatusIndex ? (
+                        <CheckCircle2 className="size-6 text-primary" />
+                      ) : i === currentStatusIndex ? (
+                        <Clock className="size-6 text-primary" />
+                      ) : (
+                        <Circle className="size-6 text-muted-foreground" />
+                      )}
+                    </div>
+                    {i < statusStepOrder.length - 1 && (
+                      <div
+                        className={`h-0.5 flex-1 ${
+                          i < currentStatusIndex ? "bg-primary" : "bg-muted"
+                        }`}
+                      />
                     )}
                   </div>
-                  {i < statusSteps.length - 1 && (
-                    <div
-                      className={`h-0.5 flex-1 ${
-                        i < currentStatusIndex ? "bg-primary" : "bg-muted"
-                      }`}
-                    />
+                  <span className="mt-2 hidden text-xs sm:block">
+                    {statusStepLabels[stepKey]}
+                  </span>
+                  {historyEntry && (
+                    <span className="hidden text-[10px] text-muted-foreground sm:block">
+                      {formatDateTime(historyEntry.createdAt)}
+                    </span>
                   )}
                 </div>
-                <span className="mt-2 hidden text-xs sm:block">
-                  {step.label}
-                </span>
-                {step.date && (
-                  <span className="hidden text-[10px] text-muted-foreground sm:block">
-                    {step.date}
-                  </span>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -207,25 +296,33 @@ export default function OrderDetailPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {documents.map((doc) => {
-                const ds = docStatusConfig[doc.status];
-                return (
-                  <div
-                    key={doc.name}
-                    className="flex items-center justify-between rounded-md border px-3 py-2"
-                  >
-                    <div>
-                      <div className="text-sm font-medium">{doc.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {doc.type}
+            {order.documents && order.documents.length > 0 ? (
+              <div className="space-y-3">
+                {order.documents.map((doc) => {
+                  const ds = docStatusConfig[doc.status];
+                  return (
+                    <div
+                      key={doc.id}
+                      className="flex items-center justify-between rounded-md border px-3 py-2"
+                    >
+                      <div>
+                        <div className="text-sm font-medium">
+                          {doc.fileName}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {docTypeLabels[doc.type] ?? doc.type}
+                        </div>
                       </div>
+                      <Badge variant={ds?.variant}>{ds?.label}</Badge>
                     </div>
-                    <Badge variant={ds?.variant}>{ds?.label}</Badge>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="py-4 text-center text-sm text-muted-foreground">
+                Документы не загружены
+              </p>
+            )}
           </CardContent>
         </Card>
 
@@ -240,58 +337,119 @@ export default function OrderDetailPage() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Сумма:</span>
-              <span className="text-lg font-bold">{orderData.price}</span>
+              <span className="text-lg font-bold">{formatPrice(order.price)}</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Статус:</span>
-              <Badge variant="secondary">Оплачено</Badge>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Дата оплаты:</span>
-              <span className="text-sm">09.04.2026 11:00</span>
-            </div>
+            {latestPayment ? (
+              <>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Статус:</span>
+                  <Badge variant={paymentStatusConfig[latestPayment.status]?.variant}>
+                    {paymentStatusConfig[latestPayment.status]?.label}
+                  </Badge>
+                </div>
+                {latestPayment.paidAt && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Дата оплаты:</span>
+                    <span className="text-sm">
+                      {formatDateTime(latestPayment.paidAt)}
+                    </span>
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Оплата ещё не производилась
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Status history */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="size-5" />
-            История статусов
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {statusHistory.map((entry, i) => (
-              <div key={i}>
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-2 shrink-0 rounded-full bg-primary" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
-                        {entry.from} &rarr; {entry.to}
-                      </span>
+      {/* Permits */}
+      {order.permits && order.permits.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Выданные пропуска</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {order.permits.map((permit) => (
+                <div
+                  key={permit.id}
+                  className="flex items-center justify-between rounded-md border px-3 py-2"
+                >
+                  <div>
+                    <div className="text-sm font-medium">
+                      {permit.permitNumber}
                     </div>
-                    {entry.comment && (
-                      <p className="text-xs text-muted-foreground">
-                        {entry.comment}
-                      </p>
-                    )}
-                    <p className="text-xs text-muted-foreground">
-                      {entry.date}
-                    </p>
+                    <div className="text-xs text-muted-foreground">
+                      {zoneLabels[permit.zone] ?? permit.zone} |{" "}
+                      {formatDate(permit.validFrom)} —{" "}
+                      {formatDate(permit.validUntil)}
+                    </div>
                   </div>
+                  <Badge
+                    variant={
+                      permit.status === "active"
+                        ? "secondary"
+                        : "destructive"
+                    }
+                  >
+                    {permit.status === "active"
+                      ? "Действует"
+                      : permit.status === "expired"
+                        ? "Истёк"
+                        : "Аннулирован"}
+                  </Badge>
                 </div>
-                {i < statusHistory.length - 1 && (
-                  <Separator className="mt-4" />
-                )}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Status history */}
+      {order.statusHistory && order.statusHistory.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="size-5" />
+              История статусов
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {order.statusHistory.map((entry, i) => (
+                <div key={entry.id}>
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 flex size-2 shrink-0 rounded-full bg-primary" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">
+                          {entry.fromStatus
+                            ? `${statusConfig[entry.fromStatus]?.label ?? entry.fromStatus} \u2192 ${statusConfig[entry.toStatus]?.label ?? entry.toStatus}`
+                            : statusConfig[entry.toStatus]?.label ?? entry.toStatus}
+                        </span>
+                      </div>
+                      {entry.comment && (
+                        <p className="text-xs text-muted-foreground">
+                          {entry.comment}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground">
+                        {formatDateTime(entry.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                  {i < order.statusHistory!.length - 1 && (
+                    <Separator className="mt-4" />
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

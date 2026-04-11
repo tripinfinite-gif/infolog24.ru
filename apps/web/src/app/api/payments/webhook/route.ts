@@ -3,47 +3,12 @@ import { z } from "zod";
 import { getPaymentService } from "@/lib/payments/service";
 import { getYooKassaClient } from "@/lib/payments/yookassa";
 import { logger } from "@/lib/logger";
+import {
+  getWebhookClientIp,
+  isWebhookIpAllowed,
+} from "@/lib/security/webhook-allowlist";
 
 export const runtime = "nodejs";
-
-// Разрешённые IP-диапазоны YooKassa для вебхуков
-const YOOKASSA_IP_RANGES = [
-  { base: "185.71.76.0", prefix: 27 },
-  { base: "185.71.77.0", prefix: 27 },
-  { base: "77.75.153.0", prefix: 25 },
-  { base: "77.75.154.128", prefix: 25 },
-];
-
-const YOOKASSA_SINGLE_IPS = ["77.75.156.11", "77.75.156.35"];
-
-/** Преобразует IPv4 строку в 32-битное число */
-function ipToNumber(ip: string): number {
-  const parts = ip.split(".").map(Number);
-  return ((parts[0] << 24) | (parts[1] << 16) | (parts[2] << 8) | parts[3]) >>> 0;
-}
-
-/** Проверяет, входит ли IP в список разрешённых адресов YooKassa */
-function isYooKassaIp(ip: string): boolean {
-  // Убираем IPv6-маппинг (::ffff:)
-  const cleanIp = ip.replace(/^::ffff:/, "");
-  const ipNum = ipToNumber(cleanIp);
-
-  // Проверяем одиночные IP
-  if (YOOKASSA_SINGLE_IPS.includes(cleanIp)) {
-    return true;
-  }
-
-  // Проверяем CIDR-диапазоны
-  for (const range of YOOKASSA_IP_RANGES) {
-    const baseNum = ipToNumber(range.base);
-    const mask = (~0 << (32 - range.prefix)) >>> 0;
-    if ((ipNum & mask) === (baseNum & mask)) {
-      return true;
-    }
-  }
-
-  return false;
-}
 
 const yookassaWebhookSchema = z.object({
   type: z.string(),
@@ -65,11 +30,9 @@ const yookassaWebhookSchema = z.object({
 export async function POST(request: Request) {
   try {
     // Безопасность: проверяем IP-адрес отправителя вебхука
-    const forwardedFor = request.headers.get("x-forwarded-for");
-    const realIp = request.headers.get("x-real-ip");
-    const clientIp = forwardedFor?.split(",")[0]?.trim() ?? realIp ?? "";
+    const clientIp = getWebhookClientIp(request);
 
-    if (!clientIp || !isYooKassaIp(clientIp)) {
+    if (!clientIp || !isWebhookIpAllowed(clientIp, "yookassa")) {
       logger.warn(
         { clientIp },
         "Webhook rejected: IP not in YooKassa whitelist",

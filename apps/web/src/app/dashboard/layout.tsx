@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { getSession } from "@/lib/auth/session";
 import { DashboardShell } from "./_components/dashboard-shell";
 
 export const metadata: Metadata = {
@@ -8,13 +10,22 @@ export const metadata: Metadata = {
   },
 };
 
-// TODO: Replace with real auth check when DB is connected
-// import { requireSession } from "@/lib/auth/session";
-
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <DashboardShell>{children}</DashboardShell>;
+  const session = await getSession();
+  if (!session) {
+    redirect("/auth/login");
+  }
+
+  return (
+    <DashboardShell
+      userName={session.user.name ?? session.user.email}
+      userEmail={session.user.email}
+    >
+      {children}
+    </DashboardShell>
+  );
 }

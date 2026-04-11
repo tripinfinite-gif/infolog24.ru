@@ -6,9 +6,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/dashboard/", "/api/"],
+        disallow: ["/dashboard/", "/admin/", "/api/", "/partner/"],
       },
     ],
-    sitemap: "https://infolog24.ru/sitemap.xml",
+    sitemap: "https://inlog24.ru/sitemap.xml",
   };
 }

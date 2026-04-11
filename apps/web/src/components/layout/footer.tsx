@@ -12,10 +12,12 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const serviceLinks = [
-  { href: "/services/mkad", label: "Пропуск на МКАД" },
-  { href: "/services/ttk", label: "Пропуск на ТТК" },
-  { href: "/services/sadovoe", label: "Пропуск на Садовое" },
-  { href: "/services/temporary", label: "Временный пропуск" },
+  { href: "/services/propusk-mkad", label: "Пропуск на МКАД" },
+  { href: "/services/propusk-ttk", label: "Пропуск на ТТК" },
+  { href: "/services/propusk-sk", label: "Пропуск на Садовое" },
+  { href: "/services/vremennyj-propusk", label: "Временный пропуск" },
+  { href: "/goslog", label: "Регистрация в ГосЛог" },
+  { href: "/etrn", label: "Переход на ЭТрН" },
   { href: "/pricing", label: "Тарифы" },
 ];
 
@@ -24,7 +26,7 @@ const companyLinks = [
   { href: "/reviews", label: "Отзывы" },
   { href: "/faq", label: "FAQ" },
   { href: "/blog", label: "Блог" },
-  { href: "/partner", label: "Партнёрство" },
+  { href: "/contacts", label: "Контакты" },
 ];
 
 const trustItems = [

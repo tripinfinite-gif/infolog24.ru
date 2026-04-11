@@ -52,9 +52,29 @@ const navItems: NavItem[] = [
   { href: "/admin/audit", label: "Аудит", icon: ScrollText },
 ];
 
-export function AdminShell({ children }: { children: React.ReactNode }) {
+interface AdminShellProps {
+  children: React.ReactNode;
+  userName?: string;
+  userRole?: string;
+}
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: "Администратор",
+  manager: "Менеджер",
+};
+
+export function AdminShell({ children, userName, userRole }: AdminShellProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  const displayName = userName ?? "Пользователь";
+  const roleLabel = ROLE_LABELS[userRole ?? ""] ?? userRole ?? "";
+  const initials = displayName
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -137,14 +157,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             {/* Notifications */}
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="size-5" />
-              <Badge className="absolute -top-1 -right-1 flex size-5 items-center justify-center p-0 text-[10px]">
-                5
-              </Badge>
             </Button>
 
-            {/* Manager info */}
+            {/* Role badge */}
             <Badge variant="secondary" className="hidden md:inline-flex">
-              Администратор
+              {roleLabel}
             </Badge>
 
             {/* User dropdown */}
@@ -155,10 +172,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   className="flex items-center gap-2 px-2"
                 >
                   <Avatar>
-                    <AvatarFallback>АД</AvatarFallback>
+                    <AvatarFallback>{initials}</AvatarFallback>
                   </Avatar>
                   <span className="hidden text-sm font-medium md:inline-block">
-                    Администратор
+                    {displayName}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
@@ -172,10 +189,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   </DropdownMenuItem>
                 </Link>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive">
-                  <LogOut className="size-4" />
-                  Выйти
-                </DropdownMenuItem>
+                <Link href="/auth/logout">
+                  <DropdownMenuItem variant="destructive">
+                    <LogOut className="size-4" />
+                    Выйти
+                  </DropdownMenuItem>
+                </Link>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

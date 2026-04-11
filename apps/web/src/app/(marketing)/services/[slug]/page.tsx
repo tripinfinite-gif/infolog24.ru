@@ -47,14 +47,26 @@ export async function generateMetadata({
   return {
     title,
     description,
+    keywords: [
+      zone.fullName,
+      `пропуск ${zone.name}`,
+      "оформление пропуска Москва",
+      "грузовой пропуск",
+    ],
     openGraph: {
       title,
       description,
       type: "website",
-      url: `/services/${slug}`,
+      url: `https://inlog24.ru/services/${slug}`,
+      siteName: "Инфологистик-24",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
     },
     alternates: {
-      canonical: `/services/${slug}`,
+      canonical: `https://inlog24.ru/services/${slug}`,
     },
   };
 }

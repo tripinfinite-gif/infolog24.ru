@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { CtaSection } from "@/components/sections/cta-section";
+import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import { blogArticles } from "@/content/blog-articles";
 
 const categoryLabels: Record<string, string> = {
@@ -31,10 +32,21 @@ export async function generateMetadata({
   return {
     title: `${article.title} | Инфологистик-24`,
     description: article.excerpt,
+    keywords: article.tags,
     openGraph: {
       title: article.title,
       description: article.excerpt,
       type: "article",
+      url: `https://inlog24.ru/blog/${slug}`,
+      siteName: "Инфологистик-24",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt,
+    },
+    alternates: {
+      canonical: `https://inlog24.ru/blog/${slug}`,
     },
   };
 }
@@ -123,27 +135,20 @@ export default async function BlogArticlePage({
     notFound();
   }
 
-  const articleJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: article.title,
-    description: article.excerpt,
-    datePublished: article.publishDate,
-    author: {
-      "@type": "Organization",
-      name: "Инфологистик-24",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Инфологистик-24",
-    },
-  };
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      <ArticleJsonLd
+        headline={article.title}
+        description={article.excerpt}
+        datePublished={article.publishDate}
+        url={`/blog/${article.slug}`}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Главная", href: "/" },
+          { name: "Блог", href: "/blog" },
+          { name: article.title, href: `/blog/${article.slug}` },
+        ]}
       />
 
       <article className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">

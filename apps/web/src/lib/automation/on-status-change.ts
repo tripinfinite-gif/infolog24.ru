@@ -1,52 +1,103 @@
 import { logger } from "@/lib/logger";
-import { notificationService } from "@/lib/notifications/service";
+import { dispatchNotification } from "@/lib/notifications/dispatcher";
+import type { OrderStatus } from "./order-state-machine";
+
+export interface OrderContext {
+  userId: string;
+  orderNumber: string;
+  passType: string;
+  zone: string;
+  amount?: number;
+  reason?: string;
+  permitNumber?: string;
+  validUntil?: string;
+}
 
 /**
- * Handle side effects when an order changes status.
+ * Map a `from → to` transition to the notification events that should fire.
  *
- * Called after the status has been persisted. Triggers notifications
- * and (in the future) integrations like Bitrix24.
+ * Most transitions fire a single event, but some (payment_pending →
+ * processing) fire two (payment succeeded + processing started).
+ */
+function eventsForTransition(
+  from: OrderStatus | string,
+  to: OrderStatus | string,
+): string[] {
+  // Terminal reject from any state.
+  if (to === "rejected") return ["order_rejected"];
+  if (to === "cancelled") return ["order_cancelled"];
+
+  // Happy-path transitions.
+  if (from === "draft" && to === "documents_pending") {
+    return ["order_documents_required"];
+  }
+  if (from === "documents_pending" && to === "payment_pending") {
+    return ["order_payment_required"];
+  }
+  if (from === "payment_pending" && to === "processing") {
+    return ["payment_succeeded", "order_processing"];
+  }
+  if (from === "processing" && to === "submitted") {
+    return ["order_submitted"];
+  }
+  if (from === "submitted" && to === "approved") {
+    return ["order_approved", "permit_issued"];
+  }
+
+  // Fallback — still notify the user of a status change.
+  return ["order_status_changed"];
+}
+
+/**
+ * Hook: called from the order DAL after a status transition is persisted.
+ *
+ * Dispatches the appropriate notification(s) for the transition.
+ * Failures are logged but never thrown — automation must not block the
+ * primary write path.
  */
 export async function onOrderStatusChange(
-  orderId: string,
-  fromStatus: string,
-  toStatus: string,
-  changedBy: string,
-  orderData: {
-    userId: string;
-    orderNumber: string;
-    passType: string;
-    zone: string;
-  },
+  order: { id: string } & OrderContext,
+  oldStatus: string,
+  newStatus: string,
+  comment?: string,
 ): Promise<void> {
-  // Map target status to notification event name
-  const eventMap: Record<string, string> = {
-    documents_pending: "order_documents_needed",
-    payment_pending: "order_payment_needed",
-    processing: "order_processing",
-    submitted: "order_submitted",
-    approved: "order_approved",
-    rejected: "order_rejected",
-    cancelled: "order_cancelled",
-  };
+  const events = eventsForTransition(oldStatus, newStatus);
 
-  const event = eventMap[toStatus];
-  if (event) {
-    await notificationService.send({
-      userId: orderData.userId,
-      event,
-      data: {
-        orderNumber: orderData.orderNumber,
-        passType: orderData.passType,
-        zone: orderData.zone,
-        fromStatus,
-        toStatus,
-      },
-    });
+  const data: Record<string, string> = {
+    orderNumber: order.orderNumber,
+    passType: order.passType,
+    zone: order.zone,
+    fromStatus: oldStatus,
+    toStatus: newStatus,
+  };
+  if (order.amount != null) data.amount = String(order.amount);
+  if (order.reason) data.reason = order.reason;
+  if (order.permitNumber) data.permitNumber = order.permitNumber;
+  if (order.validUntil) data.validUntil = order.validUntil;
+  if (comment) data.comment = comment;
+
+  for (const event of events) {
+    try {
+      await dispatchNotification({
+        userId: order.userId,
+        type: event,
+        data,
+      });
+    } catch (error) {
+      logger.error(
+        { error, orderId: order.id, event },
+        "Failed to dispatch status-change notification",
+      );
+    }
   }
 
   logger.info(
-    { orderId, fromStatus, toStatus, changedBy },
+    {
+      orderId: order.id,
+      fromStatus: oldStatus,
+      toStatus: newStatus,
+      events,
+    },
     "Order status changed — side effects processed",
   );
 }

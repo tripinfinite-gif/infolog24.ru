@@ -156,6 +156,28 @@ export async function assignManager(
   logger.info({ orderId, managerId }, "Manager assigned to order");
 }
 
+export async function getActiveOrdersCount(userId: string): Promise<number> {
+  const [result] = await db
+    .select({ count: count() })
+    .from(orders)
+    .where(
+      and(
+        eq(orders.userId, userId),
+        sql`${orders.status} NOT IN ('cancelled', 'rejected', 'approved')`,
+      ),
+    );
+  return result?.count ?? 0;
+}
+
+export async function getRecentOrders(userId: string, limit = 5) {
+  return db.query.orders.findMany({
+    where: eq(orders.userId, userId),
+    with: { vehicle: true },
+    orderBy: [desc(orders.createdAt)],
+    limit,
+  });
+}
+
 export async function getOrderStats() {
   const [totalResult, byStatusResult, byMonthResult] = await Promise.all([
     db.select({ count: count() }).from(orders),

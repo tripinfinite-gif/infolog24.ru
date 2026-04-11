@@ -11,6 +11,7 @@ import {
   Truck,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { Button } from "@/components/ui/button";
@@ -27,28 +28,40 @@ const navLinks = [
 
 const passTypes = [
   {
-    href: "/services/mkad",
+    href: "/services/propusk-mkad",
     title: "Пропуск на МКАД",
-    price: "от 4 800 ₽",
+    price: "от 12 000 ₽",
     description: "Для грузовиков свыше 3,5 тонн",
   },
   {
-    href: "/services/ttk",
+    href: "/services/propusk-ttk",
     title: "Пропуск на ТТК",
-    price: "от 9 500 ₽",
+    price: "от 12 000 ₽",
     description: "Третье транспортное кольцо",
   },
   {
-    href: "/services/sadovoe",
+    href: "/services/propusk-sk",
     title: "Пропуск на Садовое",
-    price: "от 14 000 ₽",
+    price: "от 12 000 ₽",
     description: "Садовое кольцо и центр",
   },
   {
-    href: "/services/temporary",
+    href: "/services/vremennyj-propusk",
     title: "Временный пропуск",
     price: "от 3 500 ₽",
     description: "Разовый въезд на 1-5 дней",
+  },
+  {
+    href: "/goslog",
+    title: "Регистрация в ГосЛог",
+    price: "от 15 000 ₽",
+    description: "Под ключ, дедлайн 30 апреля",
+  },
+  {
+    href: "/etrn",
+    title: "Переход на ЭТрН",
+    price: "от 25 000 ₽",
+    description: "УКЭП + ЭДО + обучение",
   },
 ];
 
@@ -61,6 +74,7 @@ export function Header({ className }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -141,9 +155,14 @@ export function Header({ className }: HeaderProps) {
             >
               <Link
                 href="/services"
-                className="inline-flex items-center gap-1 rounded-md px-3 py-2 text-[15px] font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+                className={cn(
+                  "inline-flex items-center gap-1 rounded-md px-3 py-2 text-[15px] font-medium transition-colors hover:bg-muted hover:text-foreground",
+                  pathname.startsWith("/services")
+                    ? "text-primary"
+                    : "text-foreground/80"
+                )}
               >
-                Пропуска
+                Услуги
                 <ChevronDown
                   className={cn(
                     "size-3.5 transition-transform duration-200",
@@ -154,7 +173,7 @@ export function Header({ className }: HeaderProps) {
 
               {/* Mega Menu Dropdown */}
               {dropdownOpen && (
-                <div className="absolute left-1/2 top-full z-50 w-[520px] -translate-x-1/2 pt-2">
+                <div className="absolute left-1/2 top-full z-50 w-[560px] -translate-x-1/2 pt-2">
                   <div className="rounded-2xl border border-border/60 bg-card p-2 shadow-[0_8px_30px_-4px_rgba(28,28,30,0.12)]">
                     <div className="grid grid-cols-2 gap-1">
                       {passTypes.map((pass) => (
@@ -196,7 +215,12 @@ export function Header({ className }: HeaderProps) {
               <Link
                 key={link.href}
                 href={link.href}
-                className="rounded-md px-3 py-2 text-[15px] font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground"
+                className={cn(
+                  "rounded-md px-3 py-2 text-[15px] font-medium transition-colors hover:bg-muted hover:text-foreground",
+                  pathname === link.href
+                    ? "text-primary"
+                    : "text-foreground/80"
+                )}
               >
                 {link.label}
               </Link>

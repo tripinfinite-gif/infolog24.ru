@@ -3,6 +3,7 @@ import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 
 import { AnalyticsProvider } from "@/components/analytics/analytics-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -29,6 +30,7 @@ export default function RootLayout({
     <html lang="ru" className={`${inter.variable} ${manrope.variable}`}>
       <body className={inter.className}>
         {children}
+        <Toaster />
         <AnalyticsProvider />
       </body>
     </html>
