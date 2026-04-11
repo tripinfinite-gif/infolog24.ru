@@ -13,3 +13,10 @@ node_modules/
 dist/
 *.tsbuildinfo
 .vercel
+
+# RooFlow (мультиагентный инструмент в VS Code, локальная конфигурация)
+.roo/
+.roomodes
+generate_mcp_yaml.py
+install_rooflow.sh
+memory-bank/
