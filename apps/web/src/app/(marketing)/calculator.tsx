@@ -61,7 +61,7 @@ export function Calculator() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Зона</Label>
                   <Select value={zone} onValueChange={setZone}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full" aria-label="Зона">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -77,7 +77,7 @@ export function Calculator() {
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Тип пропуска</Label>
                   <Select value={passType} onValueChange={setPassType}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full" aria-label="Тип пропуска">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -96,7 +96,7 @@ export function Calculator() {
                     value={String(vehicleCount)}
                     onValueChange={(v) => setVehicleCount(Number(v))}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full" aria-label="Количество машин">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

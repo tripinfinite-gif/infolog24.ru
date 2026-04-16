@@ -28,7 +28,7 @@ const filterTabs = [
 
 function StarRating({ rating }: { rating: number }) {
   return (
-    <div className="flex gap-0.5" aria-label={`Оценка ${rating} из 5`}>
+    <div className="flex gap-0.5" role="img" aria-label={`Оценка ${rating} из 5`}>
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}

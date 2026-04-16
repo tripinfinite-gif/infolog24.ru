@@ -21,7 +21,7 @@ interface OpenChatTriggerProps {
 export function OpenChatTrigger({
   children,
   className,
-  ariaLabel = "Открыть AI-ассистент в чате",
+  ariaLabel = "Открыть AI-ассистента",
 }: OpenChatTriggerProps) {
   return (
     <button

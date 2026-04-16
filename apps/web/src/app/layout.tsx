@@ -8,11 +8,13 @@ import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
   variable: "--font-inter",
+  display: "swap",
 });
 
 const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
   variable: "--font-manrope",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
