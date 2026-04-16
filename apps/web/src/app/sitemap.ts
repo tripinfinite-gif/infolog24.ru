@@ -35,6 +35,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/regulatorika/antishraf`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/regulatorika/yurist`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE_URL}/regulatorika/kalendar`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
+    // Сегментные лендинги
+    { url: `${BASE_URL}/malye-tk`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/ip-perevozchik`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/proizvodstvo`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
   ];
 
   const servicePages: MetadataRoute.Sitemap = serviceZones.map((zone) => ({
