@@ -35,7 +35,7 @@ import { logger } from "@/lib/logger";
 function getChatModel() {
   if (process.env.ANTHROPIC_API_KEY) {
     return {
-      model: anthropic("claude-sonnet-4-6-20250514"),
+      model: anthropic("claude-sonnet-4-20250514"),
       provider: "anthropic" as const,
       maxOutputTokens: 1500,
     };
