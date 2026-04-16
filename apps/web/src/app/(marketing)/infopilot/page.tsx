@@ -26,6 +26,9 @@ import {
   infopilotTechFeatures,
 } from "@/content/infopilot-scenarios";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "ИнфоПилот — ИИ-диспетчер на трассе 24/7 | Инфолог24",
   description:

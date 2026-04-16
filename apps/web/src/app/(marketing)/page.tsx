@@ -19,6 +19,9 @@ import {
 import { faqItems } from "@/content/faq";
 import { testimonials } from "@/content/testimonials";
 
+// ISR: revalidate every 1 hour — content changes infrequently
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title:
     "Инфолог24 — платформа для грузоперевозчиков. Пропуска, регуляторика, ИИ-диспетчер 24/7",

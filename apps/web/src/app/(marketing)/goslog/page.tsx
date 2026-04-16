@@ -22,6 +22,9 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import { GoslogForm } from "./goslog-form";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title:
     "Регистрация в реестре ГосЛог под ключ — Инфолог24",

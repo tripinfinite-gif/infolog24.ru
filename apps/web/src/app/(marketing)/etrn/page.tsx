@@ -31,6 +31,9 @@ import {
 
 import { EtrnForm } from "./etrn-form";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title:
     "Переход на электронные накладные (ЭТрН) под ключ — Инфолог24",

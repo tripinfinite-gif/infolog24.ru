@@ -64,7 +64,7 @@ export interface KnowledgeItem {
 
 const _UPDATED = "2026-04-11";
 
-export const knowledgeBase: KnowledgeItem[] = [
+const curatedKnowledgeBase: KnowledgeItem[] = [
   // ============================================================
   // 1. PASS-BASICS — Что такое пропуск, кому нужен, базовые понятия
   // ============================================================
@@ -1942,6 +1942,22 @@ export const knowledgeBase: KnowledgeItem[] = [
     related: ["kb-220", "kb-164"],
     updated: _UPDATED,
   },
+];
+
+// Транскрипт-based items (реальный язык клиентов из 223 топ-диалогов).
+// См. `knowledge-base-transcripts.ts` и план 2026-04-16.
+// Импорт идёт ниже, чтобы избежать циклических типов — transcripts ре-экспортирует
+// KnowledgeItem из этого файла.
+import { transcriptKnowledgeBase } from "./knowledge-base-transcripts";
+
+/**
+ * Итоговая база знаний = curated + transcript.
+ * Порядок важен: curated первым, потому что при равном score
+ * keyword-поиска стабильный порядок = стабильная выдача.
+ */
+export const knowledgeBase: KnowledgeItem[] = [
+  ...curatedKnowledgeBase,
+  ...transcriptKnowledgeBase,
 ];
 
 /**

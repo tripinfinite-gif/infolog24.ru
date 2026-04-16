@@ -2,7 +2,16 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { MessageCircle, Mic, Minus, Paperclip, Send, X } from "lucide-react";
+import {
+  Bot,
+  MessageCircle,
+  Mic,
+  Minus,
+  Paperclip,
+  Send,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
   useCallback,
@@ -18,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { parsePathnameToContext } from "@/lib/chat/page-context";
 import { cn } from "@/lib/utils";
 
-import { ChatMessages } from "./chat-messages";
+import { ChatMessages, type ChatMessageFeedback } from "./chat-messages";
 import {
   ChatSuggestions,
   type ChatSuggestion,
@@ -55,6 +64,8 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
   const [visionEnabled, setVisionEnabled] = useState(false);
   const [isOcrLoading, setIsOcrLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Feedback state: messageId → "up" | "down"
+  const [feedbackState, setFeedbackState] = useState<Record<string, "up" | "down">>({});
 
   const pathname = usePathname() ?? "/";
 
@@ -219,6 +230,40 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
     setSuggestions([]);
     sendMessage({ text });
   }, [input, isStreaming, sendMessage]);
+
+  const handleQuickAction = useCallback(
+    (question: string) => {
+      if (isStreaming) return;
+      sendMessage({ text: question });
+    },
+    [isStreaming, sendMessage],
+  );
+
+  const handleFeedback = useCallback(
+    (fb: ChatMessageFeedback) => {
+      setFeedbackState((prev) => {
+        // Toggle: повторный клик убирает оценку
+        if (prev[fb.messageId] === fb.rating) {
+          const next = { ...prev };
+          delete next[fb.messageId];
+          return next;
+        }
+        return { ...prev, [fb.messageId]: fb.rating };
+      });
+      // Отправляем на сервер (fire-and-forget)
+      fetch("/api/chat/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messageId: fb.messageId,
+          rating: fb.rating,
+        }),
+      }).catch(() => {
+        // Тихая деградация — feedback не критичен
+      });
+    },
+    [],
+  );
 
   // P4.2 — Voice push-to-talk: начать запись при pointerdown.
   // Запрашиваем getUserMedia, подбираем поддерживаемый mimeType
@@ -493,25 +538,32 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
       {isOpen && (
         <div
           className={cn(
-            "fixed z-50 flex flex-col overflow-hidden rounded-2xl border bg-background shadow-2xl",
+            "fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-border/50 bg-background shadow-2xl",
             "bottom-24 right-6 h-[600px] w-[400px] lg:bottom-28 lg:right-8",
             "max-sm:inset-0 max-sm:bottom-0 max-sm:right-0 max-sm:h-full max-sm:w-full max-sm:rounded-none",
+            "animate-in fade-in slide-in-from-bottom-4 duration-300 ease-out",
           )}
         >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b bg-primary px-4 py-3 text-primary-foreground">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="size-5" />
+          {/* Header — ИнфоПилот branding */}
+          <div className="flex items-center justify-between bg-gradient-to-r from-[#1c1c1e] to-[#2d2d30] px-4 py-3 text-white">
+            <div className="flex items-center gap-2.5">
+              <div className="relative flex size-9 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm">
+                <Bot className="size-5" />
+                <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-[#1c1c1e] bg-emerald-400" />
+              </div>
               <div>
-                <p className="text-sm font-semibold">AI-консультант</p>
-                <p className="text-xs opacity-80">Инфолог24</p>
+                <p className="text-sm font-semibold tracking-tight">ИнфоПилот</p>
+                <p className="flex items-center gap-1 text-[11px] text-white/60">
+                  <span className="size-1.5 rounded-full bg-emerald-400" />
+                  Онлайн · отвечу за 5 сек
+                </p>
               </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 text-primary-foreground hover:bg-primary-foreground/20"
+                className="size-8 text-white/70 hover:bg-white/10 hover:text-white"
                 onClick={() => setIsOpen(false)}
                 aria-label="Свернуть"
               >
@@ -520,7 +572,7 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
               <Button
                 variant="ghost"
                 size="icon"
-                className="size-8 text-primary-foreground hover:bg-primary-foreground/20"
+                className="size-8 text-white/70 hover:bg-white/10 hover:text-white"
                 onClick={() => setIsOpen(false)}
                 aria-label="Закрыть"
               >
@@ -531,7 +583,13 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
 
           {/* Messages area */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto">
-            <ChatMessages messages={messages} isStreaming={isStreaming} />
+            <ChatMessages
+              messages={messages}
+              isStreaming={isStreaming}
+              onQuickAction={handleQuickAction}
+              onFeedback={handleFeedback}
+              feedbackState={feedbackState}
+            />
           </div>
 
           {/* Error message */}
@@ -548,16 +606,16 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
           />
 
           {/* Input area */}
-          <div className="border-t p-3">
+          <div className="border-t bg-background/80 p-3 backdrop-blur-sm max-sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
             <div className="flex items-end gap-2">
               <textarea
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Задайте вопрос..."
+                placeholder="Задайте вопрос о пропусках..."
                 rows={1}
-                className="flex-1 resize-none rounded-xl border bg-muted/50 px-4 py-2.5 text-sm outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary"
+                className="flex-1 resize-none rounded-xl border border-border/60 bg-muted/30 px-4 py-2.5 text-sm outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-accent focus:bg-background focus:ring-1 focus:ring-accent/30"
               />
               {/* P4.1 — Paperclip attach для фото документов (OCR).
                   Рендерится только при visionEnabled === true. Скрытый
@@ -637,31 +695,37 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
                 <Send className="size-4" />
               </Button>
             </div>
-            <div className="mt-2 flex items-center justify-center">
+            <div className="mt-2 flex items-center justify-between px-1">
+              <span className="flex items-center gap-1 text-[10px] text-muted-foreground/60">
+                <Sparkles className="size-3" />
+                ИнфоПилот AI
+              </span>
               <a
-                href="tel:+74950000000"
-                className="text-xs text-muted-foreground hover:text-foreground"
+                href="tel:+74991105549"
+                className="text-[11px] text-muted-foreground transition-colors hover:text-accent"
               >
-                Связаться с менеджером: +7 (499) 110-55-49
+                +7 (499) 110-55-49
               </a>
             </div>
           </div>
         </div>
       )}
 
-      {/* Floating button */}
-      <Button
-        size="icon-lg"
-        className={cn(
-          "fixed z-40 size-14 rounded-full shadow-lg",
-          "bottom-24 right-6 lg:bottom-28 lg:right-8",
-          isOpen && "hidden",
-        )}
-        onClick={() => setIsOpen(true)}
-        aria-label="Открыть чат с AI-консультантом"
-      >
-        <MessageCircle className="size-6" />
-      </Button>
+      {/* Floating button — ИнфоПилот */}
+      {!isOpen && (
+        <div className="fixed z-40 bottom-6 right-6 lg:bottom-8 lg:right-8 flex flex-col items-end gap-2">
+          <button
+            type="button"
+            onClick={() => setIsOpen(true)}
+            aria-label="Открыть чат с ИнфоПилот"
+            className="group relative flex size-14 items-center justify-center rounded-full bg-accent text-white shadow-lg shadow-accent/25 transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-accent/30 active:scale-95"
+          >
+            <MessageCircle className="size-6 transition-transform duration-200 group-hover:scale-110" />
+            {/* Pulse ring */}
+            <span className="absolute inset-0 animate-ping rounded-full bg-accent/20" style={{ animationDuration: "3s" }} />
+          </button>
+        </div>
+      )}
     </>
   );
 }

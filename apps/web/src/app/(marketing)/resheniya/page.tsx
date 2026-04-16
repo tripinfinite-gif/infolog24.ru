@@ -18,6 +18,9 @@ import { packages } from "@/content/packages";
 
 import { CalculatorPicker } from "./_components/calculator-picker";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Пакеты решений для перевозчиков — Инфолог24",
   description:

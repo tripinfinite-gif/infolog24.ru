@@ -100,6 +100,7 @@
 | B1 | Стратегия платформы | [стратегия-платформы-инфологистик.md](2026-04-10-стратегия-платформы-инфологистик.md) | Дополнена продуктовой линейкой |
 | B2 | Прогноз рынка 2026-2028 | [прогноз-рынка-пропусков-2026-2028.md](2026-04-10-прогноз-рынка-пропусков-2026-2028.md) | Готов |
 | B3 | **Продуктовая линейка (5 продуктов)** | [продуктовая-линейка.md](2026-04-11-продуктовая-линейка.md) | **Новый** — Антиштраф, ГосЛог Старт, ЭТрН Переход, Парк Про, Юрист-перевозчик |
+| **B4** | **⭐ Маркетинг: Customer DNA + Стратегия + Юнит-экономика** | [**2026-04-14-маркетинговая-стратегия-customer-dna.md**](2026-04-14-маркетинговая-стратегия-customer-dna.md) | **Новый (2026-04-14)** — навигатор, ключевые выводы, приоритеты. Детали в `.business/` |
 
 ---
 
@@ -597,7 +598,7 @@
 | Cloudflare (DNS, CDN, DDoS) | бесплатно |
 | SMS.ru (~500 SMS/мес) | ~1 000 ₽ |
 | Resend (email, до 3000/мес) | бесплатно |
-| AI-чатбот (GPT-4o mini) | ~1 000 ₽ |
+| AI-чатбот (Claude Sonnet 4.6 / GPT-4o-mini fallback) | ~2 000 ₽ |
 | Calltouch (коллтрекинг) | ~3 000 ₽ |
 | JivoSite (онлайн-чат) | ~990 ₽ |
 | **Итого** | **~10 400 ₽/мес** |
@@ -775,6 +776,93 @@ services:
 - ✅ обновлён `plans/2026-04-10-ai-чатбот-и-telegram-бот.md` — шапка с пометкой «изменение направления, миграция в v2»
 - ✅ обновлён `plans/2026-04-11-MASTER-PLAN-v2.md` — журнал сессий, ссылки на ЛК v2, пометки про MAX
 
+---
+
+### Сессия 5 — 2026-04-14 (маркетинг: Customer DNA + стратегия + юнит-экономика)
+
+**Только аналитика и документация. Кода не касались.**
+
+**Что сделано:**
+
+1. **Customer DNA depth 10/10** — психографические профили 3 основных сегментов (малые ТК, ИП, производство) с внутренними монологами, 3 уровнями боли (поверхность → эмоция → идентичность), 5 блокерами покупки и контраргументами, 6 триггерными событиями.
+   → `.business/audience/customer-dna.md`
+
+2. **Юнит-экономика v2** — полная разбивка по 7 сегментам. Выявлено: текущий LTV/CAC = 3.2x слаб, основная причина — 45–50% базы это ИП с LTV/CAC = 2.8x. Целевой микс: удвоить долю малых ТК (5–20 машин) с 25% до 40% → LTV/CAC = 5.5x+. 5 конкретных рычагов.
+   → `.business/economics/unit-economics-v2.md`
+
+3. **Маркетинговая стратегия 2026** — новое позиционирование («операционная система для автопарка», а не «посредник»), сегментная стратегия, контент-план, воронка, ценовые пакеты, roadmap Q2–Q1 2027.
+   → `.business/marketing/strategy-2026.md`
+
+4. **План-навигатор для агентов** — единая точка входа для маркетинговых сессий.
+   → `plans/2026-04-14-маркетинговая-стратегия-customer-dna.md`
+
+**Ключевые выводы:**
+- Главный сегмент для роста: малые ТК (5–20 машин), LTV/CAC = 8–10x
+- Ценовая проблема решается объяснением: 19 490 = гарантия (не заявка)
+- YouTube и Telegram — пустые ниши, ни один конкурент не занял
+- SEO = 0%, 100% зависимость от Директа — критический риск
+
+**Файлы, созданные/обновлённые в этой сессии:**
+- ✅ создан `.business/audience/customer-dna.md`
+- ✅ создан `.business/economics/unit-economics-v2.md`
+- ✅ создан `.business/marketing/strategy-2026.md`
+- ✅ создан `plans/2026-04-14-маркетинговая-стратегия-customer-dna.md`
+- ✅ обновлён `.business/INDEX.md` — добавлены ссылки на новые файлы
+- ✅ обновлён `plans/NEXT-SESSION.md` — добавлен раздел 3.5 по маркетингу
+- ✅ обновлён `plans/2026-04-11-MASTER-PLAN-v2.md` — журнал сессий, B4 в бизнес-планах
+
 **Следующий шаг:**
 
 См. NEXT-SESSION.md — обновлён под текущее состояние.
+
+---
+
+### Сессия 7 (2026-04-16): AI-консультант — полировка, Claude, feedback, analytics
+
+**Фокус:** Дизайн-полировка виджета + смена модели на Claude + feedback/analytics
+
+**Выполнено:**
+1. **Дизайн-полировка виджета «ИнфоПилот»**
+   - Header: градиент charcoal, Bot icon, зелёный онлайн-индикатор, «Онлайн · отвечу за 5 сек»
+   - FAB: accent-оранжевый, pulse-ring анимация, hover scale
+   - Анимация открытия: slide-in-from-bottom + fade-in
+   - Input area: safe-area-inset-bottom для iPhone, accent focus
+   - Footer: «ИнфоПилот AI» + Sparkles, правильный tel: href
+   - Empty state: 4 quick-action кнопки (Стоимость/Сроки/Документы/Зоны)
+   
+2. **Смена модели на Claude Sonnet 4.6**
+   - Установлен `@ai-sdk/anthropic@^3.0.69`
+   - `getChatModel()` в route.ts: приоритет ANTHROPIC_API_KEY → Claude Sonnet, fallback OPENAI_API_KEY → gpt-4o-mini
+   - Max output tokens: 1500 (Claude) vs 1000 (OpenAI)
+
+3. **Оптимизация промпта под Claude**
+   - ASCII-разделители → XML-теги (<role>, <response-format>, <cabinet-context>, <tools-guide>, <action-cards>, <company-info>, <escalation>, <confidence>, <prohibited>, <sentiment-escalation>, <security>)
+   - Бот переименован «Помощник Инфолог24» → «ИнфоПилот»
+
+4. **Feedback 👍/👎**
+   - UI: ThumbsUp/ThumbsDown на каждом ответе ассистента (toggle, emerald/red)
+   - API: POST /api/chat/feedback
+   - DB: таблица `chat_feedback` + миграция 0005
+
+5. **Analytics чата**
+   - DB: таблица `chat_analytics` + миграция 0006
+   - Трекинг: userQuestion, provider, toolsCalled, kbFallback, convertedTo (order/callback), tokens, cost
+   - Автозапись в onFinish каждого streamText
+
+**Верификация:** 299/299 тестов, typecheck 0 ошибок.
+
+**Файлы изменены:**
+- `apps/web/src/components/chat/chat-widget.tsx` — дизайн-полировка + feedback
+- `apps/web/src/components/chat/chat-messages.tsx` — quick actions + feedback UI
+- `apps/web/src/app/api/chat/route.ts` — Claude model + analytics
+- `apps/web/src/lib/chat/system-prompt.ts` — XML-теги + ИнфоПилот
+- `apps/web/src/lib/chat/playbook.test.ts` — обновлены assertions
+- `apps/web/src/lib/db/schema.ts` — chatFeedback + chatAnalytics таблицы
+- `apps/web/src/app/api/chat/feedback/route.ts` — новый endpoint
+- `apps/web/drizzle/0005_chat_feedback.sql` — миграция
+- `apps/web/drizzle/0006_chat_analytics.sql` — миграция
+- `apps/web/package.json` — @ai-sdk/anthropic
+
+**Блокеры для прода:**
+- Применить миграции 0005 + 0006
+- Добавить ANTHROPIC_API_KEY в env

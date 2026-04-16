@@ -5,6 +5,9 @@ import { testimonials } from "@/content/testimonials";
 
 import { ReviewsClient } from "./reviews-client";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Отзывы клиентов | Инфолог24 — 150+ отзывов, рейтинг 4.9",
   description:

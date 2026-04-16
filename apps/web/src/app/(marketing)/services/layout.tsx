@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+// ISR: revalidate every 1 hour — services data changes infrequently
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Пропуска в Москву — МКАД, ТТК, Садовое кольцо | Инфолог24",
   description:

@@ -584,6 +584,57 @@ export const chatMessages = pgTable("chat_messages", {
   index("idx_chat_messages_conversation_id").on(table.conversationId),
 ]);
 
+export const chatFeedbackRatingEnum = pgEnum("chat_feedback_rating", [
+  "up",
+  "down",
+]);
+
+export const chatFeedback = pgTable("chat_feedback", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  conversationId: uuid("conversation_id").references(
+    () => chatConversations.id,
+    { onDelete: "cascade" },
+  ),
+  messageId: varchar("message_id", { length: 128 }).notNull(),
+  rating: chatFeedbackRatingEnum("rating").notNull(),
+  userId: uuid("user_id").references(() => users.id),
+  ip: varchar("ip", { length: 45 }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+}, (table) => [
+  index("idx_chat_feedback_message_id").on(table.messageId),
+]);
+
+export const chatAnalytics = pgTable("chat_analytics", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  conversationId: uuid("conversation_id").references(
+    () => chatConversations.id,
+    { onDelete: "cascade" },
+  ),
+  userId: uuid("user_id").references(() => users.id),
+  /** Последний вопрос пользователя (обрезан до 500 символов) */
+  userQuestion: varchar("user_question", { length: 500 }),
+  /** Модель AI (claude-sonnet-4-6, gpt-4o-mini) */
+  provider: varchar("provider", { length: 32 }),
+  /** Вызванные tools через запятую (searchKnowledge, getPriceCalculation, ...) */
+  toolsCalled: varchar("tools_called", { length: 500 }),
+  /** Был ли fallback (searchKnowledge не нашёл совпадений) */
+  kbFallback: boolean("kb_fallback").default(false),
+  /** Конверсия: привело ли к createOrderDraft или requestCallback */
+  convertedTo: varchar("converted_to", { length: 32 }),
+  inputTokens: integer("input_tokens"),
+  outputTokens: integer("output_tokens"),
+  costUsd: varchar("cost_usd", { length: 16 }),
+  ip: varchar("ip", { length: 45 }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+}, (table) => [
+  index("idx_chat_analytics_created_at").on(table.createdAt),
+  index("idx_chat_analytics_conversation_id").on(table.conversationId),
+]);
+
 export const promoCodes = pgTable("promo_codes", {
   id: uuid("id").primaryKey().defaultRandom(),
   code: varchar("code", { length: 50 }).notNull().unique(),

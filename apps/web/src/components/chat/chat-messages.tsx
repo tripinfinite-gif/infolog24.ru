@@ -1,7 +1,16 @@
 "use client";
 
 import type { UIMessage } from "ai";
-import { Bot, User } from "lucide-react";
+import {
+  Bot,
+  Calculator,
+  Clock,
+  FileText,
+  MapPin,
+  ThumbsDown,
+  ThumbsUp,
+  User,
+} from "lucide-react";
 
 import { ActionCardList } from "@/components/chat/action-card-list";
 import { extractActionsFromResult } from "@/lib/chat/action-cards";
@@ -129,25 +138,62 @@ function ToolResultCard({ result }: { result: unknown }) {
   return null;
 }
 
+const QUICK_ACTIONS = [
+  { icon: Calculator, label: "Рассчитать стоимость", question: "Сколько стоит пропуск на МКАД?" },
+  { icon: Clock, label: "Сроки оформления", question: "Сколько времени занимает оформление пропуска?" },
+  { icon: FileText, label: "Какие документы нужны?", question: "Какие документы нужны для пропуска?" },
+  { icon: MapPin, label: "Зоны пропусков", question: "Какие зоны пропусков бывают?" },
+];
+
+export interface ChatMessageFeedback {
+  messageId: string;
+  rating: "up" | "down";
+}
+
 interface ChatMessagesProps {
   messages: UIMessage[];
   isStreaming: boolean;
+  onQuickAction?: (question: string) => void;
+  onFeedback?: (feedback: ChatMessageFeedback) => void;
+  feedbackState?: Record<string, "up" | "down">;
 }
 
-export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
+export function ChatMessages({
+  messages,
+  isStreaming,
+  onQuickAction,
+  onFeedback,
+  feedbackState,
+}: ChatMessagesProps) {
   if (messages.length === 0) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
-        <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
-          <Bot className="size-6 text-primary" />
+      <div className="flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center">
+        <div className="flex size-14 items-center justify-center rounded-2xl bg-accent/10">
+          <Bot className="size-7 text-accent" />
         </div>
         <div>
-          <p className="font-medium text-foreground">AI-консультант</p>
+          <p className="font-heading text-base font-semibold text-foreground">
+            ИнфоПилот
+          </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Задайте вопрос о пропусках, ценах, документах или сроках
-            оформления.
+            Помогу с пропусками, ценами, документами и сроками
           </p>
         </div>
+        {onQuickAction && (
+          <div className="mt-2 grid w-full grid-cols-2 gap-2">
+            {QUICK_ACTIONS.map((action) => (
+              <button
+                key={action.label}
+                type="button"
+                onClick={() => onQuickAction(action.question)}
+                className="flex items-center gap-2 rounded-xl border border-border/60 bg-card px-3 py-2.5 text-left text-xs transition-all hover:border-accent/40 hover:bg-accent/5 hover:shadow-sm"
+              >
+                <action.icon className="size-4 shrink-0 text-accent" />
+                <span className="text-foreground">{action.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -226,6 +272,42 @@ export function ChatMessages({ messages, isStreaming }: ChatMessagesProps) {
                 </div>
               );
             })}
+
+            {/* Feedback buttons for assistant messages */}
+            {!isUser && textContent && !isStreaming && onFeedback && (
+              <div className="ml-9 mt-1 flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() =>
+                    onFeedback({ messageId: message.id, rating: "up" })
+                  }
+                  className={cn(
+                    "rounded-md p-1 transition-colors",
+                    feedbackState?.[message.id] === "up"
+                      ? "text-emerald-600"
+                      : "text-muted-foreground/40 hover:text-emerald-600",
+                  )}
+                  aria-label="Полезный ответ"
+                >
+                  <ThumbsUp className="size-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    onFeedback({ messageId: message.id, rating: "down" })
+                  }
+                  className={cn(
+                    "rounded-md p-1 transition-colors",
+                    feedbackState?.[message.id] === "down"
+                      ? "text-red-500"
+                      : "text-muted-foreground/40 hover:text-red-500",
+                  )}
+                  aria-label="Неполезный ответ"
+                >
+                  <ThumbsDown className="size-3.5" />
+                </button>
+              </div>
+            )}
           </div>
         );
       })}

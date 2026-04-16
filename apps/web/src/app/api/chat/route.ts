@@ -4,6 +4,7 @@ import {
   streamText,
   type UIMessage,
 } from "ai";
+import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
 
 import { buildSystemPrompt } from "@/lib/chat/system-prompt";
@@ -22,12 +23,35 @@ import {
 } from "@/lib/chat/security";
 import { getSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
-import { chatConversations, chatMessages } from "@/lib/db/schema";
+import { chatAnalytics, chatConversations, chatMessages } from "@/lib/db/schema";
 import { logger } from "@/lib/logger";
+
+/**
+ * Выбор модели по env:
+ * - ANTHROPIC_API_KEY → Claude Sonnet 4.6 (рекомендуется: лучший русский, длиннее контекст)
+ * - OPENAI_API_KEY → gpt-4o-mini (fallback, дешевле)
+ * Если оба ключа, приоритет у Anthropic.
+ */
+function getChatModel() {
+  if (process.env.ANTHROPIC_API_KEY) {
+    return {
+      model: anthropic("claude-sonnet-4-6-20250514"),
+      provider: "anthropic" as const,
+      maxOutputTokens: 1500,
+    };
+  }
+  if (process.env.OPENAI_API_KEY) {
+    return {
+      model: openai("gpt-4o-mini"),
+      provider: "openai" as const,
+      maxOutputTokens: 1000,
+    };
+  }
+  return null;
+}
 
 export const runtime = "nodejs";
 
-const MAX_OUTPUT_TOKENS = 1000;
 const MAX_HISTORY = 20;
 
 /**
@@ -139,8 +163,9 @@ async function saveAssistantMessage(
 }
 
 export async function POST(req: Request) {
-  if (!process.env.OPENAI_API_KEY) {
-    logger.warn("OPENAI_API_KEY not configured — chat is disabled");
+  const chatModel = getChatModel();
+  if (!chatModel) {
+    logger.warn("No AI API key configured (ANTHROPIC_API_KEY or OPENAI_API_KEY) — chat is disabled");
     return new Response(
       JSON.stringify({
         error:
@@ -276,13 +301,13 @@ export async function POST(req: Request) {
     const tools = createChatTools({ userId });
 
     const result = streamText({
-      model: openai("gpt-4o-mini"),
+      model: chatModel.model,
       system: buildSystemPrompt(clientContext),
       messages: modelMessages,
       tools,
       stopWhen: stepCountIs(3),
-      maxOutputTokens: MAX_OUTPUT_TOKENS,
-      onFinish: async ({ text, usage }) => {
+      maxOutputTokens: chatModel.maxOutputTokens,
+      onFinish: async ({ text, usage, steps }) => {
         const outTokens = usage?.outputTokens ?? estimateTokens(text ?? "");
         const inTokens = usage?.inputTokens ?? estimatedInputTokens;
         const costUsd = estimateCostUsd(inTokens, outTokens);
@@ -291,6 +316,7 @@ export async function POST(req: Request) {
           {
             conversationId,
             userId,
+            provider: chatModel.provider,
             inputTokens: inTokens,
             outputTokens: outTokens,
             costUsd,
@@ -299,6 +325,38 @@ export async function POST(req: Request) {
         );
 
         await saveAssistantMessage(conversationId, text ?? "", outTokens);
+
+        // --- Analytics ---
+        try {
+          const toolsCalled = steps
+            .flatMap((s) => s.toolCalls ?? [])
+            .map((tc) => tc.toolName);
+          const uniqueTools = [...new Set(toolsCalled)];
+          const kbFallback =
+            uniqueTools.includes("searchKnowledge") &&
+            !toolsCalled.some((t) => t !== "searchKnowledge");
+          const convertedTo = uniqueTools.includes("createOrderDraft")
+            ? "order"
+            : uniqueTools.includes("requestCallback")
+              ? "callback"
+              : null;
+
+          await db.insert(chatAnalytics).values({
+            conversationId,
+            userId,
+            userQuestion: lastUserText.slice(0, 500) || null,
+            provider: chatModel.provider,
+            toolsCalled: uniqueTools.length > 0 ? uniqueTools.join(",") : null,
+            kbFallback,
+            convertedTo,
+            inputTokens: inTokens,
+            outputTokens: outTokens,
+            costUsd: costUsd.toFixed(6),
+            ip,
+          });
+        } catch (analyticsError) {
+          logger.warn({ error: analyticsError }, "Failed to save chat analytics");
+        }
       },
     });
 

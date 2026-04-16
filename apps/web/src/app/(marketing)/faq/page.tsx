@@ -4,6 +4,9 @@ import { faqItems } from "@/content/faq";
 
 import { FaqClient } from "./faq-client";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Частые вопросы (FAQ) | Инфолог24 — ответы на 30+ вопросов",
   description:

@@ -8,6 +8,9 @@ import { CtaSection } from "@/components/sections/cta-section";
 import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import { blogArticles } from "@/content/blog-articles";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 const categoryLabels: Record<string, string> = {
   permits: "Пропуска",
   fines: "Штрафы",

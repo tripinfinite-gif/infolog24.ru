@@ -21,6 +21,9 @@ import { companyInfo } from "@/content/company";
 
 import { ContactForm } from "./contact-form";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Контакты — Инфолог24, ответим за 5 минут",
   description:

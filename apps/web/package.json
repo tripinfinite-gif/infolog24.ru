@@ -20,6 +20,7 @@
     "rag:build-embeddings": "tsx --env-file=.env.local scripts/build-knowledge-embeddings.ts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.69",
     "@ai-sdk/openai": "^3.0.52",
     "@ai-sdk/react": "^3.0.158",
     "@aws-sdk/client-s3": "^3.1029.0",

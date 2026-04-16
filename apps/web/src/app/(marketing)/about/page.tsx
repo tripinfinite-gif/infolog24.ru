@@ -22,6 +22,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { companyInfo } from "@/content/company";
 import { stats } from "@/content/stats";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "О компании Инфолог24 — 10 лет помогаем грузоперевозчикам",
   description:

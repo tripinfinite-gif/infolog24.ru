@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { blogArticles } from "@/content/blog-articles";
 
+// ISR: revalidate every 1 hour — blog updates infrequently
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Блог о грузоперевозках в Москве — Инфолог24",
   description:

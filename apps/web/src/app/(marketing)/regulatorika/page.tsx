@@ -17,6 +17,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { regulatoryTimeline } from "@/content/regulatory-timeline";
 
+// ISR: revalidate every 1 hour
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title:
     "Регуляторика грузоперевозчика — ГосЛог, ЭТрН, РНИС, Антиштраф | Инфолог24",
