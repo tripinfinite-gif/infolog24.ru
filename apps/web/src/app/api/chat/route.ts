@@ -362,7 +362,7 @@ export async function POST(req: Request) {
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
-    logger.error({ error }, "Chat API error");
+    logger.error({ error, errorMessage: error instanceof Error ? error.message : String(error), errorStack: error instanceof Error ? error.stack : undefined }, "Chat API error");
     return new Response(
       JSON.stringify({ error: "Произошла ошибка. Попробуйте позже." }),
       { status: 500, headers: { "Content-Type": "application/json" } },
