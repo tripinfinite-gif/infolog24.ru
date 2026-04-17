@@ -148,6 +148,7 @@ infologistic-24/
 
 | План | Файл | Приоритетные скиллы |
 |---|---|---|
+| **⭐ Маркетинг + Customer DNA** | `plans/2026-04-14-маркетинговая-стратегия-customer-dna.md` | `/landing-page`, `/design-loop`, `/ux-audit` |
 | Архитектура и стек | `plans/2026-04-10-архитектура-и-стек.md` | `/bulletproof`, `/monorepo-navigator` |
 | Дизайн-система | `plans/2026-04-10-дизайн-система.md` | `/tailwind-theme-builder`, `/shadcn-ui`, `/design-system` |
 | Редизайн сайта | `plans/2026-04-10-редизайн-сайта-infolog24.md` | `/senior-frontend`, `/landing-page`, `/design-loop` |
@@ -163,3 +164,20 @@ infologistic-24/
 ## Язык
 
 Всегда отвечай мне на русском.
+
+## Общая вики (ClaudeVault)
+
+Персональная кросс-проектная вики лежит в `~/ClaudeVault/wiki/`. Это второй мозг владельца — там контекст бизнеса, целей, решений и связей между проектами (Инфологистик-24, Штрафометр, Перегруз).
+
+**Всегда перед нетривиальной задачей читай:**
+- `~/ClaudeVault/wiki/hot.md` — горячий кэш (последние решения, что в работе)
+- `~/ClaudeVault/wiki/projects/infologistic-24/_index.md` — страницы по этому проекту
+- `~/ClaudeVault/wiki/goals/` — цели (годовые, квартальные, месячные)
+
+**Когда сохранять в вики:**
+- Принято важное решение (архитектура, маркетинг, цена) → `/save` или файл в `decisions/`
+- Найден новый инсайт о клиентах / конкурентах / нише → `concepts/` или `projects/infologistic-24/`
+- Готов отчёт, стратегия, план на квартал → соответствующая папка
+- Используй навыки `claude-obsidian:save`, `claude-obsidian:wiki-ingest`, `claude-obsidian:wiki-query`
+
+**MCP:** Obsidian-vault MCP-сервер подключён — можно читать/писать вики через `mcp__obsidian-vault__*`.

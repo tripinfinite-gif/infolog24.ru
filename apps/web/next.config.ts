@@ -137,6 +137,10 @@ const nextConfig: NextConfig = {
       // Joomla-артефакты
       { source: "/index.php", destination: "/", permanent: true },
 
+      // ── Унификация продуктовых страниц (старые /regulatorika/* → новые) ──
+      { source: "/regulatorika/antishraf", destination: "/monitoring", permanent: true },
+      { source: "/regulatorika/yurist", destination: "/yurist", permanent: true },
+
       // ── Legacy-пути (могут быть в закладках/ссылках, хотя на Joomla не существовали) ──
       { source: "/uslugi/:slug", destination: "/services/:slug", permanent: true },
       { source: "/uslugi", destination: "/services", permanent: true },
