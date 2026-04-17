@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageCircle,
   ScrollText,
   Settings,
   ShieldCheck,
@@ -48,6 +49,7 @@ const navItems: NavItem[] = [
   { href: "/admin/permits", label: "Пропуска", icon: ShieldCheck },
   { href: "/admin/payments", label: "Платежи", icon: CreditCard },
   { href: "/admin/analytics", label: "Аналитика", icon: BarChart3 },
+  { href: "/admin/chat", label: "AI-чат", icon: MessageCircle },
   { href: "/admin/settings", label: "Настройки", icon: Settings },
   { href: "/admin/audit", label: "Аудит", icon: ScrollText },
 ];
