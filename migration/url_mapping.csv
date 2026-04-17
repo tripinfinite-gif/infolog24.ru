@@ -1,0 +1,36 @@
+old_url,old_title,old_h1,words,priority,new_url_match_type,new_url,action,notes
+/,Инфологистик 24 Грузовой пропуск на МКАД ТТК СК в Москву,Поможем оформить пропуск на МКАД ТТК СК,1200,high,direct,/,skip,Домен тот же — URL совпадает
+/propusk,Грузовой пропуск в Москву для машин,Оформление пропуска в Москву,850,high,partial,/services,redirect_301,Каталог услуг Joomla → /services
+/propusk/propusk-na-mkad-dlya-gruzovykh-mashin,Пропуск на МКАД для грузовых машин онлайн,Пропуск на МКАД для грузовых машин,850,high,partial,/services/propusk-mkad,redirect_301,Длинный slug → короткий
+/propusk/propusk-na-gazel-v-tsentr,Пропуск на Газель в центр Москвы,Пропуск на газель в центр,580,high,none,,recreate_new_url,Нет аналога! Газели = крупный сегмент. Создать /services/propusk-gazel или /blog/*
+/propusk/propusk-ttk,Пропуск ТТК для грузовых машин,Пропуск ТТК,520,high,partial,/services/propusk-ttk,redirect_301,Прямой аналог
+/propusk/dnevnoj-propusk-na-mkad,Дневной пропуск на МКАД,Дневной пропуск на МКАД,850,high,partial,/services/vremennyj-propusk,redirect_301,Дневной ≈ временный
+/propusk/propusk-sk,Пропуск СК для грузовых машин,Пропуск СК,850,high,partial,/services/propusk-sk,redirect_301,Прямой аналог
+/propusk/razovyj-propusk-v-moskvu,Разовый пропуск в Москву,Разовый пропуск в Москву,680,high,partial,/services/vremennyj-propusk,redirect_301,Разовый ≈ временный
+/propusk/zakazat-propusk,Заказать пропуск для грузовых машин онлайн,Заказать пропуск,1050,high,partial,/services,redirect_301,Форма заказа → каталог с CTA
+/propuskm,Оформить грузовой пропуск в Москву (ИП/физлица),Получите пропуск по льготным ценам за 1 день,2200,high,partial,/ip-perevozchik,redirect_301,Лендинг для ИП → сегментная страница
+/propuskk,Грузовой пропуск для юридических лиц,Получите пропуска на ваш автопарк за 14 дней,2850,high,partial,/malye-tk,redirect_301,Лендинг для юрлиц → сегментная страница
+/prop-v-moskwu,Пропуск в Москву — оформить быстро,Оформление пропуска в Москву,850,medium,partial,/services,redirect_301,Общий лендинг → каталог
+/proverit-propusk,Пропуск МКАД проверить онлайн,Проверка пропуска на въезд в Москву,520,high,direct,/check-status,redirect_301,Прямой аналог
+/eco,Повышение экологического класса,Повышение экокласса с Евро-0 на Евро-2/3/4,380,medium,none,,recreate_same_url,Нет аналога! Услуга повышения экокласса. URL чистый.
+/litsenzii,Лицензии на международные перевозки,Оформите лицензию + карту МАП,900,medium,none,,recreate_same_url,Нет аналога! Услуга лицензирования. URL чистый.
+/sotrudnichestvo,Сотрудничество | Infologistic24,Условия сотрудничества,850,high,partial,/partners,redirect_301,Партнёрская программа
+/contacts,Контакты | Infologistic24,Контакты,400,high,direct,/contacts,skip,URL совпадает — редирект не нужен
+/otzivy,Отзывы клиентов,Отзывы наших клиентов,900,high,partial,/reviews,redirect_301,Отзывы
+/faq,FAQ — ответы на вопросы по грузовым пропускам,Ответы на часто задаваемые вопросы,4850,high,direct,/faq,skip,URL совпадает — редирект не нужен. FAQ нового сайта — 4850 слов эквивалент
+/sotrud,Сотрудничество (укороченный),Условия сотрудничества,1050,low,partial,/partners,redirect_301,Дубль /sotrudnichestvo
+/cont,Контакты (укороченный),Необходимый пакет документов,700,low,direct,/contacts,redirect_301,Дубль /contacts
+/novosti,Новости,Новости,850,medium,partial,/blog,redirect_301,Список новостей → блог
+/novosti/4-osnovnye-prichiny-annulirovaniya-propuskov-v-2020-godu,Аннулирование пропусков,Аннулирование пропусков 2022-2023,2100,high,partial,/blog/rnis-annulirovanie-propuska-za-chto,redirect_301,Тематическое совпадение
+/novosti/10-kak-oformit-propusk-dlya-gruzovykh-mashin-pyat-oshibok-novichkov,5 ошибок новичков,5 ошибок новичков,1200,medium,partial,/blog/kak-oformit-propusk-mkad-samostoyatelno-2026,redirect_301,Тематическое совпадение
+/novosti/11-moskovskij-portal,Московский портал,Московский портал с неполадками,650,medium,partial,/blog/goslog-vmesto-mos-ru-novyy-portal,redirect_301,О портале → ГосЛог
+/novosti/14-sboi-iz-za-dk,Сбои из-за ДК,Массовые отказы в пропусках,520,medium,partial,/blog/otkazali-v-propuske-chto-delat,redirect_301,Отказы → что делать
+/novosti/13-registratsiya-ts-v-rnis,Регистрация ТС в РНИС,Регистрация в РНИС,1250,medium,partial,/blog/shtrafy-rnis-chto-eto-kak-obzhalovat,redirect_301,РНИС → РНИС штрафы
+/novosti/5-v-ezd-na-ttk-na-gazeli,Въезд на ТТК на Газели,Въезд на ТТК на Газели,380,medium,partial,/blog/propusk-ttk-sadovoe-otlichie-mkad,redirect_301,ТТК Газель → ТТК отличия
+/novosti/3-be-sure-to-add-aria-expanded-to-the-control-element2,Правила въезда грузовиков с 14 января,Правила въезда с 14 января,850,low,partial,/blog,redirect_301,Joomla-артефакт slug → общий /blog
+/novosti/2-be-sure-to-add-aria-expanded-to-the-control-element1,Как оформить ЭЦП,Как оформить ЭЦП,520,low,partial,/blog,redirect_301,Joomla-артефакт slug → общий /blog
+/novosti/1-be-sure-to-add-aria-expanded-to-the-control-element,Срочное сообщение для владельцев,Срочное сообщение,550,low,partial,/blog,redirect_301,Joomla-артефакт slug → общий /blog
+/novosti/12-izmeneniya-v-protsedure-oformleniya-propuskov-dlya-proezda-v-moskvu,Изменения в процедуре оформления,Изменения в процедуре,650,low,partial,/blog,redirect_301,Процедурные изменения → общий /blog
+/novosti/6-sdelat-propusk-v-moskovskoj-oblasti,Пропуск в Московской области,Пропуск в Московской области,480,low,partial,/blog,redirect_301,МО → общий /blog
+/novosti/7-pravila-polzovaniya-platnymi-parkovkami,Правила платных парковок,Правила платных парковок,380,low,partial,/blog,redirect_301,Парковки → общий /blog
+/index.php,Главная (Joomla),—,—,technical,direct,/,redirect_301,Joomla-артефакт

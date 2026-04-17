@@ -92,23 +92,63 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Старые русские пути → новые английские
+      // ── Миграция со старого Joomla-сайта (www.infolog24.ru → inlog24.ru) ──
+
+      // Каталог услуг Joomla → новый каталог
+      { source: "/propusk", destination: "/services", permanent: true },
+      { source: "/propusk/propusk-na-mkad-dlya-gruzovykh-mashin", destination: "/services/propusk-mkad", permanent: true },
+      { source: "/propusk/propusk-ttk", destination: "/services/propusk-ttk", permanent: true },
+      { source: "/propusk/propusk-sk", destination: "/services/propusk-sk", permanent: true },
+      { source: "/propusk/dnevnoj-propusk-na-mkad", destination: "/services/vremennyj-propusk", permanent: true },
+      { source: "/propusk/razovyj-propusk-v-moskvu", destination: "/services/vremennyj-propusk", permanent: true },
+      { source: "/propusk/zakazat-propusk", destination: "/services", permanent: true },
+
+      // Лендинги Joomla → сегментные лендинги
+      { source: "/propuskm", destination: "/ip-perevozchik", permanent: true },
+      { source: "/propuskk", destination: "/malye-tk", permanent: true },
+      { source: "/prop-v-moskwu", destination: "/services", permanent: true },
+
+      // Инфостраницы Joomla → аналоги на новом сайте
+      { source: "/proverit-propusk", destination: "/check-status", permanent: true },
+      { source: "/sotrudnichestvo", destination: "/partners", permanent: true },
+      { source: "/otzivy", destination: "/reviews", permanent: true },
+      // /contacts → /contacts — совпадает, редиректа не нужно
+      // /faq → /faq — совпадает, редиректа не нужно
+
+      // Укороченные дубли Joomla
+      { source: "/sotrud", destination: "/partners", permanent: true },
+      { source: "/cont", destination: "/contacts", permanent: true },
+
+      // Новости Joomla → статьи блога (тематическое соответствие)
+      { source: "/novosti/4-osnovnye-prichiny-annulirovaniya-propuskov-v-2020-godu", destination: "/blog/rnis-annulirovanie-propuska-za-chto", permanent: true },
+      { source: "/novosti/10-kak-oformit-propusk-dlya-gruzovykh-mashin-pyat-oshibok-novichkov", destination: "/blog/kak-oformit-propusk-mkad-samostoyatelno-2026", permanent: true },
+      { source: "/novosti/11-moskovskij-portal", destination: "/blog/goslog-vmesto-mos-ru-novyy-portal", permanent: true },
+      { source: "/novosti/14-sboi-iz-za-dk", destination: "/blog/otkazali-v-propuske-chto-delat", permanent: true },
+      { source: "/novosti/13-registratsiya-ts-v-rnis", destination: "/blog/shtrafy-rnis-chto-eto-kak-obzhalovat", permanent: true },
+      { source: "/novosti/5-v-ezd-na-ttk-na-gazeli", destination: "/blog/propusk-ttk-sadovoe-otlichie-mkad", permanent: true },
+      { source: "/novosti/3-be-sure-to-add-aria-expanded-to-the-control-element2", destination: "/blog", permanent: true },
+      { source: "/novosti/2-be-sure-to-add-aria-expanded-to-the-control-element1", destination: "/blog", permanent: true },
+      { source: "/novosti/1-be-sure-to-add-aria-expanded-to-the-control-element", destination: "/blog", permanent: true },
+      { source: "/novosti/12-izmeneniya-v-protsedure-oformleniya-propuskov-dlya-proezda-v-moskvu", destination: "/blog", permanent: true },
+      { source: "/novosti/6-sdelat-propusk-v-moskovskoj-oblasti", destination: "/blog", permanent: true },
+      { source: "/novosti/7-pravila-polzovaniya-platnymi-parkovkami", destination: "/blog", permanent: true },
+      { source: "/novosti", destination: "/blog", permanent: true },
+
+      // Joomla-артефакты
+      { source: "/index.php", destination: "/", permanent: true },
+
+      // ── Legacy-пути (могут быть в закладках/ссылках, хотя на Joomla не существовали) ──
       { source: "/uslugi/:slug", destination: "/services/:slug", permanent: true },
       { source: "/uslugi", destination: "/services", permanent: true },
-      { source: "/ceny", destination: "/pricing", permanent: true },
+      { source: "/ceny", destination: "/services", permanent: true },
       { source: "/o-kompanii", destination: "/about", permanent: true },
-      { source: "/otzyvy", destination: "/reviews", permanent: true },
       { source: "/kontakty", destination: "/contacts", permanent: true },
-      // Старые опечатки и legacy
-      { source: "/propuskm", destination: "/services/propusk-mkad", permanent: true },
       { source: "/propusk-mkad", destination: "/services/propusk-mkad", permanent: true },
       { source: "/propusk-ttk", destination: "/services/propusk-ttk", permanent: true },
       { source: "/propusk-sk", destination: "/services/propusk-sk", permanent: true },
       { source: "/vremennyj-propusk", destination: "/services/vremennyj-propusk", permanent: true },
-      { source: "/godovoj-propusk", destination: "/services/godovoj-propusk", permanent: true },
-      // Прочее legacy
-      { source: "/proverit-propusk", destination: "/check-status", permanent: true },
-      { source: "/sotrudnichestvo", destination: "/partners", permanent: true },
+      { source: "/godovoj-propusk", destination: "/services/propusk-mkad", permanent: true },
+      { source: "/otzyvy", destination: "/reviews", permanent: true },
       { source: "/blagotvoritelnost/:rest*", destination: "/about", permanent: true },
     ];
   },

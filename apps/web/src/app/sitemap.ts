@@ -39,6 +39,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/malye-tk`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/ip-perevozchik`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/proizvodstvo`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    // Страницы, сохранённые со старого сайта (SEO-миграция)
+    { url: `${BASE_URL}/propusk/propusk-na-gazel-v-tsentr`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/eco`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/litsenzii`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
   ];
 
   const servicePages: MetadataRoute.Sitemap = serviceZones.map((zone) => ({

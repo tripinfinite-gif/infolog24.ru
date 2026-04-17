@@ -92,6 +92,13 @@ export async function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
+
+  // test.inlog24.ru — закрыт от индексации на уровне HTTP-заголовка
+  const host = request.headers.get("host") ?? "";
+  if (host.startsWith("test.")) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+
   if (pathname.startsWith("/api/")) {
     return applyCors(response, origin);
   }
@@ -102,9 +109,7 @@ export async function middleware(request: NextRequest) {
 // Rate-limiting перенесён в каждый API route индивидуально (Node Runtime).
 export const config = {
   matcher: [
-    "/api/((?!health).*)",
-    "/dashboard/:path*",
-    "/admin/:path*",
-    "/partner/:path*",
+    // Все страницы кроме статики (_next, favicon, etc.) — для X-Robots-Tag на test.*
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff2?|ttf|eot)$).*)",
   ],
 };
