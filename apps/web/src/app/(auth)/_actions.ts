@@ -2,11 +2,13 @@
 
 import { z } from "zod";
 import { eq } from "drizzle-orm";
+import { cookies } from "next/headers";
 
 import { requireSession } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { logger } from "@/lib/logger";
+import { claimReferralForNewUser } from "@/lib/dal/referrals";
 
 const completeClientProfileSchema = z.object({
   phone: z.string().min(5).max(20),
@@ -19,6 +21,43 @@ export type CompleteClientProfileInput = z.infer<
 export type CompleteClientProfileResult =
   | { ok: true }
   | { ok: false; error: string };
+
+/**
+ * Обработать реферальный код из cookie ref_code для только что
+ * зарегистрированного пользователя. Не блокирует регистрацию при ошибке —
+ * реферал вторичен относительно основного flow.
+ */
+export async function claimReferralFromCookieAction(): Promise<{
+  ok: boolean;
+}> {
+  let session;
+  try {
+    session = await requireSession();
+  } catch {
+    return { ok: false };
+  }
+
+  const jar = await cookies();
+  const refCookie = jar.get("ref_code");
+  if (!refCookie) return { ok: false };
+
+  try {
+    await claimReferralForNewUser({
+      referrerCode: refCookie.value,
+      referredUserId: session.user.id,
+    });
+    // Удаляем куку в любом случае — чтобы она не сработала повторно.
+    jar.delete("ref_code");
+    return { ok: true };
+  } catch (err) {
+    logger.error(
+      { err, userId: session.user.id },
+      "claimReferralFromCookieAction failed",
+    );
+    jar.delete("ref_code");
+    return { ok: false };
+  }
+}
 
 /**
  * Дополнить только что созданный аккаунт клиента телефоном.

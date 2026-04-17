@@ -25,6 +25,7 @@ const companyLinks = [
   { href: "/reviews", label: "Отзывы" },
   { href: "/faq", label: "FAQ" },
   { href: "/blog", label: "Блог" },
+  { href: "/referalnaya-programma", label: "Реферальная программа" },
   { href: "/contacts", label: "Контакты" },
 ];
 

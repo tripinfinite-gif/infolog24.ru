@@ -93,6 +93,28 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next();
 
+  // ── Реферальная программа ───────────────────────────────────────────
+  // Перехватываем ?ref=CODE на любом лендинге и кладём в cookie на 30 дней.
+  // httpOnly: false — чтобы JS мог прочитать при регистрации. Код нормализуем
+  // в upper-case и режем до 12 символов, чтобы не ловить мусор из URL.
+  const refParam = request.nextUrl.searchParams.get("ref");
+  if (
+    refParam &&
+    !pathname.startsWith("/api/") &&
+    !pathname.startsWith("/_next") &&
+    !request.cookies.get("ref_code")
+  ) {
+    const normalized = refParam.trim().toUpperCase().slice(0, 12);
+    if (/^[A-Z0-9]+$/.test(normalized)) {
+      response.cookies.set("ref_code", normalized, {
+        maxAge: 60 * 60 * 24 * 30,
+        path: "/",
+        sameSite: "lax",
+        httpOnly: false,
+      });
+    }
+  }
+
   // test.inlog24.ru — закрыт от индексации на уровне HTTP-заголовка
   const host = request.headers.get("host") ?? "";
   if (host.startsWith("test.")) {

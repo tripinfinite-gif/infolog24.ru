@@ -17,7 +17,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { completeClientProfileAction } from "../_actions";
+import {
+  claimReferralFromCookieAction,
+  completeClientProfileAction,
+} from "../_actions";
 
 interface FormState {
   name: string;
@@ -91,6 +94,14 @@ export default function RegisterPage() {
         toast.warning(profileResult.error);
       } else {
         toast.success("Аккаунт создан");
+      }
+
+      // Реферальная программа: если в cookie лежит ref_code — фиксируем
+      // запись "друг пришёл по ссылке". Ошибки не блокируют регистрацию.
+      try {
+        await claimReferralFromCookieAction();
+      } catch {
+        // ignore — реферал вторичен
       }
 
       router.push("/dashboard");

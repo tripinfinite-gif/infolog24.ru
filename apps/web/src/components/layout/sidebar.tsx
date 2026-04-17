@@ -5,6 +5,7 @@ import {
   CreditCard,
   FileText,
   Files,
+  Gift,
   LayoutDashboard,
   Menu,
   Settings,
@@ -33,6 +34,7 @@ const navItems: NavItem[] = [
   { href: "/dashboard/dokumenty", label: "Документы", icon: Files },
   { href: "/dashboard/oplata", label: "Оплата", icon: CreditCard },
   { href: "/dashboard/uvedomleniya", label: "Уведомления", icon: Bell },
+  { href: "/dashboard/referral", label: "Пригласить друга", icon: Gift },
   { href: "/dashboard/nastroyki", label: "Настройки", icon: Settings },
 ];
 

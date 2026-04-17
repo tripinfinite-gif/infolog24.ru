@@ -1,8 +1,13 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { orders, payments } from "@/lib/db/schema";
+import { orders, payments, partnerReferrals } from "@/lib/db/schema";
 import * as paymentsDAL from "@/lib/dal/payments";
 import { validatePromoCode, applyPromoCode } from "@/lib/dal/promo-codes";
+import { createNotification } from "@/lib/dal/notifications";
+import {
+  confirmReferralForOrder,
+  getReferralWithPromo,
+} from "@/lib/dal/referrals";
 import { getYooKassaClient } from "./yookassa";
 import { pricingTiers } from "@/content/pricing";
 import { logger } from "@/lib/logger";
@@ -221,6 +226,57 @@ export class PaymentService {
     logger.info(
       { paymentId: payment.id, orderId: payment.orderId },
       "Payment succeeded, order moved to processing",
+    );
+
+    // Реферальная программа: если заказ — первый у приведённого друга,
+    // начисляем рефереру промокод на 1000 ₽ и шлём уведомление.
+    // Любая ошибка ловится внутри — webhook не должен падать из-за бонусов.
+    try {
+      const confirmed = await confirmReferralForOrder(payment.orderId);
+      if (confirmed) {
+        await this.notifyReferrerOnConfirm(payment.orderId);
+      }
+    } catch (err) {
+      logger.error(
+        { err, orderId: payment.orderId },
+        "Referral processing failed (non-fatal)",
+      );
+    }
+  }
+
+  /**
+   * Уведомить реферера о подтверждённом заказе друга и выданном промокоде.
+   */
+  private async notifyReferrerOnConfirm(orderId: string): Promise<void> {
+    const referral = await db.query.partnerReferrals.findFirst({
+      where: eq(partnerReferrals.orderId, orderId),
+    });
+    if (!referral) return;
+
+    const bundle = await getReferralWithPromo(referral.id);
+    if (!bundle?.referrer) return;
+
+    await createNotification({
+      userId: bundle.referrer.id,
+      type: "referral_bonus",
+      channel: "email",
+      title: "Ваш друг оформил заказ — бонус 1000 ₽",
+      body: `Поздравляем! Вы получили скидку 1000 ₽ на следующий заказ. Промокод: ${bundle.promoCode}`,
+      metadata: {
+        promoCode: bundle.promoCode,
+        referralId: bundle.referral.id,
+        orderId,
+      },
+      status: "pending",
+    });
+
+    logger.info(
+      {
+        referrerId: bundle.referrer.id,
+        promoCode: bundle.promoCode,
+        orderId,
+      },
+      "Referrer notified about bonus",
     );
   }
 

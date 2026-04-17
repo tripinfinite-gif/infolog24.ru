@@ -128,6 +128,9 @@ export const users = pgTable("users", {
   ogrn: varchar("ogrn", { length: 15 }),
   role: userRoleEnum("role").notNull().default("client"),
   image: text("image"),
+  // Персональный реферальный код клиента. Генерируется лениво —
+  // при первом заходе на /dashboard/referral. UNIQUE, длина до 12 символов.
+  referralCode: varchar("referral_code", { length: 12 }).unique(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -137,6 +140,7 @@ export const users = pgTable("users", {
     .$onUpdate(() => new Date()),
 }, (table) => [
   index("idx_users_phone").on(table.phone),
+  index("idx_users_referral_code").on(table.referralCode),
 ]);
 
 export const sessions = pgTable("sessions", {
