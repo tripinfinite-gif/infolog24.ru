@@ -9,6 +9,7 @@ import {
 import { packages } from "@/content/packages";
 
 import { PackageDetail } from "../_components/package-detail";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title: "Пропуск+ — пакет для 1–4 машин от 12 500 ₽ | Инфолог24",
@@ -26,11 +27,11 @@ export const metadata: Metadata = {
     description:
       "Всё, чтобы ездить в Москву легально: пропуск, РНИС, ЭТрН, мониторинг штрафов и ИнфоПилот. От 12 500 ₽.",
     type: "website",
-    url: "https://inlog24.ru/resheniya/propusk-plus",
+    url: absoluteUrl("/resheniya/propusk-plus"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/resheniya/propusk-plus",
+    canonical: absoluteUrl("/resheniya/propusk-plus"),
   },
 };
 

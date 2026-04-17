@@ -60,6 +60,12 @@ const sections: MenuSection[] = [
     columns: 1,
     items: [
       {
+        href: "/ekosistema",
+        title: "Экосистема Инфолог24",
+        description: "Все услуги автопарка в одном кабинете",
+        badge: "new",
+      },
+      {
         href: "/resheniya/propusk-plus",
         title: "Пропуск+",
         description: "Пропуск + РНИС + ЭТрН. Для 1–4 машин.",
@@ -76,6 +82,11 @@ const sections: MenuSection[] = [
         description: "Корпоративный ЛК, API, SLA. Для парков 10+.",
       },
       {
+        href: "/park-pro",
+        title: "Парк Про — ЛК",
+        description: "Управление автопарком. Бесплатный тариф.",
+      },
+      {
         href: "/resheniya#podbor",
         title: "Подобрать пакет",
         description: "Калькулятор под размер автопарка",
@@ -85,8 +96,8 @@ const sections: MenuSection[] = [
       title: "Пакетная экономия до 25%",
       description:
         "Внутри пакета услуги дешевле, чем покупать по отдельности.",
-      ctaLabel: "Смотреть все решения",
-      ctaHref: "/resheniya",
+      ctaLabel: "Смотреть экосистему",
+      ctaHref: "/ekosistema",
     },
   },
   {
@@ -197,19 +208,27 @@ const sections: MenuSection[] = [
         deadline: "01.09.2026",
       },
       {
+        href: "/kep",
+        title: "КЭП и МЧД",
+        description: "Подпись и доверенность, 1–3 дня",
+        badge: "new",
+      },
+      {
         href: "/regulatorika/rnis",
         title: "РНИС — подключение",
         description: "Строго обязательна",
       },
       {
-        href: "/regulatorika/antishraf",
+        href: "/monitoring",
         title: "Антиштраф",
-        description: "Мониторинг штрафов, подписка",
+        description: "Мониторинг штрафов парка, подписка",
+        badge: "new",
       },
       {
-        href: "/regulatorika/yurist",
+        href: "/yurist",
         title: "Юрист-перевозчик",
-        description: "Юрподдержка на подписке",
+        description: "Перегруз, лизинг, дебиторка, договоры",
+        badge: "new",
       },
       {
         href: "/regulatorika/kalendar",

@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { GoslogForm } from "./goslog-form";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
     description:
       "Поможем зарегистрироваться в ГосЛог до дедлайна. Штраф до 300 000 руб. за работу без регистрации.",
     type: "website",
-    url: "https://inlog24.ru/goslog",
+    url: absoluteUrl("/goslog"),
     siteName: "Инфолог24",
   },
   twitter: {
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
       "Поможем зарегистрироваться в ГосЛог до дедлайна. Штраф до 300 000 руб.",
   },
   alternates: {
-    canonical: "https://inlog24.ru/goslog",
+    canonical: absoluteUrl("/goslog"),
   },
 };
 

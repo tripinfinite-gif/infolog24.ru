@@ -1,4 +1,5 @@
 import { companyInfo } from "@/content/company";
+import { SITE_URL } from "@/lib/utils/base-url";
 
 /* ── Helper ────────────────────────────────────────────────────────────────── */
 
@@ -24,7 +25,7 @@ export function LocalBusinessJsonLd() {
         description: companyInfo.description,
         telephone: companyInfo.contacts.phone,
         email: companyInfo.contacts.email,
-        url: "https://inlog24.ru",
+        url: SITE_URL,
         priceRange: "₽₽",
         taxID: companyInfo.legal.inn,
         vatID: companyInfo.legal.inn,
@@ -95,13 +96,13 @@ export function ServiceJsonLd({
         provider: {
           "@type": "Organization",
           name: companyInfo.name,
-          url: "https://inlog24.ru",
+          url: SITE_URL,
         },
         areaServed: {
           "@type": "City",
           name: "Москва",
         },
-        ...(url && { url: `https://inlog24.ru${url}` }),
+        ...(url && { url: `${SITE_URL}${url}` }),
         offers: {
           "@type": "Offer",
           price,
@@ -168,17 +169,17 @@ export function ArticleJsonLd({
         headline,
         description,
         datePublished,
-        url: `https://inlog24.ru${url}`,
+        url: `${SITE_URL}${url}`,
         ...(image && { image }),
         author: {
           "@type": "Organization",
           name: companyInfo.name,
-          url: "https://inlog24.ru",
+          url: SITE_URL,
         },
         publisher: {
           "@type": "Organization",
           name: companyInfo.name,
-          url: "https://inlog24.ru",
+          url: SITE_URL,
         },
       }}
     />
@@ -251,7 +252,7 @@ export function BreadcrumbJsonLd({ items }: { items: BreadcrumbItem[] }) {
           "@type": "ListItem",
           position: index + 1,
           name: item.name,
-          item: `https://inlog24.ru${item.href}`,
+          item: `${SITE_URL}${item.href}`,
         })),
       }}
     />

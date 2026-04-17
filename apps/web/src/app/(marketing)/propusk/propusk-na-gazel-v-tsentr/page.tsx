@@ -15,6 +15,7 @@ import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { BreadcrumbJsonLd, FaqJsonLd, ServiceJsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const revalidate = 3600;
 
@@ -35,10 +36,10 @@ export const metadata: Metadata = {
     description:
       "Полный гайд по пропускам на Газель: когда нужен, какие документы, как оформить. Помощь в получении за 1–3 дня.",
     type: "website",
-    url: "https://inlog24.ru/propusk/propusk-na-gazel-v-tsentr",
+    url: absoluteUrl("/propusk/propusk-na-gazel-v-tsentr"),
     siteName: "Инфолог24",
   },
-  alternates: { canonical: "https://inlog24.ru/propusk/propusk-na-gazel-v-tsentr" },
+  alternates: { canonical: absoluteUrl("/propusk/propusk-na-gazel-v-tsentr") },
 };
 
 const faqItems = [
@@ -81,7 +82,7 @@ export default function PropuskGazelPage() {
         name="Пропуск на Газель в Москву"
         description="Оформление пропуска на Газель для проезда по МКАД, ТТК и Садовому кольцу"
         price={3500}
-        url="https://inlog24.ru/propusk/propusk-na-gazel-v-tsentr"
+        url={absoluteUrl("/propusk/propusk-na-gazel-v-tsentr")}
       />
       <FaqJsonLd items={faqItems} />
       <BreadcrumbJsonLd

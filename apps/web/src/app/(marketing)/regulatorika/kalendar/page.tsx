@@ -11,6 +11,7 @@ import {
 } from "@/content/regulatory-timeline";
 
 import { SubscribeForm } from "./_components/subscribe-form";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title:
@@ -29,11 +30,11 @@ export const metadata: Metadata = {
     description:
       "ГосЛог, ЭТрН, РНИС и экокласс — все важные даты в одном календаре.",
     type: "website",
-    url: "https://inlog24.ru/regulatorika/kalendar",
+    url: absoluteUrl("/regulatorika/kalendar"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/regulatorika/kalendar",
+    canonical: absoluteUrl("/regulatorika/kalendar"),
   },
 };
 

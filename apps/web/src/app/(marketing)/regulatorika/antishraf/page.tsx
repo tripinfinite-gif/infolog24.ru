@@ -14,6 +14,7 @@ import {
 } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title: "Антиштраф — мониторинг пропусков парка | Инфолог24",
@@ -31,11 +32,11 @@ export const metadata: Metadata = {
     description:
       "Алерты о риске аннуляции пропуска и нарушениях РНИС — до того, как штрафы начнут сыпаться.",
     type: "website",
-    url: "https://inlog24.ru/regulatorika/antishraf",
+    url: absoluteUrl("/regulatorika/antishraf"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/regulatorika/antishraf",
+    canonical: absoluteUrl("/regulatorika/antishraf"),
   },
 };
 

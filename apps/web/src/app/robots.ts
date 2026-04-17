@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { headers } from "next/headers";
 
+import { SITE_URL } from "@/lib/utils/base-url";
+
 export default async function robots(): Promise<MetadataRoute.Robots> {
   const headersList = await headers();
   const host = headersList.get("host") ?? "";
@@ -20,6 +22,6 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
         disallow: ["/dashboard/", "/admin/", "/api/", "/partner/"],
       },
     ],
-    sitemap: "https://inlog24.ru/sitemap.xml",
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

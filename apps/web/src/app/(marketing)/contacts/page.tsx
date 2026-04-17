@@ -20,6 +20,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { companyInfo } from "@/content/company";
 
 import { ContactForm } from "./contact-form";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
     description:
       "Свяжитесь с нами для оформления пропуска в Москву. Ответим за 5 минут.",
     type: "website",
-    url: "https://inlog24.ru/contacts",
+    url: absoluteUrl("/contacts"),
     siteName: "Инфолог24",
   },
   twitter: {
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
       "Свяжитесь с нами для оформления пропуска в Москву. Ответим за 5 минут.",
   },
   alternates: {
-    canonical: "https://inlog24.ru/contacts",
+    canonical: absoluteUrl("/contacts"),
   },
 };
 

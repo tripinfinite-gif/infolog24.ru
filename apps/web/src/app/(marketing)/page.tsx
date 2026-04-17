@@ -18,6 +18,7 @@ import {
 } from "@/components/seo/json-ld";
 import { faqItems } from "@/content/faq";
 import { testimonials } from "@/content/testimonials";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour — content changes infrequently
 export const revalidate = 3600;
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
     description:
       "Вся операционка перевозчика в одном окне. Пакеты «Пропуск+», «Транзит Москва», «Флот Про» + ИнфоПилот — ИИ-диспетчер на трассе 24/7.",
     type: "website",
-    url: "https://inlog24.ru",
+    url: absoluteUrl("/"),
     siteName: "Инфолог24",
   },
   twitter: {
@@ -61,7 +62,7 @@ export const metadata: Metadata = {
       "Больше чем пропуск. 6 систем регуляторики в одном окне + ИИ-диспетчер на трассе 24/7.",
   },
   alternates: {
-    canonical: "https://inlog24.ru",
+    canonical: absoluteUrl("/"),
   },
 };
 

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { serviceZones } from "@/content/services";
+import { absoluteUrl } from "@/lib/utils/base-url";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,7 +58,7 @@ export async function generateMetadata({
       title,
       description,
       type: "website",
-      url: `https://inlog24.ru/services/${slug}`,
+      url: absoluteUrl(`/services/${slug}`),
       siteName: "Инфолог24",
     },
     twitter: {
@@ -66,7 +67,7 @@ export async function generateMetadata({
       description,
     },
     alternates: {
-      canonical: `https://inlog24.ru/services/${slug}`,
+      canonical: absoluteUrl(`/services/${slug}`),
     },
   };
 }

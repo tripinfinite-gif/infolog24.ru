@@ -26,6 +26,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { ensurePartnerReferralCode } from "@/lib/dal/partners";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 const TEST_PARTNER = {
   email: "partner@infolog24.ru",
@@ -88,7 +89,7 @@ async function seedTestPartner() {
   // 4. Реферальный код (создаст или вернёт существующий)
   const referralCode = await ensurePartnerReferralCode(userId);
   console.log(`  ✓ Реферальный код: ${referralCode}`);
-  console.log(`  ✓ Реф. ссылка:     https://inlog24.ru/?ref=${referralCode}`);
+  console.log(`  ✓ Реф. ссылка:     ${absoluteUrl(`/?ref=${referralCode}`)}`);
 
   console.log("\n✓ Сид завершён.\nЛогин: /partner/login\n");
 }

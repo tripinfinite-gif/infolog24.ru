@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { CtaSection } from "@/components/sections/cta-section";
 import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
 import { blogArticles } from "@/content/blog-articles";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -40,7 +41,7 @@ export async function generateMetadata({
       title: article.title,
       description: article.excerpt,
       type: "article",
-      url: `https://inlog24.ru/blog/${slug}`,
+      url: absoluteUrl(`/blog/${slug}`),
       siteName: "Инфолог24",
     },
     twitter: {
@@ -49,7 +50,7 @@ export async function generateMetadata({
       description: article.excerpt,
     },
     alternates: {
-      canonical: `https://inlog24.ru/blog/${slug}`,
+      canonical: absoluteUrl(`/blog/${slug}`),
     },
   };
 }

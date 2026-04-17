@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   title: "Инфолог24 — Пропуска в Москву для грузового транспорта",
   description:
     "Оформление пропусков на МКАД, ТТК и Садовое кольцо. Быстро, надёжно, с гарантией результата.",
+  verification: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
+    ? { yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION }
+    : undefined,
 };
 
 export default function RootLayout({

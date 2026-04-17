@@ -9,6 +9,7 @@ import {
 } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title:
@@ -27,11 +28,11 @@ export const metadata: Metadata = {
     description:
       "Подписочная юридическая поддержка: консультации, обжалование, договоры, суды.",
     type: "website",
-    url: "https://inlog24.ru/regulatorika/yurist",
+    url: absoluteUrl("/regulatorika/yurist"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/regulatorika/yurist",
+    canonical: absoluteUrl("/regulatorika/yurist"),
   },
 };
 

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { blogArticles } from "@/content/blog-articles";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour — blog updates infrequently
 export const revalidate = 3600;
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
     description:
       "Полезные статьи о пропусках в Москву для грузового транспорта.",
     type: "website",
-    url: "https://inlog24.ru/blog",
+    url: absoluteUrl("/blog"),
     siteName: "Инфолог24",
   },
   twitter: {
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
       "Полезные статьи о пропусках в Москву для грузового транспорта.",
   },
   alternates: {
-    canonical: "https://inlog24.ru/blog",
+    canonical: absoluteUrl("/blog"),
   },
 };
 

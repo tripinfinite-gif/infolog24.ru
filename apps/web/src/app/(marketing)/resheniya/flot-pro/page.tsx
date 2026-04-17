@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { packages } from "@/content/packages";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title: "Флот Про — корпоративный пакет от 900 ₽/мес за ТС | Инфолог24",
@@ -27,11 +28,11 @@ export const metadata: Metadata = {
     description:
       "API, SLA 4 часа, выделенный аккаунт-менеджер 24/7 и корпоративный ЛК для парка от 10 машин.",
     type: "website",
-    url: "https://inlog24.ru/resheniya/flot-pro",
+    url: absoluteUrl("/resheniya/flot-pro"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/resheniya/flot-pro",
+    canonical: absoluteUrl("/resheniya/flot-pro"),
   },
 };
 

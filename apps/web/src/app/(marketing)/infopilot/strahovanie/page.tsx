@@ -4,6 +4,7 @@ import { Shield } from "lucide-react";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 
 import { ScenarioTemplate } from "../_components/scenario-template";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title:
@@ -22,11 +23,11 @@ export const metadata: Metadata = {
     description:
       "ОСАГО, КАСКО, ОСГОП и ответственность экспедитора от партнёров — онлайн за минуты.",
     type: "website",
-    url: "https://inlog24.ru/infopilot/strahovanie",
+    url: absoluteUrl("/infopilot/strahovanie"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/infopilot/strahovanie",
+    canonical: absoluteUrl("/infopilot/strahovanie"),
   },
 };
 

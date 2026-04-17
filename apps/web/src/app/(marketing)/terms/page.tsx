@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { termsOfService } from "@/content/legal";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title: "Пользовательское соглашение — Инфолог24",
@@ -10,11 +11,11 @@ export const metadata: Metadata = {
     title: "Пользовательское соглашение — Инфолог24",
     description: "Пользовательское соглашение ООО «Инфологистик 24».",
     type: "website",
-    url: "https://inlog24.ru/terms",
+    url: absoluteUrl("/terms"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/terms",
+    canonical: absoluteUrl("/terms"),
   },
 };
 

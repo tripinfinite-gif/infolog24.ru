@@ -4,6 +4,7 @@ import { Truck } from "lucide-react";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 
 import { ScenarioTemplate } from "../_components/scenario-template";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title:
@@ -22,11 +23,11 @@ export const metadata: Metadata = {
     description:
       "Ближайший проверенный эвакуатор в любой точке РФ за 27 минут. Цена договором — без сюрпризов.",
     type: "website",
-    url: "https://inlog24.ru/infopilot/evakuaciya",
+    url: absoluteUrl("/infopilot/evakuaciya"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/infopilot/evakuaciya",
+    canonical: absoluteUrl("/infopilot/evakuaciya"),
   },
 };
 

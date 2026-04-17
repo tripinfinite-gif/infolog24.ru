@@ -4,6 +4,7 @@ import { Droplets } from "lucide-react";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 
 import { ScenarioTemplate } from "../_components/scenario-template";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title: "ИнфоПилот: Мойки грузовых на маршруте | Инфолог24",
@@ -21,11 +22,11 @@ export const metadata: Metadata = {
     description:
       "Ближайшая мойка на маршруте, цены договорные — без сюрпризов.",
     type: "website",
-    url: "https://inlog24.ru/infopilot/mojki",
+    url: absoluteUrl("/infopilot/mojki"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/infopilot/mojki",
+    canonical: absoluteUrl("/infopilot/mojki"),
   },
 };
 

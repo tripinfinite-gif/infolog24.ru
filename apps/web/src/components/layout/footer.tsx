@@ -7,12 +7,17 @@ import { companyInfo } from "@/content/company";
 import { cn } from "@/lib/utils";
 
 const serviceLinks = [
+  { href: "/ekosistema", label: "Экосистема Инфолог24" },
   { href: "/services/propusk-mkad", label: "Пропуск на МКАД" },
   { href: "/services/propusk-ttk", label: "Пропуск на ТТК" },
   { href: "/services/propusk-sk", label: "Пропуск на Садовое" },
   { href: "/services/vremennyj-propusk", label: "Временный пропуск" },
   { href: "/goslog", label: "Регистрация в ГосЛог" },
   { href: "/etrn", label: "Переход на ЭТрН" },
+  { href: "/kep", label: "КЭП и МЧД" },
+  { href: "/monitoring", label: "Антиштраф — мониторинг" },
+  { href: "/yurist", label: "Юрист-перевозчик" },
+  { href: "/park-pro", label: "Парк Про — ЛК" },
 ];
 
 const companyLinks = [

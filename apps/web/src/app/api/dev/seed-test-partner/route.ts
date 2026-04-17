@@ -22,6 +22,7 @@ import { db } from "@/lib/db";
 import { users } from "@/lib/db/schema";
 import { ensurePartnerReferralCode } from "@/lib/dal/partners";
 import { logger } from "@/lib/logger";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 const SEED_TOKEN = "infolog24-seed-2026-temp";
 
@@ -104,7 +105,7 @@ export async function POST(request: Request) {
         company: TEST_PARTNER.company,
         inn: TEST_PARTNER.inn,
         referralCode,
-        referralLink: `https://inlog24.ru/?ref=${referralCode}`,
+        referralLink: absoluteUrl(`/?ref=${referralCode}`),
       },
     });
   } catch (err) {

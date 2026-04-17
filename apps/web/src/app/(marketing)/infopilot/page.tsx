@@ -21,6 +21,7 @@ import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { absoluteUrl } from "@/lib/utils/base-url";
 import {
   infopilotScenarios,
   infopilotTechFeatures,
@@ -45,11 +46,11 @@ export const metadata: Metadata = {
     description:
       "Эвакуация, ремонт, мойки, страхование и обжалование штрафов — в одном чате. ИИ-агент сам звонит партнёрам и фиксирует цену.",
     type: "website",
-    url: "https://inlog24.ru/infopilot",
+    url: absoluteUrl("/infopilot"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/infopilot",
+    canonical: absoluteUrl("/infopilot"),
   },
 };
 

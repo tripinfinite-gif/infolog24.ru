@@ -16,6 +16,7 @@ import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { regulatoryTimeline } from "@/content/regulatory-timeline";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -37,11 +38,11 @@ export const metadata: Metadata = {
     description:
       "ГосЛог, ЭТрН, РНИС, Антиштраф, юрист и календарь дедлайнов — всё, что нужно перевозчику для соответствия закону.",
     type: "website",
-    url: "https://inlog24.ru/regulatorika",
+    url: absoluteUrl("/regulatorika"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/regulatorika",
+    canonical: absoluteUrl("/regulatorika"),
   },
 };
 

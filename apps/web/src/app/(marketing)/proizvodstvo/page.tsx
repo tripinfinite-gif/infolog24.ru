@@ -25,6 +25,7 @@ import {
 import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -49,11 +50,11 @@ export const metadata: Metadata = {
     description:
       "Полный аутсорсинг: от документов до продления. Одна точка контакта, закрывающие документы для бухгалтерии.",
     type: "website",
-    url: "https://inlog24.ru/proizvodstvo",
+    url: absoluteUrl("/proizvodstvo"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/proizvodstvo",
+    canonical: absoluteUrl("/proizvodstvo"),
   },
 };
 

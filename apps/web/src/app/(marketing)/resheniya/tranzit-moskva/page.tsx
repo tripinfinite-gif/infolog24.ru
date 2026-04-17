@@ -9,6 +9,7 @@ import {
 import { packages } from "@/content/packages";
 
 import { PackageDetail } from "../_components/package-detail";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title:
@@ -27,11 +28,11 @@ export const metadata: Metadata = {
     description:
       "Полная регуляторная защита: пропуск, РНИС, ЭТрН, ГосЛог, Антиштраф, юрист и ИнфоПилот. Рекомендуем для растущей ТК.",
     type: "website",
-    url: "https://inlog24.ru/resheniya/tranzit-moskva",
+    url: absoluteUrl("/resheniya/tranzit-moskva"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/resheniya/tranzit-moskva",
+    canonical: absoluteUrl("/resheniya/tranzit-moskva"),
   },
 };
 

@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/table";
 
 import { EtrnForm } from "./etrn-form";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -52,7 +53,7 @@ export const metadata: Metadata = {
     description:
       "Поможем перейти на ЭТрН до дедлайна. УКЭП, подключение к ЭДО, обучение персонала.",
     type: "website",
-    url: "https://inlog24.ru/etrn",
+    url: absoluteUrl("/etrn"),
     siteName: "Инфолог24",
   },
   twitter: {
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
       "Поможем перейти на ЭТрН до дедлайна. УКЭП, ЭДО, обучение.",
   },
   alternates: {
-    canonical: "https://inlog24.ru/etrn",
+    canonical: absoluteUrl("/etrn"),
   },
 };
 

@@ -16,6 +16,7 @@ import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { ArticleJsonLd, BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const revalidate = 3600;
 
@@ -36,10 +37,10 @@ export const metadata: Metadata = {
     description:
       "Законные способы повысить экокласс с Евро-0 до Евро-2/3/4. Документы, процедура, сроки.",
     type: "article",
-    url: "https://inlog24.ru/eco",
+    url: absoluteUrl("/eco"),
     siteName: "Инфолог24",
   },
-  alternates: { canonical: "https://inlog24.ru/eco" },
+  alternates: { canonical: absoluteUrl("/eco") },
 };
 
 const faqItems = [
@@ -82,7 +83,7 @@ export default function EcoPage() {
         headline="Повышение экологического класса автомобиля: способы, документы, сроки"
         description="Как законно повысить экологический класс грузового автомобиля для получения пропуска в Москву"
         datePublished="2024-01-15"
-        url="https://inlog24.ru/eco"
+        url={absoluteUrl("/eco")}
       />
       <FaqJsonLd items={faqItems} />
       <BreadcrumbJsonLd

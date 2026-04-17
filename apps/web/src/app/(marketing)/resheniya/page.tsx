@@ -17,6 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { packages } from "@/content/packages";
 
 import { CalculatorPicker } from "./_components/calculator-picker";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -38,11 +39,11 @@ export const metadata: Metadata = {
     description:
       "Три пакета под размер парка: от частника до корпоративного клиента. Пропуск, РНИС, ЭТрН, ГосЛог, Антиштраф и юрист — в одной подписке.",
     type: "website",
-    url: "https://inlog24.ru/resheniya",
+    url: absoluteUrl("/resheniya"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/resheniya",
+    canonical: absoluteUrl("/resheniya"),
   },
 };
 

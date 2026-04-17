@@ -4,6 +4,7 @@ import { BreadcrumbJsonLd, ReviewsJsonLd } from "@/components/seo/json-ld";
 import { testimonials } from "@/content/testimonials";
 
 import { ReviewsClient } from "./reviews-client";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "150+ отзывов. Средняя оценка 4.9. 70% клиентов продлевают пропуска ежегодно.",
     type: "website",
-    url: "https://inlog24.ru/reviews",
+    url: absoluteUrl("/reviews"),
     siteName: "Инфолог24",
   },
   twitter: {
@@ -32,7 +33,7 @@ export const metadata: Metadata = {
       "150+ отзывов. Средняя оценка 4.9. 70% клиентов продлевают пропуска ежегодно.",
   },
   alternates: {
-    canonical: "https://inlog24.ru/reviews",
+    canonical: absoluteUrl("/reviews"),
   },
 };
 

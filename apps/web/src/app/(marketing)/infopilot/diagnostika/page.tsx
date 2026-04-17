@@ -4,6 +4,7 @@ import { ClipboardCheck } from "lucide-react";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 
 import { ScenarioTemplate } from "../_components/scenario-template";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title:
@@ -22,11 +23,11 @@ export const metadata: Metadata = {
     description:
       "Ближайший лицензированный оператор, бронирование слота онлайн, документы в ЛК автоматически.",
     type: "website",
-    url: "https://inlog24.ru/infopilot/diagnostika",
+    url: absoluteUrl("/infopilot/diagnostika"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/infopilot/diagnostika",
+    canonical: absoluteUrl("/infopilot/diagnostika"),
   },
 };
 

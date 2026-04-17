@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { faqItems } from "@/content/faq";
 
 import { FaqClient } from "./faq-client";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     description:
       "Ответы на 30+ вопросов: документы, сроки, цены, штрафы, требования к транспорту.",
     type: "website",
-    url: "https://inlog24.ru/faq",
+    url: absoluteUrl("/faq"),
     siteName: "Инфолог24",
   },
   twitter: {
@@ -33,7 +34,7 @@ export const metadata: Metadata = {
       "Ответы на 30+ вопросов: документы, сроки, цены, штрафы, требования к транспорту.",
   },
   alternates: {
-    canonical: "https://inlog24.ru/faq",
+    canonical: absoluteUrl("/faq"),
   },
 };
 

@@ -2,8 +2,9 @@ import type { MetadataRoute } from "next";
 
 import { blogArticles } from "@/content/blog-articles";
 import { serviceZones } from "@/content/services";
+import { SITE_URL } from "@/lib/utils/base-url";
 
-const BASE_URL = "https://inlog24.ru";
+const BASE_URL = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [
@@ -39,6 +40,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/malye-tk`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/ip-perevozchik`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE_URL}/proizvodstvo`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    // Новые продуктовые лендинги (стратегия 1 млрд)
+    { url: `${BASE_URL}/ekosistema`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/monitoring`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE_URL}/yurist`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/kep`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE_URL}/park-pro`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.9 },
     // Страницы, сохранённые со старого сайта (SEO-миграция)
     { url: `${BASE_URL}/propusk/propusk-na-gazel-v-tsentr`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE_URL}/eco`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },

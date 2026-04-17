@@ -4,6 +4,7 @@ import { Wrench } from "lucide-react";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 
 import { ScenarioTemplate } from "../_components/scenario-template";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title: "ИнфоПилот: Ремонт грузовиков и тягачей | Инфолог24",
@@ -21,11 +22,11 @@ export const metadata: Metadata = {
     description:
       "СТО с прозрачным прайсом и рейтингом 4.5+. Цена и сроки — до приезда водителя.",
     type: "website",
-    url: "https://inlog24.ru/infopilot/remont",
+    url: absoluteUrl("/infopilot/remont"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/infopilot/remont",
+    canonical: absoluteUrl("/infopilot/remont"),
   },
 };
 

@@ -3,6 +3,7 @@ import { ArrowRight, Home } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title: "Страница не найдена — Инфолог24",
@@ -23,7 +24,7 @@ const notFoundJsonLd = {
   "@type": "WebPage",
   name: "Страница не найдена — Инфолог24",
   description: "404 — запрашиваемая страница не существует",
-  url: "https://inlog24.ru/404",
+  url: absoluteUrl("/404"),
 };
 
 export default function NotFound() {

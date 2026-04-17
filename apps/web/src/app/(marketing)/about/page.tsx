@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { companyInfo } from "@/content/company";
 import { stats } from "@/content/stats";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -40,7 +41,7 @@ export const metadata: Metadata = {
     description:
       "Сервис оформления пропусков в Москву с 2016 года. 50 000+ пропусков, 98% одобрение.",
     type: "website",
-    url: "https://inlog24.ru/about",
+    url: absoluteUrl("/about"),
     siteName: "Инфолог24",
   },
   twitter: {
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
       "Сервис оформления пропусков в Москву с 2016 года. 50 000+ пропусков, 98% одобрение.",
   },
   alternates: {
-    canonical: "https://inlog24.ru/about",
+    canonical: absoluteUrl("/about"),
   },
 };
 

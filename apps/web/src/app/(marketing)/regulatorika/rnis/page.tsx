@@ -13,6 +13,7 @@ import {
 } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title:
@@ -31,11 +32,11 @@ export const metadata: Metadata = {
     description:
       "Подключим РНИС через партнёра-оператора по себестоимости. От 350 ₽/мес за ТС.",
     type: "website",
-    url: "https://inlog24.ru/regulatorika/rnis",
+    url: absoluteUrl("/regulatorika/rnis"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/regulatorika/rnis",
+    canonical: absoluteUrl("/regulatorika/rnis"),
   },
 };
 

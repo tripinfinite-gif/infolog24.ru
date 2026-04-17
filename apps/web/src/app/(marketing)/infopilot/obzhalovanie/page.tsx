@@ -4,6 +4,7 @@ import { Scale } from "lucide-react";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/seo/json-ld";
 
 import { ScenarioTemplate } from "../_components/scenario-template";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title:
@@ -22,11 +23,11 @@ export const metadata: Metadata = {
     description:
       "ИИ + юрист в штате. Отмена или снижение штрафов с камер МАДИ, АМПП, ГИБДД. Платите только за результат.",
     type: "website",
-    url: "https://inlog24.ru/infopilot/obzhalovanie",
+    url: absoluteUrl("/infopilot/obzhalovanie"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/infopilot/obzhalovanie",
+    canonical: absoluteUrl("/infopilot/obzhalovanie"),
   },
 };
 

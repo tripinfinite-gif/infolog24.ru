@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { privacyPolicy } from "@/content/legal";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const metadata: Metadata = {
   title: "Политика конфиденциальности — Инфолог24",
@@ -10,11 +11,11 @@ export const metadata: Metadata = {
     title: "Политика конфиденциальности — Инфолог24",
     description: "Политика конфиденциальности ООО «Инфологистик 24».",
     type: "website",
-    url: "https://inlog24.ru/privacy",
+    url: absoluteUrl("/privacy"),
     siteName: "Инфолог24",
   },
   alternates: {
-    canonical: "https://inlog24.ru/privacy",
+    canonical: absoluteUrl("/privacy"),
   },
 };
 

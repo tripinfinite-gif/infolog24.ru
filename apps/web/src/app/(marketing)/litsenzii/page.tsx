@@ -15,6 +15,7 @@ import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { BreadcrumbJsonLd, FaqJsonLd, ServiceJsonLd } from "@/components/seo/json-ld";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { absoluteUrl } from "@/lib/utils/base-url";
 
 export const revalidate = 3600;
 
@@ -35,10 +36,10 @@ export const metadata: Metadata = {
     description:
       "Оформление лицензии и карты МАП за 30 дней. Полное сопровождение от подачи до получения.",
     type: "website",
-    url: "https://inlog24.ru/litsenzii",
+    url: absoluteUrl("/litsenzii"),
     siteName: "Инфолог24",
   },
-  alternates: { canonical: "https://inlog24.ru/litsenzii" },
+  alternates: { canonical: absoluteUrl("/litsenzii") },
 };
 
 const faqItems = [
@@ -81,7 +82,7 @@ export default function LitsenziiPage() {
         name="Лицензия на международные перевозки"
         description="Оформление лицензии на международные автомобильные перевозки и карты допуска МАП"
         price={50000}
-        url="https://inlog24.ru/litsenzii"
+        url={absoluteUrl("/litsenzii")}
       />
       <FaqJsonLd items={faqItems} />
       <BreadcrumbJsonLd
