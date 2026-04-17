@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
 import { z } from "zod";
 import { env } from "@/env";
 import { logger } from "@/lib/logger";
@@ -188,6 +189,9 @@ export async function POST(request: Request) {
       message: "Заявка принята. Мы свяжемся с вами в ближайшее время.",
     });
   } catch (error) {
+    Sentry.captureException(error, {
+      tags: { route: "api/contacts", method: "POST" },
+    });
     logger.error({ err: error }, "Failed to process contact form submission");
     return NextResponse.json(
       {

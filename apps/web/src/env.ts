@@ -33,6 +33,7 @@ export const env = createEnv({
     NEXT_PUBLIC_GA4_ID: z.string().optional(),
     NEXT_PUBLIC_JIVO_WIDGET_ID: z.string().optional(),
     NEXT_PUBLIC_CALLTOUCH_MOD_ID: z.string().optional(),
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
   },
   runtimeEnv: {
     DATABASE_URL: process.env.DATABASE_URL,
@@ -62,5 +63,6 @@ export const env = createEnv({
     NEXT_PUBLIC_GA4_ID: process.env.NEXT_PUBLIC_GA4_ID,
     NEXT_PUBLIC_JIVO_WIDGET_ID: process.env.NEXT_PUBLIC_JIVO_WIDGET_ID,
     NEXT_PUBLIC_CALLTOUCH_MOD_ID: process.env.NEXT_PUBLIC_CALLTOUCH_MOD_ID,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
 });

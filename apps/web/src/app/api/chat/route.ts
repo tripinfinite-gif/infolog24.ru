@@ -6,6 +6,7 @@ import {
 } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
+import * as Sentry from "@sentry/nextjs";
 
 import { buildSystemPrompt } from "@/lib/chat/system-prompt";
 import { createChatTools } from "@/lib/chat/tools";
@@ -362,6 +363,9 @@ export async function POST(req: Request) {
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
+    Sentry.captureException(error, {
+      tags: { route: "api/chat", method: "POST" },
+    });
     logger.error({ error, errorMessage: error instanceof Error ? error.message : String(error), errorStack: error instanceof Error ? error.stack : undefined }, "Chat API error");
     return new Response(
       JSON.stringify({ error: "Произошла ошибка. Попробуйте позже." }),

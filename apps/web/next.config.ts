@@ -1,4 +1,5 @@
 import withBundleAnalyzer from "@next/bundle-analyzer";
+import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
 const withAnalyzer = withBundleAnalyzer({
@@ -158,4 +159,26 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withAnalyzer(nextConfig);
+/**
+ * Sentry конфигурация билда.
+ *
+ * Без `NEXT_PUBLIC_SENTRY_DSN` Sentry SDK не инициализируется в рантайме
+ * (см. sentry.*.config.ts), а `withSentryConfig` оставляет конфиг
+ * функциональным — просто никакой ошибки не летит на сервер Sentry.
+ *
+ * authToken для загрузки source maps НЕ передаём — это потребует доступа
+ * к Sentry-аккаунту, которого пока нет. Добавим, когда появится.
+ */
+const sentryBuildOptions = {
+  // Тише в логах билда.
+  silent: !process.env.CI,
+  // Расширенное дерево вызовов в React — пока пропускаем (Next пробует сам).
+  widenClientFileUpload: true,
+  // Автоматически разворачивает /monitoring для туннелирования событий
+  // мимо ad-blocker'ов. Включим, когда получим DSN и доверим маршрут.
+  tunnelRoute: undefined as string | undefined,
+  // Source maps всё равно не грузим без authToken.
+  disableLogger: true,
+};
+
+export default withSentryConfig(withAnalyzer(nextConfig), sentryBuildOptions);
