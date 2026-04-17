@@ -5,9 +5,51 @@ import { notFound } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { CtaSection } from "@/components/sections/cta-section";
-import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/seo/json-ld";
+import {
+  ArticleJsonLd,
+  BreadcrumbJsonLd,
+  FaqJsonLd,
+} from "@/components/seo/json-ld";
 import { blogArticles } from "@/content/blog-articles";
 import { absoluteUrl } from "@/lib/utils/base-url";
+
+/**
+ * Извлекает пары вопрос/ответ из секции "## FAQ" в markdown-контенте статьи.
+ * Формат: "### Вопрос?" → следующие абзацы до следующего ### или ## — ответ.
+ */
+function extractFaqItems(
+  content: string
+): { question: string; answer: string }[] {
+  const faqStart = content.indexOf("## FAQ");
+  if (faqStart === -1) return [];
+
+  // Берём всё от "## FAQ" до следующего "## " или конца
+  const tail = content.slice(faqStart + "## FAQ".length);
+  const nextH2 = tail.search(/\n##\s+(?!#)/);
+  const faqBlock = nextH2 === -1 ? tail : tail.slice(0, nextH2);
+
+  const items: { question: string; answer: string }[] = [];
+  const parts = faqBlock.split(/\n### /).slice(1); // первый элемент — мусор перед первым ###
+
+  for (const part of parts) {
+    const lines = part.split("\n");
+    const question = lines[0].trim().replace(/\?*$/, "?");
+    const answerLines: string[] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.startsWith("### ") || line.startsWith("## ")) break;
+      if (line) answerLines.push(line);
+    }
+    const answer = answerLines
+      .join(" ")
+      .replace(/\*\*(.+?)\*\*/g, "$1")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .trim();
+    if (question && answer) items.push({ question, answer });
+  }
+
+  return items;
+}
 
 // ISR: revalidate every 1 hour
 export const revalidate = 3600;
@@ -139,6 +181,8 @@ export default async function BlogArticlePage({
     notFound();
   }
 
+  const faqItems = extractFaqItems(article.content);
+
   return (
     <>
       <ArticleJsonLd
@@ -154,6 +198,7 @@ export default async function BlogArticlePage({
           { name: article.title, href: `/blog/${article.slug}` },
         ]}
       />
+      {faqItems.length > 0 && <FaqJsonLd items={faqItems} />}
 
       <article className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-3xl">
