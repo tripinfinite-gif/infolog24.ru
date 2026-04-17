@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { blogArticles } from "@/content/blog-articles";
 import { serviceZones } from "@/content/services";
+import { vehicleTypes } from "@/content/vehicle-types";
 import { SITE_URL } from "@/lib/utils/base-url";
 
 const BASE_URL = SITE_URL;
@@ -66,5 +67,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...servicePages, ...blogPages];
+  // Программатик-SEO: пропуск на [модель-грузовика]
+  const vehiclePages: MetadataRoute.Sitemap = vehicleTypes.map((v) => ({
+    url: `${BASE_URL}/propusk-na/${v.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...servicePages, ...blogPages, ...vehiclePages];
 }
