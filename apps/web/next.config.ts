@@ -37,6 +37,9 @@ const cspDirectives: Record<string, string[]> = {
     "https://www.google-analytics.com",
   ],
   "frame-src": ["'self'", "https://yookassa.ru"],
+  // PWA: service worker и web-app manifest обслуживаются из того же origin.
+  "worker-src": ["'self'"],
+  "manifest-src": ["'self'"],
   "object-src": ["'none'"],
   "base-uri": ["'self'"],
   "form-action": ["'self'"],

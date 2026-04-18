@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 
 import { AnalyticsProvider } from "@/components/analytics/analytics-provider";
+import { ServiceWorkerRegister } from "@/components/pwa/sw-register";
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
@@ -21,9 +22,19 @@ export const metadata: Metadata = {
   title: "Инфолог24 — Пропуска в Москву для грузового транспорта",
   description:
     "Оформление пропусков на МКАД, ТТК и Садовое кольцо. Быстро, надёжно, с гарантией результата.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Инфолог24",
+  },
   verification: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
     ? { yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION }
     : undefined,
+};
+
+export const viewport: Viewport = {
+  themeColor: "#7c3aed",
 };
 
 export default function RootLayout({
@@ -37,6 +48,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <AnalyticsProvider />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
