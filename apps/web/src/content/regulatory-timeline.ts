@@ -6,7 +6,18 @@ export interface RegulatoryMilestone {
   who: string;
   penalty: string;
   ctaLabel: string;
-  ctaHref: string;
+  /**
+   * Тип CTA:
+   * - "link" — обычный переход по ctaHref (страница с информацией + формой)
+   * - "modal" — открывает QuickLeadModal с modalSource/modalContext
+   *   (используется для горящих дедлайнов — форма конвертит быстрее чем страница)
+   */
+  ctaType: "link" | "modal";
+  ctaHref?: string;          // для ctaType="link"
+  modalSource?: string;      // для ctaType="modal" — source в /api/contacts
+  modalContext?: Record<string, string>;  // для ctaType="modal" — контекст для CRM/email
+  modalTitle?: string;       // заголовок модалки
+  modalDescription?: string; // подзаголовок модалки
   status: "upcoming" | "urgent" | "active";
 }
 
@@ -18,8 +29,18 @@ export const regulatoryTimeline: RegulatoryMilestone[] = [
     name: "ГосЛог: дедлайн для экспедиторов",
     who: "Экспедиторские компании — все, кто оформляет перевозки от имени грузоотправителя",
     penalty: "Штраф до 1 000 000 ₽ для юрлиц за работу без регистрации",
-    ctaLabel: "Подключиться к ГосЛог",
-    ctaHref: "/regulatorika/goslog",
+    // Горящий дедлайн — открываем форму сразу, не ведём на промежуточную страницу
+    ctaLabel: "Помочь с регистрацией",
+    ctaType: "modal",
+    modalSource: "reg_goslog_expeditors",
+    modalContext: {
+      service: "ГосЛог — регистрация экспедитора",
+      deadline: "30 апреля 2026",
+      urgency: "горит",
+    },
+    modalTitle: "Регистрация в ГосЛог для экспедитора",
+    modalDescription:
+      "Успеем к 30 апреля. Оставьте телефон — перезвоним за 5 минут, расскажем что нужно и сделаем под ключ.",
     status: "urgent",
   },
   {
@@ -29,8 +50,9 @@ export const regulatoryTimeline: RegulatoryMilestone[] = [
     name: "ЭТрН: обязательный переход",
     who: "Все перевозчики и грузоотправители — без ЭДО возить нельзя",
     penalty: "Блокировка перевозки, штрафы за отсутствие электронной ТрН",
-    ctaLabel: "Перейти на ЭТрН",
-    ctaHref: "/regulatorika/etrn",
+    ctaLabel: "Подготовиться к ЭТрН",
+    ctaType: "link",
+    ctaHref: "/etrn",
     status: "upcoming",
   },
   {
@@ -40,8 +62,9 @@ export const regulatoryTimeline: RegulatoryMilestone[] = [
     name: "ГосЛог: дедлайн для перевозчиков",
     who: "Все автомобильные перевозчики грузов по РФ",
     penalty: "Штраф до 1 000 000 ₽ + запрет на выполнение перевозок",
-    ctaLabel: "Зарегистрироваться в ГосЛог",
-    ctaHref: "/regulatorika/goslog",
+    ctaLabel: "Подготовиться к ГосЛог",
+    ctaType: "link",
+    ctaHref: "/goslog",
     status: "upcoming",
   },
   {
@@ -51,7 +74,8 @@ export const regulatoryTimeline: RegulatoryMilestone[] = [
     name: "Расширение регуляторного каркаса",
     who: "Все грузоперевозчики — ужесточение требований к экоклассу Евро-3/4",
     penalty: "Отказ в выдаче пропусков для несоответствующих ТС",
-    ctaLabel: "Подготовиться заранее",
+    ctaLabel: "Получить напоминание",
+    ctaType: "link",
     ctaHref: "/regulatorika/kalendar",
     status: "upcoming",
   },

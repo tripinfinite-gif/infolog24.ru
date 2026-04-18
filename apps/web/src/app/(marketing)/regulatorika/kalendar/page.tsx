@@ -178,7 +178,7 @@ export default function KalendarPage() {
                           </div>
                         </div>
                         <Link
-                          href={milestone.ctaHref}
+                          href={milestone.ctaHref ?? "/contacts"}
                           className="mt-5 inline-flex items-center text-sm font-semibold text-primary hover:underline"
                         >
                           {milestone.ctaLabel}

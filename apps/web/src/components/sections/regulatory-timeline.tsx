@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { QuickLeadModal } from "@/components/forms/quick-lead-modal";
 import {
   getDaysUntil,
   regulatoryTimeline,
@@ -42,11 +43,13 @@ function MilestoneCard({
   // Hydration-safe: считаем дни только на клиенте, чтобы избежать рассинхрона
   // SSR/CSR на границе суток (UTC vs локальный TZ).
   const [countdown, setCountdown] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
     setCountdown(formatCountdown(getDaysUntil(milestone.date)));
   }, [milestone.date]);
 
   const isUrgent = milestone.status === "urgent";
+  const isModal = milestone.ctaType === "modal";
 
   return (
     <motion.div
@@ -93,21 +96,48 @@ function MilestoneCard({
         {milestone.penalty}
       </p>
 
-      <Button
-        asChild
-        size="sm"
-        variant={isUrgent ? "default" : "outline"}
-        className={cn(
-          "mt-5 w-full rounded-xl",
-          isUrgent &&
-            "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-        )}
-      >
-        <Link href={milestone.ctaHref}>
-          {milestone.ctaLabel}
-          <ArrowRight className="ml-2 size-4" />
-        </Link>
-      </Button>
+      {isModal ? (
+        <>
+          <Button
+            size="sm"
+            variant={isUrgent ? "default" : "outline"}
+            onClick={() => setModalOpen(true)}
+            className={cn(
+              "mt-5 w-full rounded-xl",
+              isUrgent &&
+                "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            )}
+          >
+            <span className="truncate">{milestone.ctaLabel}</span>
+            <ArrowRight className="ml-2 size-4 shrink-0" />
+          </Button>
+          <QuickLeadModal
+            open={modalOpen}
+            onOpenChange={setModalOpen}
+            title={milestone.modalTitle ?? milestone.name}
+            description={milestone.modalDescription}
+            source={milestone.modalSource ?? `reg_${milestone.id}`}
+            context={milestone.modalContext}
+            submitLabel="Получить расчёт"
+          />
+        </>
+      ) : (
+        <Button
+          asChild
+          size="sm"
+          variant={isUrgent ? "default" : "outline"}
+          className={cn(
+            "mt-5 w-full rounded-xl",
+            isUrgent &&
+              "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          )}
+        >
+          <Link href={milestone.ctaHref ?? "#"}>
+            <span className="truncate">{milestone.ctaLabel}</span>
+            <ArrowRight className="ml-2 size-4 shrink-0" />
+          </Link>
+        </Button>
+      )}
     </motion.div>
   );
 }
