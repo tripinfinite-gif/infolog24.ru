@@ -16,6 +16,8 @@ interface FinalCtaFormProps {
   className?: string;
 }
 
+const SIMPLIFIED = process.env.NEXT_PUBLIC_CTA_SIMPLIFIED === "true";
+
 type FleetOption = "1" | "2-4" | "5-20" | "20+";
 
 const fleetOptions: { value: FleetOption; label: string }[] = [
@@ -67,29 +69,37 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
     setLoading(true);
 
     try {
-      const fleetLabel =
-        fleetOptions.find((f) => f.value === fleet)?.label ?? fleet;
-      const needsLabels = needOptions
-        .filter((n) => needs.includes(n.id))
-        .map((n) => n.label)
-        .join(", ");
+      const body: {
+        name: string;
+        phone: string;
+        message?: string;
+        source: string;
+      } = {
+        name,
+        phone,
+        source: SIMPLIFIED ? "homepage-v2-simplified" : "homepage-v2",
+      };
 
-      const message = [
-        `Размер парка: ${fleetLabel}`,
-        needsLabels ? `Что нужно: ${needsLabels}` : null,
-      ]
-        .filter(Boolean)
-        .join("\n");
+      if (!SIMPLIFIED) {
+        const fleetLabel =
+          fleetOptions.find((f) => f.value === fleet)?.label ?? fleet;
+        const needsLabels = needOptions
+          .filter((n) => needs.includes(n.id))
+          .map((n) => n.label)
+          .join(", ");
+
+        body.message = [
+          `Размер парка: ${fleetLabel}`,
+          needsLabels ? `Что нужно: ${needsLabels}` : null,
+        ]
+          .filter(Boolean)
+          .join("\n");
+      }
 
       const res = await fetch("/api/contacts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          message,
-          source: "homepage-v2",
-        }),
+        body: JSON.stringify(body),
       });
 
       const json = await res.json().catch(() => ({}));
@@ -151,43 +161,45 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
           </div>
 
           {/* Alternatives */}
-          <div className="mt-8 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-wider text-primary-foreground/50">
-              Или напишите сразу
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  if (typeof window !== "undefined") {
-                    window.dispatchEvent(new Event("infopilot:open"));
-                  }
-                }}
-                className="inline-flex items-center gap-2 rounded-xl bg-accent/15 px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/25"
-              >
-                <Bot className="size-4" />
-                AI-ассистент
-              </button>
-              {maxLink && (
+          {!SIMPLIFIED && (
+            <div className="mt-8 space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary-foreground/50">
+                Или напишите сразу
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(new Event("infopilot:open"));
+                    }
+                  }}
+                  className="inline-flex items-center gap-2 rounded-xl bg-accent/15 px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/25"
+                >
+                  <Bot className="size-4" />
+                  AI-ассистент
+                </button>
+                {maxLink && (
+                  <a
+                    href={maxLink.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
+                  >
+                    <MessageSquare className="size-4" />
+                    MAX
+                  </a>
+                )}
                 <a
-                  href={maxLink.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`tel:${companyInfo.contacts.phoneTel}`}
                   className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
                 >
-                  <MessageSquare className="size-4" />
-                  MAX
+                  <Phone className="size-4" />
+                  {companyInfo.contacts.phoneFormatted}
                 </a>
-              )}
-              <a
-                href={`tel:${companyInfo.contacts.phoneTel}`}
-                className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
-              >
-                <Phone className="size-4" />
-                {companyInfo.contacts.phoneFormatted}
-              </a>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Form */}
@@ -241,61 +253,65 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
               </div>
 
               {/* Fleet size */}
-              <fieldset className="space-y-2">
-                <legend className="text-sm font-medium text-foreground">
-                  Сколько у вас машин?
-                </legend>
-                <div className="grid grid-cols-4 gap-2">
-                  {fleetOptions.map((option) => {
-                    const active = fleet === option.value;
-                    return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setFleet(option.value)}
-                        className={cn(
-                          "rounded-xl border px-3 py-2 text-xs font-semibold transition-colors",
-                          active
-                            ? "border-accent bg-accent text-accent-foreground shadow-sm"
-                            : "border-border bg-card text-foreground hover:border-accent"
-                        )}
-                      >
-                        {option.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
+              {!SIMPLIFIED && (
+                <fieldset className="space-y-2">
+                  <legend className="text-sm font-medium text-foreground">
+                    Сколько у вас машин?
+                  </legend>
+                  <div className="grid grid-cols-4 gap-2">
+                    {fleetOptions.map((option) => {
+                      const active = fleet === option.value;
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => setFleet(option.value)}
+                          className={cn(
+                            "rounded-xl border px-3 py-2 text-xs font-semibold transition-colors",
+                            active
+                              ? "border-accent bg-accent text-accent-foreground shadow-sm"
+                              : "border-border bg-card text-foreground hover:border-accent"
+                          )}
+                        >
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              )}
 
               {/* Needs */}
-              <fieldset className="space-y-2">
-                <legend className="text-sm font-medium text-foreground">
-                  Что нужно? (можно несколько)
-                </legend>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                  {needOptions.map((option) => {
-                    const checked = needs.includes(option.id);
-                    return (
-                      <label
-                        key={option.id}
-                        className={cn(
-                          "flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
-                          checked
-                            ? "border-accent bg-accent/5 text-foreground"
-                            : "border-border bg-card text-foreground hover:border-accent"
-                        )}
-                      >
-                        <Checkbox
-                          checked={checked}
-                          onCheckedChange={() => toggleNeed(option.id)}
-                          className="size-4"
-                        />
-                        <span>{option.label}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
+              {!SIMPLIFIED && (
+                <fieldset className="space-y-2">
+                  <legend className="text-sm font-medium text-foreground">
+                    Что нужно? (можно несколько)
+                  </legend>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {needOptions.map((option) => {
+                      const checked = needs.includes(option.id);
+                      return (
+                        <label
+                          key={option.id}
+                          className={cn(
+                            "flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                            checked
+                              ? "border-accent bg-accent/5 text-foreground"
+                              : "border-border bg-card text-foreground hover:border-accent"
+                          )}
+                        >
+                          <Checkbox
+                            checked={checked}
+                            onCheckedChange={() => toggleNeed(option.id)}
+                            className="size-4"
+                          />
+                          <span>{option.label}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+              )}
 
               {/* 152-ФЗ согласие на обработку персональных данных */}
               <div className="flex items-start gap-2 text-xs text-muted-foreground">
@@ -344,6 +360,32 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 <span>Данные защищены. Спам не отправляем.</span>
               </div>
             </form>
+          )}
+
+          {SIMPLIFIED && !submitted && (
+            <div className="mt-8 border-t pt-6">
+              <p className="mb-4 text-center text-sm text-muted-foreground">
+                Или свяжитесь по-другому:
+              </p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(new Event("infopilot:open"));
+                    }
+                  }}
+                >
+                  <Bot className="mr-2 size-4" /> Чат ИнфоПилот
+                </Button>
+                <Button type="button" variant="outline" asChild>
+                  <a href={`tel:${companyInfo.contacts.phoneTel}`}>
+                    <Phone className="mr-2 size-4" /> Позвонить
+                  </a>
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       </div>

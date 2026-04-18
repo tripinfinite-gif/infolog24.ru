@@ -39,10 +39,12 @@ export function PopupProvider({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
-      <ExitIntentPopup
+      {/* Exit Intent Popup временно отключён для A/B теста конверсии (Этап 9).
+          После 2 недель измерения решение — вернуть или удалить полностью. */}
+      {/* <ExitIntentPopup
         onOpen={handleExitOpen}
         onClose={handleExitClose}
-      />
+      /> */}
       <ScrollPopup
         onOpen={handleScrollOpen}
         onClose={handleScrollClose}

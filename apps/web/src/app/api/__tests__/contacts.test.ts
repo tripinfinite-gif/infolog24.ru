@@ -1,4 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+const { mockSendEmail, mockCreateDeal } = vi.hoisted(() => ({
+  mockSendEmail: vi.fn(),
+  mockCreateDeal: vi.fn(),
+}));
+
+vi.mock("@/lib/notifications/channels/email", () => ({
+  sendEmailMessage: mockSendEmail,
+}));
+
+vi.mock("@/lib/integrations/bitrix24", () => ({
+  createDeal: mockCreateDeal,
+}));
+
 import { POST } from "@/app/api/contacts/route";
 
 function makeRequest(body: unknown): Request {
@@ -10,6 +24,13 @@ function makeRequest(body: unknown): Request {
 }
 
 describe("POST /api/contacts", () => {
+  beforeEach(() => {
+    mockSendEmail.mockReset();
+    mockCreateDeal.mockReset();
+    mockSendEmail.mockResolvedValue({ success: true, id: "email-1" });
+    mockCreateDeal.mockResolvedValue({ ok: true, data: 123 });
+  });
+
   it("returns 200 for valid contact form", async () => {
     const response = await POST(
       makeRequest({
@@ -67,5 +88,54 @@ describe("POST /api/contacts", () => {
     });
     const response = await POST(badRequest);
     expect(response.status).toBe(500);
+  });
+
+  it("accepts and formats context for email/bitrix", async () => {
+    const response = await POST(
+      makeRequest({
+        name: "Иван",
+        phone: "+74951234567",
+        context: {
+          zone: "МКАД",
+          price: "12 000 ₽",
+          utm_source: "yandex",
+        },
+      }),
+    );
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.success).toBe(true);
+
+    // Bitrix deal вызывается и в комментариях есть отформатированный контекст.
+    expect(mockCreateDeal).toHaveBeenCalledTimes(1);
+    const dealArg = mockCreateDeal.mock.calls[0][0];
+    expect(dealArg.comments).toContain("Зона: МКАД");
+    expect(dealArg.comments).toContain("Рассчитанная цена: 12 000 ₽");
+    expect(dealArg.comments).toContain("UTM source: yandex");
+    expect(dealArg.comments).toContain("=== Контекст заявки ===");
+    expect(dealArg.comments).toContain("=== Атрибуция ===");
+
+    // Email (если настроен ADMIN_EMAIL) получает те же данные в HTML.
+    if (mockSendEmail.mock.calls.length > 0) {
+      const emailArg = mockSendEmail.mock.calls[0][0];
+      expect(emailArg.html).toContain("Зона: МКАД");
+    }
+  });
+
+  it("silently succeeds on honeypot (website field) without creating deal", async () => {
+    const response = await POST(
+      makeRequest({
+        name: "Bot",
+        phone: "+74951234567",
+        website: "spam-link.example",
+      }),
+    );
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.success).toBe(true);
+
+    // Honeypot → не должны ни слать email, ни создавать deal.
+    expect(mockSendEmail).not.toHaveBeenCalled();
+    expect(mockCreateDeal).not.toHaveBeenCalled();
   });
 });

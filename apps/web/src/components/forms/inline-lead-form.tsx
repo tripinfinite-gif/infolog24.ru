@@ -3,6 +3,7 @@
 import { Lock, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useState, useCallback, type FormEvent, type ChangeEvent } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,6 +18,35 @@ import {
 } from "@/components/ui/select";
 import { analytics } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
+
+const UTM_KEYS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+] as const;
+
+function readUtmFromCookies(): Record<string, string> {
+  if (typeof document === "undefined") return {};
+  const result: Record<string, string> = {};
+  const pairs = document.cookie.split("; ");
+  for (const p of pairs) {
+    const idx = p.indexOf("=");
+    if (idx === -1) continue;
+    const key = p.slice(0, idx).trim();
+    const value = p.slice(idx + 1);
+    if (!key || !value) continue;
+    if ((UTM_KEYS as readonly string[]).includes(key)) {
+      try {
+        result[key] = decodeURIComponent(value);
+      } catch {
+        result[key] = value;
+      }
+    }
+  }
+  return result;
+}
 
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "");
@@ -47,6 +77,7 @@ interface InlineLeadFormProps {
   showZone?: boolean;
   className?: string;
   onSuccess?: () => void;
+  source?: string;
 }
 
 export function InlineLeadForm({
@@ -54,10 +85,12 @@ export function InlineLeadForm({
   showZone = true,
   className,
   onSuccess,
+  source = "inline_lead_form",
 }: InlineLeadFormProps) {
   const [phone, setPhone] = useState("+7");
   const [agreed, setAgreed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handlePhoneChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
@@ -69,18 +102,50 @@ export function InlineLeadForm({
     setPhone(formatPhone(raw));
   }, []);
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (loading) return;
+
     const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get("name") as string,
-      phone: phone,
-      zone: formData.get("zone") as string | null,
-    };
-    console.log("Lead form submitted:", data);
-    analytics.callbackRequested();
-    setSubmitted(true);
-    onSuccess?.();
+    const name = (formData.get("name") as string | null) ?? "";
+    const zoneRaw = formData.get("zone") as string | null;
+    const zone = zoneRaw && zoneRaw !== "unknown" ? zoneRaw : undefined;
+
+    setLoading(true);
+    try {
+      const utm = readUtmFromCookies();
+      const message =
+        Object.keys(utm).length > 0 ? `UTM: ${JSON.stringify(utm)}` : undefined;
+
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone,
+          source,
+          zone,
+          message,
+        }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          toast.error("Слишком много запросов. Попробуйте через минуту.");
+          return;
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      analytics.callbackRequested();
+      setSubmitted(true);
+      onSuccess?.();
+    } catch (err) {
+      toast.error("Ошибка отправки. Позвоните нам или напишите в чат.");
+      console.warn("[InlineLeadForm]", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (submitted) {
@@ -163,10 +228,10 @@ export function InlineLeadForm({
       <Button
         type="submit"
         size="lg"
-        disabled={!agreed || !isPhoneValid}
+        disabled={!agreed || !isPhoneValid || loading}
         className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
       >
-        {ctaText}
+        {loading ? "Отправка..." : ctaText}
       </Button>
 
       <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">

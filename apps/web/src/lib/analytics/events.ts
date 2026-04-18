@@ -39,4 +39,10 @@ export const analytics = {
   paymentStarted: (amount: number) =>
     trackEvent("payment_started", { amount }),
   promoCodeApplied: (code: string) => trackEvent("promo_applied", { code }),
+  leadModalOpened: (source: string) =>
+    trackEvent("lead_modal_opened", { source }),
+  leadModalSubmitted: (source: string) =>
+    trackEvent("lead_modal_submitted", { source }),
+  leadModalClosed: (source: string, submitted: boolean) =>
+    trackEvent("lead_modal_closed", { source, submitted: submitted ? 1 : 0 }),
 };

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, type FormEvent, type ChangeEvent } fr
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, CheckCircle, Calculator } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -16,8 +17,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { analytics } from "@/lib/analytics/events";
 
 const STORAGE_KEY = "exit-intent-shown";
+
+const UTM_KEYS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+] as const;
+
+function readUtmFromCookies(): Record<string, string> {
+  if (typeof document === "undefined") return {};
+  const result: Record<string, string> = {};
+  const pairs = document.cookie.split("; ");
+  for (const p of pairs) {
+    const idx = p.indexOf("=");
+    if (idx === -1) continue;
+    const key = p.slice(0, idx).trim();
+    const value = p.slice(idx + 1);
+    if (!key || !value) continue;
+    if ((UTM_KEYS as readonly string[]).includes(key)) {
+      try {
+        result[key] = decodeURIComponent(value);
+      } catch {
+        result[key] = value;
+      }
+    }
+  }
+  return result;
+}
 
 function formatPhone(value: string): string {
   const digits = value.replace(/\D/g, "");
@@ -46,6 +77,7 @@ export function ExitIntentPopup({ onOpen, onClose }: ExitIntentPopupProps) {
   const [submitted, setSubmitted] = useState(false);
   const [phone, setPhone] = useState("+7");
   const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const showPopup = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -97,18 +129,50 @@ export function ExitIntentPopup({ onOpen, onClose }: ExitIntentPopupProps) {
     setPhone(formatPhone(raw));
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (loading) return;
+
     const formData = new FormData(e.currentTarget);
-    console.log("Exit intent form submitted:", {
-      name: formData.get("name"),
-      phone: phone,
-    });
-    setSubmitted(true);
-    setTimeout(() => {
-      setOpen(false);
-      onClose?.();
-    }, 3000);
+    const name = (formData.get("name") as string | null) ?? "";
+
+    setLoading(true);
+    try {
+      const utm = readUtmFromCookies();
+      const message =
+        Object.keys(utm).length > 0 ? `UTM: ${JSON.stringify(utm)}` : undefined;
+
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone,
+          source: "exit_intent",
+          message,
+        }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          toast.error("Слишком много запросов. Попробуйте через минуту.");
+          return;
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      analytics.callbackRequested();
+      setSubmitted(true);
+      setTimeout(() => {
+        setOpen(false);
+        onClose?.();
+      }, 3000);
+    } catch (err) {
+      toast.error("Ошибка отправки. Позвоните нам или напишите в чат.");
+      console.warn("[ExitIntentPopup]", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const phoneDigits = phone.replace(/\D/g, "");
@@ -192,10 +256,10 @@ export function ExitIntentPopup({ onOpen, onClose }: ExitIntentPopupProps) {
                 <Button
                   type="submit"
                   size="lg"
-                  disabled={!agreed || !isPhoneValid}
+                  disabled={!agreed || !isPhoneValid || loading}
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                 >
-                  Получить расчёт
+                  {loading ? "Отправка..." : "Получить расчёт"}
                 </Button>
 
                 <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">

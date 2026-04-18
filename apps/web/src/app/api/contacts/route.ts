@@ -30,9 +30,107 @@ const contactSchema = z.object({
    * Используется AI-ассистентом при sentiment-эскалации.
    */
   priority: z.enum(["normal", "high"]).default("normal").optional(),
+  /**
+   * Произвольный контекст заявки: с какой страницы / калькулятора / статьи
+   * пришёл лид, UTM-метки, параметры расчёта (zone, passType, price и т.п.).
+   * Значения ограничены 300 символами на ключ, чтобы защититься от спама.
+   */
+  context: z.record(z.string(), z.string().max(300)).optional(),
+  /**
+   * Honeypot: скрытое поле, которое не видит пользователь, но видят боты.
+   * Если заполнено — значит это бот, возвращаем silent success.
+   */
+  website: z.string().optional(),
 });
 
 type ContactInput = z.infer<typeof contactSchema>;
+
+const CONTEXT_LABELS: Record<string, string> = {
+  zone: "Зона",
+  passType: "Срок пропуска",
+  fleet: "Парк",
+  fleetSize: "Размер парка",
+  price: "Рассчитанная цена",
+  priceFrom: "Цена от",
+  package: "Пакет",
+  vehicle: "ТС",
+  weightKg: "Вес",
+  segment: "Сегмент",
+  source_article: "Статья",
+  utm_source: "UTM source",
+  utm_medium: "UTM medium",
+  utm_campaign: "UTM campaign",
+  utm_content: "UTM content",
+  utm_term: "UTM term",
+};
+
+const BUSINESS_CONTEXT_FIELDS = [
+  "zone",
+  "passType",
+  "fleet",
+  "fleetSize",
+  "price",
+  "priceFrom",
+  "package",
+  "vehicle",
+  "weightKg",
+  "segment",
+  "source_article",
+];
+
+const UTM_CONTEXT_FIELDS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+];
+
+/**
+ * Форматирует произвольный контекст заявки (бизнес-поля, UTM, прочее)
+ * в человекочитаемый plain-text для email и Bitrix-комментариев.
+ * Группирует поля по секциям: "Контекст заявки", "Атрибуция", "Прочее".
+ */
+function formatContextForHuman(
+  context: Record<string, string> | undefined,
+): string {
+  if (!context || Object.keys(context).length === 0) return "";
+
+  const business: string[] = [];
+  const utm: string[] = [];
+  const other: string[] = [];
+
+  for (const [key, value] of Object.entries(context)) {
+    const line = `${CONTEXT_LABELS[key] ?? key}: ${value}`;
+    if (BUSINESS_CONTEXT_FIELDS.includes(key)) business.push(line);
+    else if (UTM_CONTEXT_FIELDS.includes(key)) utm.push(line);
+    else other.push(line);
+  }
+
+  const sections: string[] = [];
+  if (business.length > 0)
+    sections.push("=== Контекст заявки ===\n" + business.join("\n"));
+  if (utm.length > 0) sections.push("=== Атрибуция ===\n" + utm.join("\n"));
+  if (other.length > 0) sections.push("=== Прочее ===\n" + other.join("\n"));
+
+  return sections.join("\n\n");
+}
+
+/**
+ * Возвращает тот же контекст в виде HTML-блока (escaped) для email.
+ */
+function formatContextForHtml(
+  context: Record<string, string> | undefined,
+): string {
+  const text = formatContextForHuman(context);
+  if (!text) return "";
+  return `
+    <h3 style="color:#1e293b;font-size:14px;margin-top:24px;">Дополнительный контекст</h3>
+    <pre style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:#334155;white-space:pre-wrap;word-break:break-word;">${escapeHtml(
+      text,
+    )}</pre>
+  `;
+}
 
 function escapeHtml(value: string): string {
   return value
@@ -75,6 +173,7 @@ function buildAdminEmailHtml(data: ContactInput): string {
           : ""
       }
       <table style="border-collapse:collapse;border:1px solid #ddd;">${trs}</table>
+      ${formatContextForHtml(data.context)}
       <p style="color:#666;font-size:12px;margin-top:16px;">
         Сформировано автоматически сервисом Инфолог24.
       </p>
@@ -106,9 +205,21 @@ export async function POST(request: Request) {
     }
 
     const data = result.data;
+
+    // Honeypot: скрытое поле, которое видит только бот. Если заполнено —
+    // молча возвращаем success, не создаём лид и не дёргаем интеграции.
+    if (data.website && data.website.trim().length > 0) {
+      logger.info({ ip }, "Honeypot triggered — bot filtered");
+      return NextResponse.json({
+        success: true,
+        message: "Заявка принята. Мы свяжемся с вами в ближайшее время.",
+      });
+    }
+
     const createdAt = new Date().toISOString();
     const isHighPriority = data.priority === "high";
     const priorityPrefix = isHighPriority ? "🚨 СРОЧНО — " : "";
+    const contextText = formatContextForHuman(data.context);
 
     // 1. Persistent log of the lead (audit trail via pino)
     logger.info(
@@ -121,6 +232,7 @@ export async function POST(request: Request) {
           zone: data.zone || null,
           source: data.source || "website",
           priority: data.priority ?? "normal",
+          context: data.context ?? null,
           createdAt,
           ip,
         },
@@ -154,9 +266,10 @@ export async function POST(request: Request) {
         data.zone ? `Зона: ${data.zone}` : null,
         data.source ? `Источник: ${data.source}` : null,
         data.message ? `Сообщение: ${data.message}` : null,
+        contextText || null,
       ]
         .filter(Boolean)
-        .join("\n"),
+        .join("\n\n"),
       source: data.source || "WEB",
     })
       .then((res) => {
