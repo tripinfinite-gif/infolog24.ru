@@ -2,11 +2,11 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, Calculator as CalcIcon, Info } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { analytics } from "@/lib/analytics/events";
 
+import { QuickLeadModal } from "@/components/forms/quick-lead-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,6 +24,7 @@ export function Calculator() {
   const [zone, setZone] = useState("mkad");
   const [passType, setPassType] = useState("annual");
   const [vehicleCount, setVehicleCount] = useState(1);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const result = calculateTotal(zone, passType, vehicleCount);
 
@@ -163,14 +164,12 @@ export function Calculator() {
 
               <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                 <Button
-                  asChild
                   size="lg"
+                  onClick={() => setModalOpen(true)}
                   className="h-12 px-8 text-base font-semibold bg-accent text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
                 >
-                  <Link href="/contacts">
-                    Оставить заявку
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
+                  Оставить заявку
+                  <ArrowRight className="ml-2 size-4" />
                 </Button>
                 <p className="text-xs text-muted-foreground">
                   Окончательная цена после проверки документов
@@ -180,6 +179,24 @@ export function Calculator() {
           </Card>
         </motion.div>
       </div>
+      <QuickLeadModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        title="Оформить пропуск"
+        description={
+          result
+            ? `Ваш расчёт: ${new Intl.NumberFormat("ru-RU").format(result.total)} ₽. Оставьте телефон — перезвоним за 5 минут.`
+            : "Оставьте телефон — подберём оптимальный тариф за 5 минут."
+        }
+        source="calculator_main"
+        context={{
+          zone: zones.find((z) => z.value === zone)?.label ?? zone,
+          passType: passTypes.find((p) => p.value === passType)?.label ?? passType,
+          vehicleCount: String(vehicleCount),
+          price: result ? `${new Intl.NumberFormat("ru-RU").format(result.total)} ₽` : "—",
+        }}
+        submitLabel="Получить расчёт"
+      />
     </section>
   );
 }

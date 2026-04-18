@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import { Calculator } from "@/app/(marketing)/calculator";
+import { SimplePassButton } from "@/components/sections/simple-pass-button";
 
 interface SimplePassProps {
   className?: string;
@@ -191,20 +192,18 @@ export function SimplePass({ className }: SimplePassProps) {
                   ))}
                 </ul>
 
-                <Button
-                  asChild
-                  className={cn(
-                    "mt-6 w-full rounded-xl",
-                    service.dark
-                      ? "bg-accent text-accent-foreground hover:bg-accent/90"
-                      : "bg-primary text-primary-foreground hover:bg-primary/90"
-                  )}
+                <SimplePassButton
+                  zone={service.zone}
+                  price={service.price}
+                  period={service.period}
+                  dark={service.dark}
+                />
+                <Link
+                  href={service.href}
+                  className="mt-2 block text-center text-xs text-muted-foreground hover:underline"
                 >
-                  <Link href={service.href}>
-                    Оформить
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
+                  Подробнее →
+                </Link>
               </div>
             );
           })}
