@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
+import { RelatedArticles } from "@/components/blog/related-articles";
 import { Badge } from "@/components/ui/badge";
 import { CtaSection } from "@/components/sections/cta-section";
 import {
@@ -11,6 +13,11 @@ import {
   FaqJsonLd,
 } from "@/components/seo/json-ld";
 import { blogArticles } from "@/content/blog-articles";
+import {
+  getCategoryInfo,
+  getRelatedArticles,
+  slugifyTag,
+} from "@/lib/blog";
 import { absoluteUrl } from "@/lib/utils/base-url";
 
 /**
@@ -182,6 +189,8 @@ export default async function BlogArticlePage({
   }
 
   const faqItems = extractFaqItems(article.content);
+  const categoryInfo = getCategoryInfo(article.category);
+  const related = getRelatedArticles(article, 3);
 
   return (
     <>
@@ -195,6 +204,14 @@ export default async function BlogArticlePage({
         items={[
           { name: "Главная", href: "/" },
           { name: "Блог", href: "/blog" },
+          ...(categoryInfo
+            ? [
+                {
+                  name: categoryInfo.label,
+                  href: `/blog/kategoriya/${categoryInfo.slug}`,
+                },
+              ]
+            : []),
           { name: article.title, href: `/blog/${article.slug}` },
         ]}
       />
@@ -202,18 +219,42 @@ export default async function BlogArticlePage({
 
       <article className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-3xl">
+          <BlogBreadcrumbs
+            items={[
+              { name: "Главная", href: "/" },
+              { name: "Блог", href: "/blog" },
+              ...(categoryInfo
+                ? [
+                    {
+                      name: categoryInfo.label,
+                      href: `/blog/kategoriya/${categoryInfo.slug}`,
+                    },
+                  ]
+                : []),
+              { name: article.title },
+            ]}
+          />
+
           <Link
             href="/blog"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+            className="mt-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
           >
             <ArrowLeft className="size-4" />
             Назад к блогу
           </Link>
 
-          <div className="mt-6 flex items-center gap-3">
-            <Badge variant="secondary">
-              {categoryLabels[article.category]}
-            </Badge>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            {categoryInfo ? (
+              <Link href={`/blog/kategoriya/${categoryInfo.slug}`}>
+                <Badge variant="secondary" className="hover:bg-secondary/80">
+                  {categoryLabels[article.category]}
+                </Badge>
+              </Link>
+            ) : (
+              <Badge variant="secondary">
+                {categoryLabels[article.category]}
+              </Badge>
+            )}
             <span className="flex items-center gap-1 text-sm text-muted-foreground">
               <Calendar className="size-3" />
               {new Date(article.publishDate).toLocaleDateString("ru-RU", {
@@ -237,13 +278,20 @@ export default async function BlogArticlePage({
           {/* Tags */}
           <div className="mt-8 flex flex-wrap gap-2 border-t pt-6">
             {article.tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
+              <Link key={tag} href={`/blog/tag/${slugifyTag(tag)}`}>
+                <Badge
+                  variant="outline"
+                  className="text-xs transition-colors hover:border-accent hover:text-accent"
+                >
+                  #{tag}
+                </Badge>
+              </Link>
             ))}
           </div>
         </div>
       </article>
+
+      <RelatedArticles articles={related} />
 
       <CtaSection
         heading="Нужна помощь с пропуском?"

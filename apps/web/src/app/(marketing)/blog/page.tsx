@@ -1,11 +1,13 @@
-import { Calendar, Clock } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import { notFound } from "next/navigation";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { blogArticles } from "@/content/blog-articles";
+import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
+import { BlogCard } from "@/components/blog/blog-card";
+import { BlogCategoryTabs } from "@/components/blog/blog-category-tabs";
+import { BlogPagination } from "@/components/blog/blog-pagination";
+import { BlogSearch } from "@/components/blog/blog-search";
+import { BreadcrumbJsonLd } from "@/components/seo/json-ld";
+import { BLOG_PAGE_SIZE, getSortedArticles, paginate } from "@/lib/blog";
 import { absoluteUrl } from "@/lib/utils/base-url";
 
 // ISR: revalidate every 1 hour — blog updates infrequently
@@ -37,89 +39,85 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: absoluteUrl("/blog"),
+    types: {
+      "application/rss+xml": [
+        { url: absoluteUrl("/blog/rss.xml"), title: "Блог Инфолог24 — RSS" },
+      ],
+    },
   },
 };
 
-const categoryLabels: Record<string, string> = {
-  permits: "Пропуска",
-  fines: "Штрафы",
-  transport: "Транспорт",
-};
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const params = await searchParams;
+  const requestedPage = Number(params.page ?? "1");
+  if (params.page && (!Number.isInteger(requestedPage) || requestedPage < 1)) {
+    notFound();
+  }
 
-const categoryImages: Record<string, { src: string; alt: string }> = {
-  permits: { src: "/images/permit-documents.jpg", alt: "Документы на пропуск" },
-  fines: { src: "/images/traffic-camera.jpg", alt: "Камера контроля на МКАД" },
-  transport: { src: "/images/truck-closeup.jpg", alt: "Грузовой транспорт" },
-};
-
-export default function BlogPage() {
-  const sortedArticles = [...blogArticles].sort(
-    (a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
+  const sortedArticles = getSortedArticles();
+  const { items, page, totalPages, total } = paginate(
+    sortedArticles,
+    requestedPage,
+    BLOG_PAGE_SIZE
   );
 
-  return (
-    <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-      <div className="mx-auto max-w-7xl">
-        <div className="text-center">
-          <h1 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
-            Блог
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Полезные статьи о пропусках, штрафах и грузоперевозках в Москве
-          </p>
-        </div>
+  // Если запросили страницу за пределами — 404 (только если явно передан page)
+  if (params.page && requestedPage > totalPages) {
+    notFound();
+  }
 
-        <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {sortedArticles.map((article) => (
-            <Card
-              key={article.slug}
-              className="flex flex-col rounded-2xl border-0 bg-card shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div className="relative h-40 overflow-hidden rounded-t-2xl">
-                <Image
-                  src={categoryImages[article.category]?.src ?? "/images/hero-truck.jpg"}
-                  alt={categoryImages[article.category]?.alt ?? "Грузоперевозки в Москве"}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                />
+  return (
+    <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Главная", href: "/" },
+          { name: "Блог", href: "/blog" },
+        ]}
+      />
+
+      <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+        <div className="mx-auto max-w-7xl">
+          <BlogBreadcrumbs
+            items={[
+              { name: "Главная", href: "/" },
+              { name: "Блог" },
+            ]}
+          />
+
+          <div className="mt-6 text-center">
+            <h1 className="font-heading text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
+              Блог
+            </h1>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Полезные статьи о пропусках, штрафах и грузоперевозках в Москве
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Всего материалов: {total}
+            </p>
+          </div>
+
+          <div className="mt-10 flex flex-col gap-6">
+            <BlogCategoryTabs active="all" />
+
+            <BlogSearch articles={sortedArticles}>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {items.map((article) => (
+                  <BlogCard key={article.slug} article={article} />
+                ))}
               </div>
-              <CardContent className="flex flex-1 flex-col gap-4 p-6 sm:p-8">
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">
-                    {categoryLabels[article.category]}
-                  </Badge>
-                </div>
-                <h2 className="text-lg font-semibold text-foreground">
-                  <Link
-                    href={`/blog/${article.slug}`}
-                    className="hover:text-accent transition-colors"
-                  >
-                    {article.title}
-                  </Link>
-                </h2>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {article.excerpt}
-                </p>
-                <div className="mt-auto flex items-center gap-4 pt-4 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Calendar className="size-3" />
-                    {new Date(article.publishDate).toLocaleDateString("ru-RU", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="size-3" />
-                    {article.readTime} мин
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+              <BlogPagination
+                currentPage={page}
+                totalPages={totalPages}
+                basePath="/blog"
+              />
+            </BlogSearch>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }

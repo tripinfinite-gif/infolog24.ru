@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 import { blogArticles } from "@/content/blog-articles";
 import { serviceZones } from "@/content/services";
 import { vehicleTypes } from "@/content/vehicle-types";
+import { BLOG_CATEGORIES, getAllTagSlugs } from "@/lib/blog";
 import { SITE_URL } from "@/lib/utils/base-url";
 
 const BASE_URL = SITE_URL;
@@ -67,6 +68,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
+  const blogCategoryPages: MetadataRoute.Sitemap = BLOG_CATEGORIES.map(
+    (cat) => ({
+      url: `${BASE_URL}/blog/kategoriya/${cat.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.6,
+    })
+  );
+
+  const blogTagPages: MetadataRoute.Sitemap = getAllTagSlugs().map(
+    ({ slug }) => ({
+      url: `${BASE_URL}/blog/tag/${slug}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.4,
+    })
+  );
+
+  const blogRssPage: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/blog/rss.xml`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.3,
+    },
+  ];
+
   // Программатик-SEO: пропуск на [модель-грузовика]
   const vehiclePages: MetadataRoute.Sitemap = vehicleTypes.map((v) => ({
     url: `${BASE_URL}/propusk-na/${v.slug}`,
@@ -75,5 +103,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...servicePages, ...blogPages, ...vehiclePages];
+  return [
+    ...staticPages,
+    ...servicePages,
+    ...blogPages,
+    ...blogCategoryPages,
+    ...blogTagPages,
+    ...blogRssPage,
+    ...vehiclePages,
+  ];
 }
