@@ -22,6 +22,7 @@ import {
   ServiceJsonLd,
 } from "@/components/seo/json-ld";
 import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
+import { SegmentCtaButton } from "@/components/forms/segment-cta-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { absoluteUrl } from "@/lib/utils/base-url";
@@ -173,13 +174,12 @@ export default function IpPerevozchikPage() {
             не оформлен. Помогаем собрать документы, даже если вы делаете это впервые.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/contacts"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Оформить пропуск от 12 000 ₽
-              <ArrowRight className="ml-2 size-4" />
-            </Link>
+            <SegmentCtaButton
+              segmentSlug="ip_perevozchik"
+              segmentName="ИП/частные перевозчики (1-3 машины)"
+              label="Оформить пропуск от 12 000 ₽"
+              className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+            />
             <OpenChatTrigger className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-background px-8 text-base font-semibold text-foreground transition-colors hover:bg-muted">
               <MessageCircle className="size-4" />
               Спросить ИнфоПилота
@@ -309,12 +309,12 @@ export default function IpPerevozchikPage() {
                       Гарантия возврата при отказе
                     </p>
                   </div>
-                  <Link
-                    href="/contacts"
-                    className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-                  >
-                    Оформить пропуск
-                  </Link>
+                  <SegmentCtaButton
+                    segmentSlug="ip_perevozchik"
+                    segmentName="ИП/частные перевозчики (1-3 машины)"
+                    label="Оформить пропуск"
+                    className="mt-4 h-12 w-full rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+                  />
                 </div>
               </div>
             </CardContent>
@@ -461,12 +461,12 @@ export default function IpPerevozchikPage() {
             Оформите пропуск сейчас — работайте спокойно.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/contacts"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Оформить пропуск от 12 000 ₽
-            </Link>
+            <SegmentCtaButton
+              segmentSlug="ip_perevozchik"
+              segmentName="ИП/частные перевозчики (1-3 машины)"
+              label="Оформить пропуск от 12 000 ₽"
+              className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+            />
             <a
               href="tel:+74991105549"
               className="flex items-center gap-2 text-lg font-semibold text-primary-foreground transition-opacity hover:opacity-80"

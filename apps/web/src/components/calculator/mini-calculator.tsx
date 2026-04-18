@@ -1,11 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Bot, Calculator as CalcIcon, Clock } from "lucide-react";
+import { ArrowRight, Calculator as CalcIcon, Clock } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
+import { QuickLeadModal } from "@/components/forms/quick-lead-modal";
 import { analytics } from "@/lib/analytics/events";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -112,6 +113,7 @@ export function MiniCalculator({
   const [zone, setZone] = useState<ZoneId>("mkad");
   const [passType, setPassType] = useState<PassType>("annual");
   const [fleet, setFleet] = useState<FleetSize>("1");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const result = useMemo(() => {
     const fleetOption =
@@ -142,6 +144,13 @@ export function MiniCalculator({
     }, 1000);
     return () => window.clearTimeout(handle);
   }, [zone, passType, fleet, result.total]);
+
+  const zoneLabel =
+    ZONE_OPTIONS.find((z) => z.value === zone)?.label ?? zone;
+  const passTypeLabel =
+    PASS_TYPE_OPTIONS.find((p) => p.value === passType)?.label ?? passType;
+  const fleetLabel =
+    FLEET_OPTIONS.find((f) => f.value === fleet)?.label ?? fleet;
 
   return (
     <section
@@ -301,24 +310,13 @@ export function MiniCalculator({
 
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <Button
-                    asChild
                     size="lg"
+                    onClick={() => setModalOpen(true)}
                     className="h-11 rounded-xl bg-accent px-6 text-accent-foreground shadow-md shadow-accent/20 hover:bg-accent/90"
                   >
-                    <Link href="/services">
-                      Заказать
-                      <ArrowRight className="ml-1.5 size-4" />
-                    </Link>
+                    Заказать
+                    <ArrowRight className="ml-1.5 size-4" />
                   </Button>
-                  <OpenChatTrigger
-                    ariaLabel="Спросить ИнфоПилот"
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-background px-5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      <Bot className="size-4" aria-hidden="true" />
-                      Спросить ИнфоПилот
-                    </span>
-                  </OpenChatTrigger>
                 </div>
               </div>
             </motion.div>
@@ -337,7 +335,32 @@ export function MiniCalculator({
             </div>
           </CardContent>
         </Card>
+
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          Есть вопросы?{" "}
+          <OpenChatTrigger
+            className="text-accent underline hover:text-accent/80"
+            ariaLabel="Открыть чат ИнфоПилот"
+          >
+            Спросите ИнфоПилот
+          </OpenChatTrigger>
+        </p>
       </div>
+
+      <QuickLeadModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        title={`Оформить пропуск на ${zoneLabel}`}
+        description={`Ваша цена: ${formatRub(result.total)}. Оставьте телефон — перезвоним за 5 минут с готовым расчётом.`}
+        source="mini_calc"
+        context={{
+          zone: zoneLabel,
+          passType: passTypeLabel,
+          fleet: fleetLabel,
+          price: formatRub(result.total),
+        }}
+        submitLabel="Получить расчёт бесплатно"
+      />
     </section>
   );
 }

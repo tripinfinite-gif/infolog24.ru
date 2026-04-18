@@ -21,6 +21,7 @@ import {
   ServiceJsonLd,
 } from "@/components/seo/json-ld";
 import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
+import { SegmentCtaButton } from "@/components/forms/segment-cta-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { absoluteUrl } from "@/lib/utils/base-url";
@@ -172,13 +173,12 @@ export default function MalyeTkPage() {
             Больше никаких простоев из-за пропусков — мы берём это на себя.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/contacts"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Рассчитать стоимость для парка
-              <ArrowRight className="ml-2 size-4" />
-            </Link>
+            <SegmentCtaButton
+              segmentSlug="malye_tk"
+              segmentName="Малые ТК (5-20 машин)"
+              label="Рассчитать стоимость для парка"
+              className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+            />
             <a
               href="tel:+74991105549"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-background px-8 text-base font-semibold text-foreground transition-colors hover:bg-muted"
@@ -311,12 +311,12 @@ export default function MalyeTkPage() {
                       Скидка 15% от розничной цены
                     </p>
                   </div>
-                  <Link
-                    href="/contacts"
-                    className="mt-4 inline-flex h-12 w-full items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-                  >
-                    Рассчитать для моего парка
-                  </Link>
+                  <SegmentCtaButton
+                    segmentSlug="malye_tk"
+                    segmentName="Малые ТК (5-20 машин)"
+                    label="Рассчитать для моего парка"
+                    className="mt-4 h-12 w-full rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+                  />
                 </div>
               </div>
             </CardContent>
@@ -461,12 +461,12 @@ export default function MalyeTkPage() {
             решение со скидкой. Бесплатная консультация, расчёт за 2 минуты.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/contacts"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Рассчитать стоимость для парка
-            </Link>
+            <SegmentCtaButton
+              segmentSlug="malye_tk"
+              segmentName="Малые ТК (5-20 машин)"
+              label="Рассчитать стоимость для парка"
+              className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+            />
             <OpenChatTrigger className="inline-flex h-12 items-center justify-center rounded-xl border border-primary-foreground/30 bg-transparent px-8 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10">
               Спросить ИнфоПилота
             </OpenChatTrigger>

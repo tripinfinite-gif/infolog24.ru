@@ -23,6 +23,7 @@ import {
   ServiceJsonLd,
 } from "@/components/seo/json-ld";
 import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
+import { SegmentCtaButton } from "@/components/forms/segment-cta-button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { absoluteUrl } from "@/lib/utils/base-url";
@@ -208,13 +209,12 @@ export default function ProizvodstvoPage() {
             Без срывов, без штрафов, без вашего участия.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/contacts"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Обсудить условия для предприятия
-              <ArrowRight className="ml-2 size-4" />
-            </Link>
+            <SegmentCtaButton
+              segmentSlug="proizvodstvo"
+              segmentName="Производственные компании"
+              label="Обсудить условия для предприятия"
+              className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+            />
             <a
               href="tel:+74991105549"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-background px-8 text-base font-semibold text-foreground transition-colors hover:bg-muted"
@@ -470,12 +470,12 @@ export default function ProizvodstvoPage() {
             размера парка, маршрутов и графика работы. Консультация бесплатна.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/contacts"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
-            >
-              Обсудить условия для предприятия
-            </Link>
+            <SegmentCtaButton
+              segmentSlug="proizvodstvo"
+              segmentName="Производственные компании"
+              label="Обсудить условия для предприятия"
+              className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
+            />
             <OpenChatTrigger className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-primary-foreground/30 bg-transparent px-8 text-base font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/10">
               <MessageCircle className="size-4" />
               Спросить ИнфоПилота

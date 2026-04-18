@@ -29,6 +29,8 @@ import {
 } from "@/content/vehicle-types";
 import { absoluteUrl } from "@/lib/utils/base-url";
 
+import { VehicleCtaButton } from "./_components/vehicle-cta-button";
+
 export const revalidate = 3600;
 
 interface PageParams {
@@ -133,9 +135,10 @@ export default async function PropuskVehiclePage({
             {v.heroSubtitle}
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <VehicleCtaButton vehicle={v} />
             <Link
               href="/calculator"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-border bg-background px-8 text-base font-semibold transition-colors hover:bg-muted"
             >
               <Calculator className="size-4" />
               Рассчитать стоимость
@@ -546,9 +549,14 @@ export default async function PropuskVehiclePage({
             Временный пропуск — в день обращения.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <VehicleCtaButton
+              vehicle={v}
+              variant="secondary"
+              className="h-12 bg-white px-8 text-base font-semibold text-primary hover:bg-white/90"
+            />
             <Link
               href="/calculator"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-8 text-base font-semibold text-primary transition-colors hover:bg-white/90"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/30 px-8 text-base font-semibold transition-colors hover:bg-white/10"
             >
               Рассчитать стоимость
               <ArrowRight className="size-4" />

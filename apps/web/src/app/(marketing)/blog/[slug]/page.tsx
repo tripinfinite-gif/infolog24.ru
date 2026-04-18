@@ -4,9 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
+import { BlogCta } from "@/components/blog/blog-cta";
 import { RelatedArticles } from "@/components/blog/related-articles";
 import { Badge } from "@/components/ui/badge";
-import { CtaSection } from "@/components/sections/cta-section";
 import {
   ArticleJsonLd,
   BreadcrumbJsonLd,
@@ -293,12 +293,7 @@ export default async function BlogArticlePage({
 
       <RelatedArticles articles={related} />
 
-      <CtaSection
-        heading="Нужна помощь с пропуском?"
-        description="Оставьте заявку, и мы поможем оформить пропуск быстро и без ошибок."
-        ctaText="Оформить пропуск"
-        ctaHref="/contacts"
-      />
+      <BlogCta articleTitle={article.title} articleSlug={article.slug} />
     </>
   );
 }

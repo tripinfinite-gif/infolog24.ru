@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
+import { QuickLeadModal } from "@/components/forms/quick-lead-modal";
 import { Button } from "@/components/ui/button";
 import { packages, type ServicePackage } from "@/content/packages";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,13 @@ const fleetOptions: { value: FleetSize; label: string }[] = [
 
 export function PackagesGrid({ className }: PackagesGridProps) {
   const [selectedFleet, setSelectedFleet] = useState<FleetSize | null>(null);
+  const [modalState, setModalState] = useState<{
+    open: boolean;
+    pkg: ServicePackage | null;
+  }>({
+    open: false,
+    pkg: null,
+  });
   const highlightedPackageId = selectedFleet
     ? fleetToPackage[selectedFleet]
     : null;
@@ -128,8 +136,8 @@ export function PackagesGrid({ className }: PackagesGridProps) {
               </div>
 
               <Button
-                asChild
                 size="lg"
+                onClick={() => setModalState({ open: true, pkg })}
                 className={cn(
                   "mt-6 h-12 w-full rounded-xl text-base font-semibold",
                   isHighlighted
@@ -137,11 +145,15 @@ export function PackagesGrid({ className }: PackagesGridProps) {
                     : "bg-primary text-primary-foreground hover:bg-primary/90"
                 )}
               >
-                <Link href={pkg.ctaHref}>
-                  {pkg.ctaLabel}
-                  <ArrowRight className="ml-2 size-4" />
-                </Link>
+                {pkg.ctaLabel}
+                <ArrowRight className="ml-2 size-4" />
               </Button>
+              <Link
+                href={pkg.ctaHref}
+                className="mt-2 block text-center text-xs text-muted-foreground hover:underline"
+              >
+                Подробнее о пакете →
+              </Link>
             </motion.div>
           );
         })}
@@ -179,6 +191,33 @@ export function PackagesGrid({ className }: PackagesGridProps) {
           })}
         </div>
       </div>
+
+      <QuickLeadModal
+        open={modalState.open}
+        onOpenChange={(o) => setModalState((s) => ({ ...s, open: o }))}
+        title={
+          modalState.pkg
+            ? `Оформить пакет «${modalState.pkg.name}»`
+            : "Оставить заявку"
+        }
+        description={
+          modalState.pkg
+            ? `От ${modalState.pkg.priceFrom}. ${modalState.pkg.tagline}`
+            : undefined
+        }
+        source={
+          modalState.pkg ? `package_${modalState.pkg.id}` : "package_unknown"
+        }
+        context={
+          modalState.pkg
+            ? {
+                package: modalState.pkg.name,
+                fleetSize: selectedFleet ?? "не указан",
+                priceFrom: modalState.pkg.priceFrom,
+              }
+            : undefined
+        }
+      />
     </motion.section>
   );
 }
