@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { MiniCalculator } from "@/components/calculator/mini-calculator";
 import { FaqMini } from "@/components/sections/faq-mini";
 import { FinalCtaForm } from "@/components/sections/final-cta-form";
 import { Hero } from "@/components/sections/hero";
@@ -112,6 +113,9 @@ export default function HomePage() {
       <div className="mx-auto max-w-7xl space-y-10 px-4 py-6 sm:space-y-14 sm:px-6 sm:py-10 lg:px-8">
         {/* 1. Hero */}
         <Hero />
+
+        {/* 1a. Mini-calculator — стоимость за 10 секунд, раскрывает конверсию для 80% посетителей, не доходящих до /calculator */}
+        <MiniCalculator />
 
         {/* 2. Pain: 6 systems */}
         <PainSystems />
