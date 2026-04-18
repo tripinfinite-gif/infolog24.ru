@@ -115,6 +115,12 @@ export const referralStatusEnum = pgEnum("referral_status", [
   "paid",
 ]);
 
+export const reviewStatusEnum = pgEnum("review_status", [
+  "pending",
+  "approved",
+  "rejected",
+]);
+
 // ── Tables ─────────────────────────────────────────────────────────────────
 
 export const users = pgTable("users", {
@@ -669,6 +675,50 @@ export const partnerReferrals = pgTable("partner_referrals", {
     .defaultNow(),
 });
 
+/**
+ * Отзывы клиентов: автосбор после выдачи пропуска + модерация.
+ *
+ * Флоу:
+ *   1. Cron request-reviews создаёт запись status='pending' + token для
+ *      каждого выданного пропуска (permits.createdAt в окне 2–4 дня назад).
+ *   2. Клиенту приходит email со ссылкой /review/{token}.
+ *   3. Клиент заполняет форму → submittedAt, authorName, rating, content.
+ *   4. Админ approve → status='approved' → отзыв на /reviews.
+ *
+ * `author_name`/`content` имеют DEFAULT '', `rating` DEFAULT 0 — потому что
+ * запись создаётся пустой до того, как клиент что-то заполнит.
+ * Миграция 0008_reviews.sql.
+ */
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    orderId: uuid("order_id").references(() => orders.id, {
+      onDelete: "set null",
+    }),
+    userId: uuid("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    authorName: varchar("author_name", { length: 255 }).notNull().default(""),
+    company: varchar("company", { length: 255 }),
+    rating: integer("rating").notNull().default(0),
+    content: text("content").notNull().default(""),
+    status: reviewStatusEnum("status").notNull().default("pending"),
+    token: varchar("token", { length: 64 }).unique(),
+    submittedAt: timestamp("submitted_at", { withTimezone: true }),
+    moderatedBy: uuid("moderated_by").references(() => users.id),
+    moderatedAt: timestamp("moderated_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("idx_reviews_status_created").on(table.status, table.createdAt),
+    index("idx_reviews_token").on(table.token),
+    index("idx_reviews_order_id").on(table.orderId),
+  ],
+);
+
 export const auditLog = pgTable("audit_log", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
@@ -821,4 +871,13 @@ export const partnerReferralsRelations = relations(
 
 export const auditLogRelations = relations(auditLog, ({ one }) => ({
   user: one(users, { fields: [auditLog.userId], references: [users.id] }),
+}));
+
+export const reviewsRelations = relations(reviews, ({ one }) => ({
+  order: one(orders, { fields: [reviews.orderId], references: [orders.id] }),
+  user: one(users, { fields: [reviews.userId], references: [users.id] }),
+  moderator: one(users, {
+    fields: [reviews.moderatedBy],
+    references: [users.id],
+  }),
 }));

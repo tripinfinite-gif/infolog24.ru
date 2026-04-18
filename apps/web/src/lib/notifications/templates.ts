@@ -342,9 +342,29 @@ export const notificationTemplates: NotificationTemplate[] = [
   },
   {
     event: "review_request",
-    title: "Оцените наш сервис",
+    title: "Как прошло оформление пропуска? Оцените работу",
     body: "Спасибо, что воспользовались Инфолог24! Поделитесь впечатлениями — это поможет нам стать лучше: {{reviewUrl}}",
     channels: ["email"],
+    variants: {
+      email: {
+        subject: "Как прошло оформление пропуска? Оцените работу Инфолог24",
+        html: `<!doctype html><html><body style="font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#111;max-width:560px;margin:0 auto;padding:24px;">
+<h2 style="margin:0 0 16px;">Спасибо, что выбрали Инфолог24</h2>
+<p>Ваш пропуск оформлен и мы надеемся, что всё прошло гладко.</p>
+<p>Нам важно знать ваше мнение — это помогает нам становиться лучше и подсвечивает то, что действительно работает.</p>
+<p style="margin:24px 0;"><a href="{{reviewUrl}}" style="display:inline-block;background:#6d28d9;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;">Оставить отзыв</a></p>
+<p style="color:#666;font-size:13px;">Это займёт 1 минуту. Ваш отзыв появится на сайте после модерации.</p>
+<p style="color:#999;font-size:12px;margin-top:32px;">Если кнопка не открывается, скопируйте ссылку в браузер: <br>{{reviewUrl}}</p>
+</body></html>`,
+        text: `Спасибо, что выбрали Инфолог24!
+
+Ваш пропуск оформлен. Нам важно ваше мнение о работе — поделитесь впечатлениями (займёт 1 минуту):
+
+{{reviewUrl}}
+
+Отзыв появится на сайте после модерации.`,
+      },
+    },
   },
   {
     event: "permit_expiring_45days",

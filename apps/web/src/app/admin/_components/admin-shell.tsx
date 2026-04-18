@@ -12,6 +12,7 @@ import {
   ScrollText,
   Settings,
   ShieldCheck,
+  Star,
   Truck,
   Users,
   X,
@@ -50,6 +51,7 @@ const navItems: NavItem[] = [
   { href: "/admin/payments", label: "Платежи", icon: CreditCard },
   { href: "/admin/analytics", label: "Аналитика", icon: BarChart3 },
   { href: "/admin/chat", label: "AI-чат", icon: MessageCircle },
+  { href: "/admin/reviews", label: "Отзывы", icon: Star },
   { href: "/admin/settings", label: "Настройки", icon: Settings },
   { href: "/admin/audit", label: "Аудит", icon: ScrollText },
 ];

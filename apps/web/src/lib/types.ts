@@ -60,6 +60,9 @@ export type NewPartnerReferral = InferInsertModel<
 export type AuditLog = InferSelectModel<typeof schema.auditLog>;
 export type NewAuditLog = InferInsertModel<typeof schema.auditLog>;
 
+export type Review = InferSelectModel<typeof schema.reviews>;
+export type NewReview = InferInsertModel<typeof schema.reviews>;
+
 /** Paginated result wrapper */
 export interface PaginatedResult<T> {
   data: T[];

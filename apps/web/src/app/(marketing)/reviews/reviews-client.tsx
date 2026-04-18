@@ -11,7 +11,7 @@ import {
 } from "@/components/motion/stagger-children";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { testimonials } from "@/content/testimonials";
+import { testimonials, type Testimonial } from "@/content/testimonials";
 
 const platformBadges = [
   { id: "yandex", name: "Яндекс Карты", rating: "4.9", color: "bg-red-500" },
@@ -64,16 +64,30 @@ function SourceBadge({ source }: { source?: string }) {
   );
 }
 
-export function ReviewsClient() {
+interface ReviewsClientProps {
+  /**
+   * Одобренные отзывы из БД. Если массив пустой — используются
+   * хардкоднутые `testimonials` как fallback (так было исторически).
+   * Если массив непустой — DB-отзывы идут первыми, потом хардкоднутые.
+   */
+  dbReviews?: Testimonial[];
+}
+
+export function ReviewsClient({ dbReviews = [] }: ReviewsClientProps = {}) {
   const [activeFilter, setActiveFilter] = useState<string>("all");
 
+  const allReviews = useMemo<Testimonial[]>(
+    () => (dbReviews.length > 0 ? [...dbReviews, ...testimonials] : testimonials),
+    [dbReviews],
+  );
+
   const filteredTestimonials = useMemo(() => {
-    if (activeFilter === "all") return testimonials;
-    return testimonials.filter((t) => t.source === activeFilter);
-  }, [activeFilter]);
+    if (activeFilter === "all") return allReviews;
+    return allReviews.filter((t) => t.source === activeFilter);
+  }, [activeFilter, allReviews]);
 
   const avgRating =
-    testimonials.reduce((sum, t) => sum + t.rating, 0) / testimonials.length;
+    allReviews.reduce((sum, t) => sum + t.rating, 0) / allReviews.length;
 
   return (
     <>
@@ -156,7 +170,7 @@ export function ReviewsClient() {
                 {tab.id !== "all" && (
                   <span className="ml-1 text-xs opacity-70">
                     (
-                    {testimonials.filter((t) => t.source === tab.id).length}
+                    {allReviews.filter((t) => t.source === tab.id).length}
                     )
                   </span>
                 )}
