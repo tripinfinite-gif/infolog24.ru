@@ -36,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { analytics } from "@/lib/analytics/events";
 
 const statusConfig: Record<
   string,
@@ -156,6 +157,7 @@ export function DocumentsList({ documents }: DocumentsListProps) {
         return;
       }
 
+      analytics.documentUploaded(uploadType);
       toast.success("Документ загружен");
       setUploadOpen(false);
       setUploadFile(null);

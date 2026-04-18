@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { analytics } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
 interface VehicleOption {
@@ -114,6 +115,16 @@ export function ArchiveUploader({ vehicles }: ArchiveUploaderProps) {
       });
       const data: UploadResult = await res.json();
       setResult(data);
+
+      if (data.ok) {
+        // Трекаем каждый распознанный документ отдельным событием и общий order_completed.
+        data.documents?.forEach((doc) => {
+          analytics.documentUploaded(doc.type);
+        });
+        if (data.orderId) {
+          analytics.orderCompleted(data.orderId);
+        }
+      }
 
       if (data.ok && data.redirectTo) {
         // Небольшая пауза, чтобы клиент увидел список загруженного, потом редирект

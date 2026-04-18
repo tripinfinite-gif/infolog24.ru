@@ -3,9 +3,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Bot, Calculator as CalcIcon, Clock } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
+import { analytics } from "@/lib/analytics/events";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -132,6 +133,15 @@ export function MiniCalculator({
 
   // Анимационный ключ — при смене любого параметра результат делает fade-in
   const resultKey = `${zone}-${passType}-${fleet}`;
+
+  // Analytics: трекаем «использование калькулятора» с debounce 1 сек,
+  // чтобы не слать событие на каждый клик по селекту.
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      analytics.calculatorUsed(zone, result.total);
+    }, 1000);
+    return () => window.clearTimeout(handle);
+  }, [zone, passType, fleet, result.total]);
 
   return (
     <section

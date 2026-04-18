@@ -3,7 +3,9 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Calculator as CalcIcon, Info } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import { analytics } from "@/lib/analytics/events";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,16 @@ export function Calculator() {
   const [vehicleCount, setVehicleCount] = useState(1);
 
   const result = calculateTotal(zone, passType, vehicleCount);
+
+  // Analytics: дебаунс 1 сек — трекаем итоговую цену после стабилизации выбора.
+  useEffect(() => {
+    if (!result) return;
+    const total = result.total;
+    const handle = window.setTimeout(() => {
+      analytics.calculatorUsed(zone, total);
+    }, 1000);
+    return () => window.clearTimeout(handle);
+  }, [zone, passType, vehicleCount, result]);
 
   return (
     <section id="calculator" className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">

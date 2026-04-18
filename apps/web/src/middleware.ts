@@ -115,6 +115,34 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // ── UTM-метки (для атрибуции рекламных каналов) ────────────────────
+  // Сохраняем utm_* из URL в cookie на 90 дней, чтобы API-ручки при
+  // создании заявки/контакта могли их подтянуть и записать в БД.
+  // Длину и алфавит ограничиваем, чтобы cookie не раздувались.
+  if (
+    !pathname.startsWith("/api/") &&
+    !pathname.startsWith("/_next")
+  ) {
+    const UTM_KEYS = [
+      "utm_source",
+      "utm_medium",
+      "utm_campaign",
+      "utm_content",
+      "utm_term",
+    ] as const;
+    for (const key of UTM_KEYS) {
+      const value = request.nextUrl.searchParams.get(key);
+      if (value && value.length <= 100 && /^[A-Za-z0-9_.\-]+$/.test(value)) {
+        response.cookies.set(key, value, {
+          maxAge: 60 * 60 * 24 * 90,
+          path: "/",
+          sameSite: "lax",
+          httpOnly: false,
+        });
+      }
+    }
+  }
+
   // test.inlog24.ru — закрыт от индексации на уровне HTTP-заголовка
   const host = request.headers.get("host") ?? "";
   if (host.startsWith("test.")) {

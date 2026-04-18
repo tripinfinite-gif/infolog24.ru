@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { analytics } from "@/lib/analytics/events";
 
 const statusConfig: Record<
   string,
@@ -70,8 +71,9 @@ export function PaymentsList({ payments, stats }: PaymentsListProps) {
   const router = useRouter();
   const [payingOrderId, setPayingOrderId] = useState<string | null>(null);
 
-  async function handlePay(orderId: string) {
+  async function handlePay(orderId: string, amount: number) {
     setPayingOrderId(orderId);
+    analytics.paymentStarted(amount);
     try {
       const res = await fetch("/api/payments/create", {
         method: "POST",
@@ -176,7 +178,7 @@ export function PaymentsList({ payments, stats }: PaymentsListProps) {
                         {payment.status === "pending" ? (
                           <Button
                             size="sm"
-                            onClick={() => handlePay(payment.orderId)}
+                            onClick={() => handlePay(payment.orderId, payment.amount)}
                             disabled={payingOrderId === payment.orderId}
                           >
                             {payingOrderId === payment.orderId ? (

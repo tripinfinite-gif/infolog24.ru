@@ -24,6 +24,7 @@ import {
 } from "react";
 
 import { Button } from "@/components/ui/button";
+import { analytics } from "@/lib/analytics/events";
 import { parsePathnameToContext } from "@/lib/chat/page-context";
 import { cn } from "@/lib/utils";
 
@@ -58,6 +59,8 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
   // Гарантия идемпотентности: welcome загружается один раз за жизнь компонента,
   // чтобы при повторных открытиях не дёргать endpoint.
   const welcomeFetchedRef = useRef(false);
+  // Analytics: трекаем открытие чата один раз за жизнь компонента (за сессию).
+  const chatOpenedTrackedRef = useRef(false);
   // P4.1 — Vision OCR: флаг включённости по /api/chat/vision-status,
   // ref на скрытый input[type=file] для прикрепления фото документов,
   // isOcrLoading — активная обработка изображения на сервере.
@@ -98,6 +101,14 @@ export function ChatWidget({ isAuthenticated: _isAuthenticated = false }: ChatWi
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  // Analytics: первое открытие чата за сессию.
+  useEffect(() => {
+    if (isOpen && !chatOpenedTrackedRef.current) {
+      chatOpenedTrackedRef.current = true;
+      analytics.chatOpened();
     }
   }, [isOpen]);
 

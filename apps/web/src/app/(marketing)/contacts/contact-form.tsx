@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { analytics } from "@/lib/analytics/events";
 
 export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -51,6 +52,7 @@ export function ContactForm() {
       }
 
       setSubmitted(true);
+      analytics.callbackRequested();
       toast.success("Заявка отправлена! Мы свяжемся с вами в ближайшее время.");
       router.push("/thank-you");
     } catch {

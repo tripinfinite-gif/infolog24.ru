@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { analytics } from "@/lib/analytics/events";
 
 export function SubscribeForm() {
   const [name, setName] = useState("");
@@ -42,6 +43,7 @@ export function SubscribeForm() {
         return;
       }
       setSubmitted(true);
+      analytics.callbackRequested();
       toast.success("Готово! Пришлём напоминания за 60, 30 и 7 дней до дедлайнов.");
     } catch {
       toast.error("Ошибка сети. Попробуйте позже.");

@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { companyInfo } from "@/content/company";
+import { analytics } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
 const MAX_URL =
@@ -71,6 +72,7 @@ export function FloatingActions({ className }: FloatingActionsProps) {
       name: formData.get("name"),
       phone: phone,
     });
+    analytics.callbackRequested();
     setSubmitted(true);
     setTimeout(() => {
       setCallbackOpen(false);

@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { analytics } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
 
 function formatPhone(value: string): string {
@@ -77,6 +78,7 @@ export function InlineLeadForm({
       zone: formData.get("zone") as string | null,
     };
     console.log("Lead form submitted:", data);
+    analytics.callbackRequested();
     setSubmitted(true);
     onSuccess?.();
   }

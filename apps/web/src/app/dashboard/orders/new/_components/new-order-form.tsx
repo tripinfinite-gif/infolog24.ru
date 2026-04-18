@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, Upload, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { analytics } from "@/lib/analytics/events";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -91,6 +92,11 @@ export function NewOrderForm({
   const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Analytics: фиксируем старт оформления заявки один раз при монтировании формы.
+  useEffect(() => {
+    analytics.orderStarted();
+  }, []);
+
   const selectedPassData = passTypes.find((p) => p.id === selectedPass);
   const selectedVehicleData = vehicles.find((v) => v.id === selectedVehicle);
 
@@ -159,7 +165,7 @@ export function NewOrderForm({
           }
 
           // Step 3: Register document
-          await fetch("/api/documents", {
+          const registerRes = await fetch("/api/documents", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -171,6 +177,9 @@ export function NewOrderForm({
               mimeType: file.type,
             }),
           });
+          if (registerRes.ok) {
+            analytics.documentUploaded("other");
+          }
         } catch {
           toast.error(`Ошибка загрузки файла ${file.name}`);
         }
@@ -196,6 +205,9 @@ export function NewOrderForm({
       }
 
       const order = await res.json();
+      if (order?.id) {
+        analytics.orderCompleted(String(order.id));
+      }
       toast.success("Заявка успешно создана");
       router.push(`/dashboard/orders/${order.id}`);
     } catch {

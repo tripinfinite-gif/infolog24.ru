@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { analytics } from "@/lib/analytics/events";
 
 export function EtrnForm() {
   const [submitted, setSubmitted] = useState(false);
@@ -47,6 +48,7 @@ export function EtrnForm() {
       // Fallback — still show success for UX
     }
 
+    analytics.callbackRequested();
     setLoading(false);
     setSubmitted(true);
   }
