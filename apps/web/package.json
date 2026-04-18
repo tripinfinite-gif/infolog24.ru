@@ -17,7 +17,9 @@
     "db:seed": "tsx src/lib/db/seed.ts",
     "db:seed:partner": "tsx --env-file=.env.local src/lib/db/seed-test-partner.ts",
     "db:seed:client": "tsx --env-file=.env.local src/lib/db/seed-test-client.ts",
-    "rag:build-embeddings": "tsx --env-file=.env.local scripts/build-knowledge-embeddings.ts"
+    "rag:build-embeddings": "tsx --env-file=.env.local scripts/build-knowledge-embeddings.ts",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.69",
@@ -72,6 +74,18 @@
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "storybook": "^10.3.5",
+    "@storybook/nextjs-vite": "^10.3.5",
+    "@chromatic-com/storybook": "^5.1.2",
+    "@storybook/addon-vitest": "^10.3.5",
+    "@storybook/addon-a11y": "^10.3.5",
+    "@storybook/addon-docs": "^10.3.5",
+    "@storybook/addon-onboarding": "^10.3.5",
+    "vite": "^8.0.8",
+    "eslint-plugin-storybook": "^10.3.5",
+    "playwright": "^1.59.1",
+    "@vitest/browser-playwright": "4.1.4",
+    "@vitest/coverage-v8": "4.1.4"
   }
 }

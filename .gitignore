@@ -20,3 +20,6 @@ dist/
 generate_mcp_yaml.py
 install_rooflow.sh
 memory-bank/
+
+*storybook.log
+storybook-static
