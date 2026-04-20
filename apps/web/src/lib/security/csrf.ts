@@ -7,6 +7,19 @@ const ALLOWED_ORIGINS = [
   process.env.NEXT_PUBLIC_APP_URL || "https://infolog24.ru",
   "https://infolog24.ru",
   "https://www.infolog24.ru",
+  // В dev — разрешаем localhost с любым портом, чтобы формы можно было тестировать локально.
+  ...(process.env.NODE_ENV !== "production"
+    ? [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+        "http://localhost:3003",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3002",
+        "http://127.0.0.1:3003",
+      ]
+    : []),
 ];
 
 /** Пути, исключённые из CSRF-проверки (вебхуки от внешних сервисов) */

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, type FormEvent, type ChangeEvent } fr
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle, Lock, HelpCircle } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -16,8 +17,38 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { analytics } from "@/lib/analytics/events";
 
 const STORAGE_KEY = "scroll-popup-shown";
+
+const UTM_KEYS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+] as const;
+
+function readUtmFromCookies(): Record<string, string> {
+  if (typeof document === "undefined") return {};
+  const result: Record<string, string> = {};
+  const pairs = document.cookie.split("; ");
+  for (const p of pairs) {
+    const idx = p.indexOf("=");
+    if (idx === -1) continue;
+    const key = p.slice(0, idx).trim();
+    const value = p.slice(idx + 1);
+    if (!key || !value) continue;
+    if ((UTM_KEYS as readonly string[]).includes(key)) {
+      try {
+        result[key] = decodeURIComponent(value);
+      } catch {
+        result[key] = value;
+      }
+    }
+  }
+  return result;
+}
 
 type Zone = "mkad" | "ttk" | "sk" | "unknown";
 type VehicleCount = "1" | "2-5" | "6-10" | "11+";
@@ -84,6 +115,7 @@ export function ScrollPopup({
   const [phone, setPhone] = useState("+7");
   const [agreed, setAgreed] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const showPopup = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -133,19 +165,55 @@ export function ScrollPopup({
     setPhone(formatPhone(raw));
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log("Scroll popup form submitted:", {
-      zone,
-      vehicleCount,
-      phone,
-    });
-    setSubmitted(true);
-    setStep(4);
-    setTimeout(() => {
-      setOpen(false);
-      onClose?.();
-    }, 3000);
+    if (loading) return;
+
+    // ScrollPopup — UX минимума кликов, имя не собираем. Манагер уточнит при созвоне.
+    const name = "Клиент (калькулятор)";
+
+    setLoading(true);
+    try {
+      const utm = readUtmFromCookies();
+      const messageParts: string[] = [];
+      if (zone) messageParts.push(`Зона: ${ZONE_LABELS[zone]}`);
+      if (vehicleCount) messageParts.push(`Машин: ${vehicleCount}`);
+      if (Object.keys(utm).length > 0) messageParts.push(`UTM: ${JSON.stringify(utm)}`);
+      const message = messageParts.length > 0 ? messageParts.join(" | ") : undefined;
+
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone,
+          source: "scroll_popup",
+          zone: zone && zone !== "unknown" ? zone : undefined,
+          message,
+        }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 429) {
+          toast.error("Слишком много запросов. Попробуйте через минуту.");
+          return;
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      analytics.callbackRequested();
+      setSubmitted(true);
+      setStep(4);
+      setTimeout(() => {
+        setOpen(false);
+        onClose?.();
+      }, 3000);
+    } catch (err) {
+      toast.error("Ошибка отправки. Позвоните нам или напишите в чат.");
+      console.warn("[ScrollPopup]", err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   const price = zone ? BASE_PRICES[zone] : 0;
@@ -341,10 +409,10 @@ export function ScrollPopup({
                 <Button
                   type="submit"
                   size="lg"
-                  disabled={!agreed || !isPhoneValid}
+                  disabled={!agreed || !isPhoneValid || loading}
                   className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                 >
-                  Получить точный расчёт
+                  {loading ? "Отправка..." : "Получить точный расчёт"}
                 </Button>
 
                 <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
