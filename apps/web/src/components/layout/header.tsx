@@ -126,7 +126,7 @@ const sections: MenuSection[] = [
       {
         href: "/services/vremennyj-propusk",
         title: "Временный пропуск",
-        description: "Разовый въезд на 1–5 дней",
+        description: "Разовый въезд до 10 суток",
       },
       {
         href: "/check-status",
@@ -254,7 +254,7 @@ const sections: MenuSection[] = [
       {
         href: "/about",
         title: "О нас",
-        description: "10 лет, 15 000+ пропусков",
+        description: "10 лет, 50 000+ пропусков",
       },
       { href: "/reviews", title: "Отзывы", description: "Реальные кейсы" },
       { href: "/blog", title: "Блог и база знаний" },

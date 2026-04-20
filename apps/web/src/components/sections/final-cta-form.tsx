@@ -223,7 +223,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                   Получить расчёт
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Перезвоним за 15 минут
+                  Перезвоним за 15 минут и рассчитаем стоимость
                 </p>
               </div>
 
@@ -357,7 +357,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
 
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <Shield className="size-3.5" />
-                <span>Данные защищены. Спам не отправляем.</span>
+                <span>Данные защищены по 152-ФЗ. Без навязчивых звонков.</span>
               </div>
             </form>
           )}

@@ -89,8 +89,8 @@ function HeroSection() {
           Пропуска в Москву — МКАД, ТТК, Садовое кольцо
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted-foreground sm:text-xl">
-          Оформим пропуск за 3 дня с гарантией результата. Временный пропуск
-          бесплатно при заказе годового.
+          Поможем оформить пропуск с гарантией результата. Регламент Дептранса
+          — 10 рабочих дней. Временный пропуск бесплатно при заказе годового.
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Button

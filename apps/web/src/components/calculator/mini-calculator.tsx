@@ -43,14 +43,14 @@ interface PricingRow {
 
 /**
  * Таблица цен — согласована с content/calculator.ts (единый источник).
- * Все зоны одинаковы по цене: годовой 12 000 ₽, временный 3 500 ₽.
+ * Все зоны одинаковы по цене: годовой 12 000 ₽, временный 4 500 ₽.
  */
 const PRICING: PricingRow[] = [
-  { zone: "mkad", passType: "temp", pricePerVehicle: 3500 },
+  { zone: "mkad", passType: "temp", pricePerVehicle: 4500 },
   { zone: "mkad", passType: "annual", pricePerVehicle: 12000 },
-  { zone: "ttk", passType: "temp", pricePerVehicle: 3500 },
+  { zone: "ttk", passType: "temp", pricePerVehicle: 4500 },
   { zone: "ttk", passType: "annual", pricePerVehicle: 12000 },
-  { zone: "sk", passType: "temp", pricePerVehicle: 3500 },
+  { zone: "sk", passType: "temp", pricePerVehicle: 4500 },
   { zone: "sk", passType: "annual", pricePerVehicle: 12000 },
 ];
 
@@ -61,7 +61,7 @@ const ZONE_OPTIONS: { value: ZoneId; label: string }[] = [
 ];
 
 const PASS_TYPE_OPTIONS: { value: PassType; label: string }[] = [
-  { value: "temp", label: "Временный (до 5 суток)" },
+  { value: "temp", label: "Временный (до 10 суток)" },
   { value: "annual", label: "Годовой (12 месяцев)" },
 ];
 
@@ -77,7 +77,7 @@ const FLEET_OPTIONS: {
   { value: "10+", label: "10+ машин", vehicles: 12, discount: 0.15 },
 ];
 
-const PROCESSING_DAYS_HINT = "Срок оформления: 3–4 дня";
+const PROCESSING_DAYS_HINT = "Регламент: 10 рабочих дней · временный — 1 день";
 
 const currencyFormatter = new Intl.NumberFormat("ru-RU", {
   style: "currency",
@@ -324,7 +324,7 @@ export function MiniCalculator({
             {/* Ссылка на полный калькулятор */}
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span>
-                Цены «от». Экокласс, ночные пропуски, доп. опции — в полном калькуляторе.
+                Цены «от». Экокласс, режим пропуска (дневной/ночной/круглосуточный), доп. опции — в полном калькуляторе.
               </span>
               <Link
                 href="/calculator"
@@ -350,7 +350,7 @@ export function MiniCalculator({
       <QuickLeadModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        title={`Оформить пропуск на ${zoneLabel}`}
+        title={`Помощь с пропуском на ${zoneLabel}`}
         description={`Ваша цена: ${formatRub(result.total)}. Оставьте телефон — перезвоним за 5 минут с готовым расчётом.`}
         source="mini_calc"
         context={{

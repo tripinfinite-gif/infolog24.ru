@@ -42,8 +42,8 @@ export async function generateMetadata({
 
   if (!zone) return { title: "Услуга не найдена" };
 
-  const title = `${zone.fullName} — оформление за ${zone.processingDays} дн. | Инфолог24`;
-  const description = `${zone.zoneDescription} Оформляем ${zone.fullName.toLowerCase()} за ${zone.processingDays} рабочих дня. Цена ${zone.priceLabel} ${zone.priceUnit}. Гарантия результата. Бесплатный временный пропуск.`;
+  const title = `${zone.fullName} — помощь в оформлении | Инфолог24`;
+  const description = `${zone.zoneDescription} Помогаем оформить ${zone.fullName.toLowerCase()}. Регламент Дептранса — ${zone.processingDays} рабочих дней. Цена ${zone.priceLabel} ${zone.priceUnit}. Гарантия результата. Бесплатный временный пропуск.`;
 
   return {
     title,

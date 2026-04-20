@@ -48,7 +48,7 @@ export function permitTypesKeyboard(): InlineKeyboard {
     .row()
     .text("Годовой ночной", `${CB.typePrefix}annual_night`)
     .row()
-    .text("Разовый (до 5 суток)", `${CB.typePrefix}temporary`)
+    .text("Разовый (до 10 суток)", `${CB.typePrefix}temporary`)
     .row()
     .text("← Назад", CB.back);
 }

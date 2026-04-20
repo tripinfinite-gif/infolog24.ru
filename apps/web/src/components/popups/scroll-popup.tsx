@@ -30,10 +30,10 @@ const ZONE_LABELS: Record<Zone, string> = {
 };
 
 const BASE_PRICES: Record<Zone, number> = {
-  mkad: 4500,
-  ttk: 9000,
-  sk: 45000,
-  unknown: 4500,
+  mkad: 12000,
+  ttk: 12000,
+  sk: 12000,
+  unknown: 12000,
 };
 
 function getDiscount(count: VehicleCount): number {
@@ -208,7 +208,7 @@ export function ScrollPopup({
                   onClick={() => selectZone("mkad")}
                 >
                   <span className="text-base font-semibold">МКАД</span>
-                  <span className="text-xs text-muted-foreground">от 4 500 &#8381;</span>
+                  <span className="text-xs text-muted-foreground">от 12 000 &#8381;</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -217,7 +217,7 @@ export function ScrollPopup({
                   onClick={() => selectZone("ttk")}
                 >
                   <span className="text-base font-semibold">ТТК</span>
-                  <span className="text-xs text-muted-foreground">от 9 000 &#8381;</span>
+                  <span className="text-xs text-muted-foreground">от 12 000 &#8381;</span>
                 </Button>
                 <Button
                   variant="outline"
@@ -226,7 +226,7 @@ export function ScrollPopup({
                   onClick={() => selectZone("sk")}
                 >
                   <span className="text-base font-semibold">Садовое</span>
-                  <span className="text-xs text-muted-foreground">от 45 000 &#8381;</span>
+                  <span className="text-xs text-muted-foreground">от 12 000 &#8381;</span>
                 </Button>
                 <Button
                   variant="outline"

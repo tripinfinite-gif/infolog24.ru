@@ -12,12 +12,12 @@ export const zones: CalculatorOption[] = [
 
 export const passTypes: CalculatorOption[] = [
   { id: "annual", label: "Годовой (включает временный)", value: "annual" },
-  { id: "temp", label: "Временный (до 5 суток)", value: "temp" },
+  { id: "temp", label: "Временный (до 10 суток)", value: "temp" },
 ];
 
 export const durations: CalculatorOption[] = [
   { id: "1year", label: "1 год", value: "1year" },
-  { id: "5days", label: "До 5 суток", value: "5days" },
+  { id: "10days", label: "До 10 суток", value: "10days" },
 ];
 
 export interface PriceRule {
@@ -38,8 +38,8 @@ export const priceRules: PriceRule[] = [
   {
     zone: "mkad",
     type: "temp",
-    duration: "5days",
-    basePrice: 3500,
+    duration: "10days",
+    basePrice: 4500,
   },
   // ТТК
   {
@@ -51,8 +51,8 @@ export const priceRules: PriceRule[] = [
   {
     zone: "ttk",
     type: "temp",
-    duration: "5days",
-    basePrice: 3500,
+    duration: "10days",
+    basePrice: 4500,
   },
   // Садовое кольцо
   {
@@ -64,8 +64,8 @@ export const priceRules: PriceRule[] = [
   {
     zone: "sk",
     type: "temp",
-    duration: "5days",
-    basePrice: 3500,
+    duration: "10days",
+    basePrice: 4500,
   },
 ];
 

@@ -107,7 +107,7 @@ export default async function PropuskVehiclePage({
     <>
       <ServiceJsonLd
         name={`Пропуск на ${v.name} в Москву`}
-        description={`Оформление пропуска на ${v.name} для проезда по МКАД, ТТК и Садовому кольцу Москвы. ${v.summary}`}
+        description={`Помощь в оформлении пропуска на ${v.name} для проезда по МКАД, ТТК и Садовому кольцу Москвы. ${v.summary}`}
         price={v.priceFrom}
         url={pageUrl}
       />
@@ -304,7 +304,7 @@ export default async function PropuskVehiclePage({
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">
                   {v.permitTypes.sk.required
-                    ? `Строгая зона, экокласс от Евро-4, РНИС обязателен. От ${formatPrice(v.permitTypes.sk.priceFrom)} ₽.`
+                    ? `Строгая зона, экокласс от Евро-3, РНИС обязателен. От ${formatPrice(v.permitTypes.sk.priceFrom)} ₽.`
                     : `Пропуск не требуется.`}
                 </p>
               </CardContent>
@@ -387,7 +387,7 @@ export default async function PropuskVehiclePage({
       <section className="bg-muted/30 px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <div className="mx-auto max-w-4xl">
           <h2 className="font-heading text-2xl font-bold sm:text-3xl lg:text-4xl">
-            Как мы оформляем пропуск
+            Как мы помогаем оформить пропуск
           </h2>
           <div className="mt-8 space-y-6">
             {[

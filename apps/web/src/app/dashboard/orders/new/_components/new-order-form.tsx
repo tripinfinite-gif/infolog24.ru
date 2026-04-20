@@ -36,11 +36,11 @@ interface VehicleOption {
 }
 
 const passTypes = [
-  { id: "mkad_day", label: "МКАД дневной", zone: "mkad" as const, zoneLabel: "МКАД", price: 10000 },
-  { id: "mkad_night", label: "МКАД ночной", zone: "mkad" as const, zoneLabel: "МКАД", price: 8000 },
-  { id: "ttk", label: "ТТК", zone: "ttk" as const, zoneLabel: "ТТК", price: 15000 },
-  { id: "sk", label: "Садовое кольцо", zone: "sk" as const, zoneLabel: "СК", price: 20000 },
-  { id: "temp", label: "Временный", zone: "mkad" as const, zoneLabel: "МКАД", price: 3500 },
+  { id: "mkad_day", label: "МКАД дневной", zone: "mkad" as const, zoneLabel: "МКАД", price: 12000 },
+  { id: "mkad_night", label: "МКАД ночной", zone: "mkad" as const, zoneLabel: "МКАД", price: 12000 },
+  { id: "ttk", label: "ТТК", zone: "ttk" as const, zoneLabel: "ТТК", price: 12000 },
+  { id: "sk", label: "Садовое кольцо", zone: "sk" as const, zoneLabel: "СК", price: 12000 },
+  { id: "temp", label: "Временный", zone: "mkad" as const, zoneLabel: "МКАД", price: 4500 },
 ];
 
 const steps = [

@@ -77,8 +77,8 @@ export function Footer({ className }: FooterProps) {
                 iconClassName="text-accent"
               />
               <p className="text-sm leading-relaxed text-primary-foreground/50">
-                Оформление пропусков в Москву для грузового транспорта с 2016
-                года. Быстро, надёжно, с гарантией результата.
+                Помогаем оформить пропуск в Москву для грузового транспорта
+                с 2016 года. Быстро, надёжно, с гарантией результата.
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <OpenChatTrigger
@@ -170,7 +170,7 @@ export function Footer({ className }: FooterProps) {
                 <li>
                   <span className="flex items-start gap-2.5 text-sm text-primary-foreground/50">
                     <MapPin className="mt-0.5 size-4 shrink-0" />
-                    {companyInfo.contacts.physicalAddress}
+                    {companyInfo.contacts.legalAddress}
                   </span>
                 </li>
                 <li>
@@ -217,10 +217,6 @@ export function Footer({ className }: FooterProps) {
                 &copy; {companyInfo.foundedYear}&ndash;{currentYear}{" "}
                 {companyInfo.legal.legalNameShort}
               </span>
-              <span className="hidden sm:inline">&middot;</span>
-              <span>ИНН {companyInfo.legal.inn}</span>
-              <span className="hidden sm:inline">&middot;</span>
-              <span>ОГРН {companyInfo.legal.ogrn}</span>
             </div>
             <div className="flex gap-4">
               <Link

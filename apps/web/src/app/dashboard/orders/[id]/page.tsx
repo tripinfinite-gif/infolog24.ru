@@ -77,7 +77,7 @@ const zoneLabels: Record<string, string> = {
 const docTypeLabels: Record<string, string> = {
   pts: "ПТС",
   sts: "СТС",
-  driver_license: "Водительское удостоверен��е",
+  driver_license: "Водительское удостоверение",
   power_of_attorney: "Доверенность",
   application: "Заявление",
   contract: "Договор",

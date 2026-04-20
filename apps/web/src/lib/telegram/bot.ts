@@ -27,7 +27,7 @@ const zoneLabels: Record<"mkad" | "ttk" | "sk", string> = {
 const typeLabels: Record<"annual_day" | "annual_night" | "temporary", string> = {
   annual_day: "Годовой (дневной)",
   annual_night: "Годовой (ночной)",
-  temporary: "Разовый (до 5 суток)",
+  temporary: "Разовый (до 10 суток)",
 };
 
 const WELCOME_TEXT =
@@ -45,7 +45,7 @@ function resolveBasePrice(
   type: "annual_day" | "annual_night" | "temporary",
 ): number {
   if (type === "temporary") {
-    return pricingTiers.find((t) => t.type === "temp")?.price ?? 3500;
+    return pricingTiers.find((t) => t.type === "temp")?.price ?? 4500;
   }
   return (
     pricingTiers.find((t) => t.zone === zone && t.type === "annual")?.price ??

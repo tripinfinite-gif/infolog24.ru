@@ -26,9 +26,39 @@ function pluralDays(n: number): string {
   return "дней";
 }
 
+function pluralMonths(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return "месяц";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "месяца";
+  return "месяцев";
+}
+
+function pluralYears(n: number): string {
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return "год";
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "года";
+  return "лет";
+}
+
 function formatCountdown(days: number): string {
   if (days === 0) return "Сегодня";
-  if (days > 0) return `Через ${days} ${pluralDays(days)}`;
+  if (days > 0) {
+    // Горящий дедлайн в пределах 2 месяцев — дни.
+    if (days <= 60) return `Осталось ${days} ${pluralDays(days)}`;
+    // От 2 до 12 месяцев — в месяцах.
+    if (days <= 365) {
+      const months = Math.round(days / 30);
+      return `Через ~${months} ${pluralMonths(months)}`;
+    }
+    // Больше года — в годах (округляем до 0.5 года).
+    const years = Math.round((days / 365) * 2) / 2;
+    const yearsLabel =
+      years % 1 === 0 ? `${years}` : years.toFixed(1).replace(".", ",");
+    const wholeYears = Math.floor(years);
+    return `Через ~${yearsLabel} ${pluralYears(wholeYears === years ? wholeYears : 2)}`;
+  }
   const absDays = Math.abs(days);
   return `${absDays} ${pluralDays(absDays)} назад`;
 }

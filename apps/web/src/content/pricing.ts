@@ -30,7 +30,8 @@ export const fineData: FineData = {
   finePerCamera: 7500,
   camerasOnMkad: 43,
   fineRepeat: 10000,
-  totalPerTrip: 215000,
+  // 43 камеры × 7 500 ₽ = 322 500 ₽ (ст. 12.16 ч. 7 КоАП РФ, ред. ФЗ-490 от 26.12.2024).
+  totalPerTrip: 322500,
   totalPerMonth: 500000,
   earlyPaymentDiscount: 25,
 };
@@ -43,7 +44,7 @@ export const pricingTiers: PricingTier[] = [
     subtitle: "Годовой пропуск",
     price: 12000,
     priceUnit: "₽",
-    processingDays: "3 рабочих дня",
+    processingDays: "10 рабочих дней",
     features: [
       "Действует 1 год",
       "Для транспорта свыше 3,5 т",
@@ -60,7 +61,7 @@ export const pricingTiers: PricingTier[] = [
     subtitle: "Годовой пропуск",
     price: 12000,
     priceUnit: "₽",
-    processingDays: "5 рабочих дней",
+    processingDays: "10 рабочих дней",
     features: [
       "Действует 1 год",
       "Включает проезд по МКАД",
@@ -77,12 +78,12 @@ export const pricingTiers: PricingTier[] = [
     subtitle: "Годовой пропуск",
     price: 12000,
     priceUnit: "₽",
-    processingDays: "7 рабочих дней",
+    processingDays: "10 рабочих дней",
     features: [
       "Действует 1 год",
       "Включает проезд по ТТК и МКАД",
       "Для транспорта свыше 1 т",
-      "Экокласс Евро-4 и выше",
+      "Экокласс Евро-3 и выше",
       "Временный пропуск бесплатно",
       "Полное сопровождение",
     ],
@@ -92,11 +93,11 @@ export const pricingTiers: PricingTier[] = [
     type: "temp",
     title: "Временный",
     subtitle: "Любая зона",
-    price: 3500,
+    price: 4500,
     priceUnit: "₽",
     processingDays: "1 рабочий день",
     features: [
-      "Действует до 5 суток",
+      "Действует до 10 суток",
       "Любая зона: МКАД, ТТК, СК",
       "Оформление за 1 день",
       "Минимум документов",

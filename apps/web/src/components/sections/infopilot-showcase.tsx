@@ -74,11 +74,11 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
-            Водитель говорит в чате: «Встал, Воронежская, 230-й километр, мост
-            через Дон, не заводится». Через 2 минуты у него в чате — карточка с
-            проверенным эвакуатором: ETA 27 минут, цена зафиксирована
-            8&nbsp;500&nbsp;₽, наш робот уже созвонился с диспетчером партнёра.
-            Водитель нажимает «Подтверждаю». Всё.
+            Водитель говорит в чате: «Сломался, Воронежская трасса, 230-й
+            километр, мост через Дон, не заводится». Через 2 минуты у него
+            в&nbsp;чате — карточка с проверенным эвакуатором: ETA 27 минут,
+            цена зафиксирована 8&nbsp;500&nbsp;₽, ИнфоПилот уже связался
+            с&nbsp;диспетчером партнёра. Водитель нажимает «Подтверждаю». Всё.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -170,9 +170,11 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
         <div className="mt-10 flex flex-col items-center gap-2 rounded-2xl bg-accent/5 p-6 text-center sm:flex-row sm:justify-center sm:gap-4">
           <Sparkles className="size-5 text-accent" />
           <p className="text-sm font-medium text-foreground sm:text-base">
-            Уже <span className="font-bold text-accent">47 партнёров</span> в
-            23&nbsp;городах. На пилоте обработано{" "}
-            <span className="font-bold text-accent">312 инцидентов</span>
+            На пилотном запуске —{" "}
+            <span className="font-bold text-accent">47 партнёров</span> в
+            23&nbsp;городах и{" "}
+            <span className="font-bold text-accent">312 обработанных инцидентов</span>.
+            Продукт расширяется каждый месяц.
           </p>
         </div>
       </div>

@@ -11,8 +11,8 @@ interface HeroProps {
 }
 
 const heroStats = [
-  { value: "10+", label: "лет на рынке" },
-  { value: "15K+", label: "пропусков оформлено" },
+  { value: "10 лет", label: "на рынке" },
+  { value: "50 000+", label: "пропусков оформлено" },
   { value: "6", label: "систем в одном окне" },
   { value: "24/7", label: "ИИ-диспетчер" },
 ];
@@ -21,7 +21,7 @@ const trustItems = [
   "Контур • Астрал",
   "Яндекс 4.7",
   "2ГИС 4.6",
-  "15 000+ кейсов",
+  "50 000+ кейсов",
 ];
 
 export function Hero({ className }: HeroProps) {
@@ -45,21 +45,21 @@ export function Hero({ className }: HeroProps) {
         <div className="max-w-2xl">
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-sm text-primary-foreground/80">
             <Sparkles className="size-3.5 text-accent" />
-            Платформа для перевозчика — больше чем пропуск
+            Платформа для перевозчика
           </div>
 
           <h1 className="font-heading text-4xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl">
             Больше чем пропуск.{" "}
             <span className="text-accent">
-              Вся операционка перевозчика в одном окне
+              Вся операционная работа перевозчика в одном окне
             </span>{" "}
             — и ИИ-диспетчер на трассе 24/7.
           </h1>
 
           <p className="mt-6 max-w-xl text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
-            Пропуск + РНИС + ЭТрН + ГосЛог + мониторинг штрафов + эвакуация,
-            ремонт, мойка и страхование через проверенных партнёров. Работаем
-            с&nbsp;2016 года, 15&nbsp;000+ оформленных пропусков.
+            Помощь с пропусками, РНИС, ЭТрН и ГосЛог. Мониторинг штрафов.
+            Эвакуация, ремонт, мойка и страхование через проверенных партнёров.
+            Работаем с&nbsp;2016 года — более 50&nbsp;000 оформленных пропусков.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -75,13 +75,12 @@ export function Hero({ className }: HeroProps) {
             </Button>
             <Button
               asChild
-              variant="outline"
               size="lg"
-              className="h-13 rounded-xl border-primary-foreground/20 px-8 text-base text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+              className="h-13 rounded-xl bg-primary-foreground px-8 text-base font-semibold text-primary shadow-lg transition-all hover:bg-primary-foreground/90 hover:shadow-xl"
             >
               <Link href="#passes">
                 <Truck className="mr-2 size-4" />
-                Просто оформить пропуск
+                Помочь с пропуском
               </Link>
             </Button>
           </div>

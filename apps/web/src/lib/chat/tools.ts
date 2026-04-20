@@ -45,7 +45,7 @@ const zoneLabels: Record<string, string> = {
 const typeLabels: Record<string, string> = {
   annual_day: "Годовой (дневной)",
   annual_night: "Годовой (ночной)",
-  temporary: "Временный (до 5 суток)",
+  temporary: "Временный (до 10 суток)",
 };
 
 const typeToOrderType: Record<
@@ -62,7 +62,7 @@ function resolveBasePrice(
   type: "annual_day" | "annual_night" | "temporary",
 ): number {
   if (type === "temporary") {
-    return pricingTiers.find((t) => t.type === "temp")?.price ?? 3500;
+    return pricingTiers.find((t) => t.type === "temp")?.price ?? 4500;
   }
   return (
     pricingTiers.find((t) => t.zone === zone && t.type === "annual")?.price ??
@@ -174,7 +174,7 @@ export function createChatTools({ userId }: ChatUserContext) {
         type: z
           .enum(["annual_day", "annual_night", "temporary"])
           .describe(
-            "Тип пропуска: annual_day (годовой дневной), annual_night (годовой ночной), temporary (временный до 5 суток)",
+            "Тип пропуска: annual_day (годовой дневной), annual_night (годовой ночной), temporary (временный до 10 суток)",
           ),
         vehicleCount: z
           .number()

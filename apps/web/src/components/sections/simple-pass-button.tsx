@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 
 interface SimplePassButtonProps {
   zone: string;        // "МКАД" / "ТТК" / "Садовое" / "Временный"
-  price: string;       // "12 000" / "3 500"
-  period: string;      // "за машину / год" / "до 5 суток"
+  price: string;       // "12 000" / "4 500"
+  period: string;      // "за машину / год" / "до 10 суток"
   dark?: boolean;
 }
 
@@ -39,7 +39,7 @@ export function SimplePassButton({
           ? "sk"
           : "unknown";
 
-  const passType = isTemporary ? "Временный (до 5 суток)" : "Годовой (12 месяцев)";
+  const passType = isTemporary ? "Временный (до 10 суток)" : "Годовой (12 месяцев)";
   const priceLabel = `${price} ₽ ${period}`;
 
   return (
