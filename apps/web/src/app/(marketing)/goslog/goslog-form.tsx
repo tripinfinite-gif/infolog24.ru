@@ -18,10 +18,41 @@ import {
 } from "@/components/ui/select";
 import { analytics } from "@/lib/analytics/events";
 
+const UTM_KEYS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+] as const;
+
+function readUtmFromCookies(): Record<string, string> {
+  if (typeof document === "undefined") return {};
+  const result: Record<string, string> = {};
+  const pairs = document.cookie.split("; ");
+  for (const p of pairs) {
+    const idx = p.indexOf("=");
+    if (idx === -1) continue;
+    const key = p.slice(0, idx).trim();
+    const value = p.slice(idx + 1);
+    if (!key || !value) continue;
+    if ((UTM_KEYS as readonly string[]).includes(key)) {
+      try {
+        result[key] = decodeURIComponent(value);
+      } catch {
+        result[key] = value;
+      }
+    }
+  }
+  return result;
+}
+
 export function GoslogForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [urgency, setUrgency] = useState<string>("before_deadline");
+  const [type, setType] = useState<string>("expeditor");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,6 +63,20 @@ export function GoslogForm() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
+    const website = (formData.get("website") as string) ?? "";
+
+    const context: Record<string, string> = {
+      ...readUtmFromCookies(),
+      segment: type,
+      package: urgency,
+    };
+
+    const inn = (formData.get("inn") as string)?.trim();
+    if (inn) context.inn = inn;
+
+    const company = (formData.get("company") as string)?.trim();
+    if (company) context.company = company;
+
     try {
       await fetch("/api/contacts", {
         method: "POST",
@@ -39,9 +84,16 @@ export function GoslogForm() {
         body: JSON.stringify({
           name: formData.get("name"),
           phone: formData.get("phone"),
-          company: formData.get("company"),
-          type: formData.get("type"),
           source: "goslog",
+          priority: urgency === "expired" ? "high" : "normal",
+          message:
+            urgency === "expired"
+              ? "Клиент пропустил дедлайн 30.04.2026 — консультация по экстренным мерам"
+              : urgency === "urgent"
+                ? "Дедлайн 30.04.2026 — нужна срочная регистрация"
+                : "",
+          context,
+          website,
         }),
       });
     } catch {
@@ -63,7 +115,8 @@ export function GoslogForm() {
           Заявка отправлена!
         </h3>
         <p className="mt-2 text-primary-foreground/80">
-          Мы свяжемся с вами в течение 15 минут в рабочее время.
+          Перезвоним в течение 15 минут в рабочее время. Подготовим список того,
+          что нужно до подачи, и расскажем о ваших шансах.
         </p>
       </div>
     );
@@ -72,15 +125,25 @@ export function GoslogForm() {
   return (
     <div className="rounded-3xl bg-primary p-6 sm:p-8 lg:p-10">
       <div className="text-center">
-        <h2 className="font-heading text-2xl font-bold text-primary-foreground sm:text-3xl">
-          Оставить заявку на регистрацию
-        </h2>
+        <h3 className="font-heading text-2xl font-bold text-primary-foreground sm:text-3xl">
+          Заявка на регистрацию в ГосЛог
+        </h3>
         <p className="mt-2 text-primary-foreground/70">
-          Заполните форму — перезвоним за 15 минут
+          Заполните форму — перезвоним за 15 минут с планом действий
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
+        {/* Honeypot */}
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          className="absolute left-[-9999px] h-0 w-0 opacity-0"
+          aria-hidden="true"
+        />
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="goslog-name" className="text-primary-foreground">
@@ -89,7 +152,7 @@ export function GoslogForm() {
             <Input
               id="goslog-name"
               name="name"
-              placeholder="Как к вам обращаться?"
+              placeholder="Как к вам обращаться"
               required
               className="h-12 border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
             />
@@ -109,33 +172,83 @@ export function GoslogForm() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="goslog-company" className="text-primary-foreground">
-            Компания
-          </Label>
-          <Input
-            id="goslog-company"
-            name="company"
-            placeholder="Название компании или ИП"
-            className="h-12 border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
-          />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="goslog-company" className="text-primary-foreground">
+              Компания (необязательно)
+            </Label>
+            <Input
+              id="goslog-company"
+              name="company"
+              placeholder="Название ООО / ИП"
+              className="h-12 border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="goslog-inn" className="text-primary-foreground">
+              ИНН (необязательно)
+            </Label>
+            <Input
+              id="goslog-inn"
+              name="inn"
+              inputMode="numeric"
+              pattern="\d{10,12}"
+              placeholder="10 или 12 цифр"
+              className="h-12 border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
+            />
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="goslog-type" className="text-primary-foreground">
-            Тип деятельности
-          </Label>
-          <Select name="type">
-            <SelectTrigger className="h-12 w-full border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground data-[placeholder]:text-primary-foreground/50">
-              <SelectValue placeholder="Выберите тип" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="expeditor">Экспедитор</SelectItem>
-              <SelectItem value="carrier">Перевозчик</SelectItem>
-              <SelectItem value="both">И то, и другое</SelectItem>
-              <SelectItem value="other">Другое</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="goslog-type" className="text-primary-foreground">
+              Тип деятельности
+            </Label>
+            <Select name="type" value={type} onValueChange={setType}>
+              <SelectTrigger
+                id="goslog-type"
+                className="h-12 w-full border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground data-[placeholder]:text-primary-foreground/50"
+              >
+                <SelectValue placeholder="Выберите тип" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="expeditor">Экспедитор</SelectItem>
+                <SelectItem value="carrier">Перевозчик</SelectItem>
+                <SelectItem value="both">И то, и другое</SelectItem>
+                <SelectItem value="unsure">Ещё не знаю</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="goslog-urgency" className="text-primary-foreground">
+              Срочность
+            </Label>
+            <Select
+              name="urgency"
+              value={urgency}
+              onValueChange={setUrgency}
+            >
+              <SelectTrigger
+                id="goslog-urgency"
+                className="h-12 w-full border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground data-[placeholder]:text-primary-foreground/50"
+              >
+                <SelectValue placeholder="Когда нужна регистрация" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="urgent">
+                  Срочно — до 30 апреля 2026
+                </SelectItem>
+                <SelectItem value="before_deadline">
+                  В ближайшие недели
+                </SelectItem>
+                <SelectItem value="planning">Планирую — выбираю подрядчика</SelectItem>
+                <SelectItem value="expired">
+                  Пропустил дедлайн — что делать?
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="flex items-start gap-2 text-xs text-primary-foreground/70">
