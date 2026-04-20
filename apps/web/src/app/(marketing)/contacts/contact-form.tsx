@@ -18,10 +18,18 @@ export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [consent, setConsent] = useState(false);
+  const [website, setWebsite] = useState("");
   const router = useRouter();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    // Honeypot: скрытое поле видят только боты. Молча имитируем успех.
+    if (website.trim().length > 0) {
+      setSubmitted(true);
+      return;
+    }
+
     if (!consent) {
       toast.error("Необходимо согласие на обработку персональных данных");
       return;
@@ -96,7 +104,30 @@ export function ContactForm() {
           Заполните форму, и мы свяжемся с вами за 5 минут
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+        <form onSubmit={handleSubmit} className="mt-6 space-y-5" noValidate>
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: "-9999px",
+              top: "auto",
+              width: "1px",
+              height: "1px",
+              overflow: "hidden",
+            }}
+          >
+            <label htmlFor="contact-website">Website</label>
+            <input
+              id="contact-website"
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="contact-name">
               Имя <span className="text-destructive">*</span>

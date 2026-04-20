@@ -4,6 +4,7 @@ import { useState, useEffect, type FormEvent, type ChangeEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bot, CheckCircle, Lock, MessageSquare, Phone } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,35 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { companyInfo } from "@/content/company";
 import { analytics } from "@/lib/analytics/events";
 import { cn } from "@/lib/utils";
+
+const UTM_KEYS = [
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_content",
+  "utm_term",
+] as const;
+
+function readUtmFromCookies(): Record<string, string> {
+  if (typeof document === "undefined") return {};
+  const result: Record<string, string> = {};
+  const pairs = document.cookie.split("; ");
+  for (const p of pairs) {
+    const idx = p.indexOf("=");
+    if (idx === -1) continue;
+    const key = p.slice(0, idx).trim();
+    const value = p.slice(idx + 1);
+    if (!key || !value) continue;
+    if ((UTM_KEYS as readonly string[]).includes(key)) {
+      try {
+        result[key] = decodeURIComponent(value);
+      } catch {
+        result[key] = value;
+      }
+    }
+  }
+  return result;
+}
 
 const MAX_URL =
   companyInfo.social.find((s) => s.name === "MAX")?.url ?? "https://max.ru/infolog24";
@@ -48,13 +78,26 @@ export function FloatingActions({ className }: FloatingActionsProps) {
   const [visible, setVisible] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("+7");
   const [agreed, setAgreed] = useState(false);
+  const [website, setWebsite] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (callbackOpen) return;
+    setName("");
+    setPhone("+7");
+    setAgreed(false);
+    setWebsite("");
+    setLoading(false);
+    setSubmitted(false);
+  }, [callbackOpen]);
 
   function handlePhoneChange(e: ChangeEvent<HTMLInputElement>) {
     const raw = e.target.value;
@@ -65,25 +108,55 @@ export function FloatingActions({ className }: FloatingActionsProps) {
     setPhone(formatPhone(raw));
   }
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    console.log("Callback form submitted:", {
-      name: formData.get("name"),
-      phone: phone,
-    });
-    analytics.callbackRequested();
-    setSubmitted(true);
-    setTimeout(() => {
-      setCallbackOpen(false);
-      setSubmitted(false);
-      setPhone("+7");
-      setAgreed(false);
-    }, 3000);
+    if (loading) return;
+
+    if (website.trim().length > 0) {
+      setSubmitted(true);
+      setTimeout(() => setCallbackOpen(false), 3000);
+      return;
+    }
+
+    if (!isNameValid || !isPhoneValid || !agreed) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/contacts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone,
+          source: "callback_widget",
+          context: readUtmFromCookies(),
+        }),
+      });
+
+      if (res.status === 429) {
+        toast.error("Слишком много запросов. Подождите минуту.");
+        return;
+      }
+
+      if (!res.ok) {
+        toast.error("Ошибка отправки. Позвоните +7 (499) 110-55-49");
+        return;
+      }
+
+      analytics.callbackRequested();
+      setSubmitted(true);
+      setTimeout(() => setCallbackOpen(false), 3000);
+    } catch {
+      toast.error("Ошибка отправки. Позвоните +7 (499) 110-55-49");
+    } finally {
+      setLoading(false);
+    }
   }
 
   const phoneDigits = phone.replace(/\D/g, "");
   const isPhoneValid = phoneDigits.length === 11;
+  const isNameValid = name.trim().length >= 2 && name.trim().length <= 100;
+  const canSubmit = isNameValid && isPhoneValid && agreed && !loading;
 
   return (
     <>
@@ -219,13 +292,40 @@ export function FloatingActions({ className }: FloatingActionsProps) {
                   </DialogDescription>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+                <form onSubmit={handleSubmit} className="mt-4 space-y-4" noValidate>
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      left: "-9999px",
+                      top: "auto",
+                      width: "1px",
+                      height: "1px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <label htmlFor="floating-website">Website</label>
+                    <input
+                      id="floating-website"
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                    />
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="floating-name">Имя</Label>
                     <Input
                       id="floating-name"
                       name="name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       placeholder="Ваше имя"
+                      minLength={2}
+                      maxLength={100}
                       required
                       autoComplete="given-name"
                     />
@@ -234,12 +334,14 @@ export function FloatingActions({ className }: FloatingActionsProps) {
                     <Label htmlFor="floating-phone">Телефон</Label>
                     <Input
                       id="floating-phone"
+                      name="phone"
                       type="tel"
                       value={phone}
                       onChange={handlePhoneChange}
                       placeholder="+7 (___) ___-__-__"
                       required
                       autoComplete="tel"
+                      inputMode="tel"
                     />
                   </div>
 
@@ -248,6 +350,7 @@ export function FloatingActions({ className }: FloatingActionsProps) {
                       id="floating-agree"
                       checked={agreed}
                       onCheckedChange={(checked) => setAgreed(checked === true)}
+                      required
                     />
                     <Label htmlFor="floating-agree" className="text-xs leading-normal text-muted-foreground">
                       Согласен на{" "}
@@ -260,10 +363,10 @@ export function FloatingActions({ className }: FloatingActionsProps) {
                   <Button
                     type="submit"
                     size="lg"
-                    disabled={!agreed || !isPhoneValid}
+                    disabled={!canSubmit}
                     className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                   >
-                    Отправить
+                    {loading ? "Отправляем..." : "Отправить"}
                   </Button>
 
                   <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">

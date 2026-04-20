@@ -34,11 +34,14 @@ const cspDirectives: Record<string, string[]> = {
   "connect-src": [
     "'self'",
     "https://mc.yandex.ru",
+    "wss://mc.yandex.ru",
     "https://www.google-analytics.com",
   ],
   "frame-src": ["'self'", "https://yookassa.ru"],
   // PWA: service worker и web-app manifest обслуживаются из того же origin.
-  "worker-src": ["'self'"],
+  // blob: нужен клиентским библиотекам (Vercel AI SDK, sentry, эмбеддинги),
+  // которые создают воркеры из Blob'ов для офлоада тяжёлой работы.
+  "worker-src": ["'self'", "blob:"],
   "manifest-src": ["'self'"],
   "object-src": ["'none'"],
   "base-uri": ["'self'"],
