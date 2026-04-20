@@ -109,6 +109,7 @@ const nextConfig: NextConfig = {
       { source: "/propusk/dnevnoj-propusk-na-mkad", destination: "/services/vremennyj-propusk", permanent: true },
       { source: "/propusk/razovyj-propusk-v-moskvu", destination: "/services/vremennyj-propusk", permanent: true },
       { source: "/propusk/zakazat-propusk", destination: "/services", permanent: true },
+      { source: "/propusk/propusk-na-gazel-v-tsentr", destination: "/services/propusk-sk", permanent: true },
 
       // Лендинги Joomla → сегментные лендинги
       { source: "/propuskm", destination: "/ip-perevozchik", permanent: true },
