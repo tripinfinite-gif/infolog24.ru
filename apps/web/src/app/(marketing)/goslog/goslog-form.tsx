@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle, Loader2, Shield } from "lucide-react";
+import { CheckCircle, Info, Loader2, Shield } from "lucide-react";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { analytics } from "@/lib/analytics/events";
 
 const UTM_KEYS = [
@@ -47,12 +48,15 @@ function readUtmFromCookies(): Record<string, string> {
   return result;
 }
 
+type BusinessType = "carrier" | "expeditor" | "mixed" | "other";
+
 export function GoslogForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [consent, setConsent] = useState(false);
-  const [urgency, setUrgency] = useState<string>("before_deadline");
-  const [type, setType] = useState<string>("expeditor");
+  const [businessType, setBusinessType] =
+    useState<BusinessType>("carrier");
+  const [fleet, setFleet] = useState<string>("1-5");
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -67,15 +71,15 @@ export function GoslogForm() {
 
     const context: Record<string, string> = {
       ...readUtmFromCookies(),
-      segment: type,
-      package: urgency,
+      segment: businessType,
+      fleet: fleet,
     };
 
-    const inn = (formData.get("inn") as string)?.trim();
-    if (inn) context.inn = inn;
-
+    const email = (formData.get("email") as string)?.trim();
     const company = (formData.get("company") as string)?.trim();
     if (company) context.company = company;
+
+    const question = (formData.get("question") as string)?.trim() ?? "";
 
     try {
       await fetch("/api/contacts", {
@@ -84,14 +88,14 @@ export function GoslogForm() {
         body: JSON.stringify({
           name: formData.get("name"),
           phone: formData.get("phone"),
+          email: email || undefined,
           source: "goslog",
-          priority: urgency === "expired" ? "high" : "normal",
+          priority:
+            businessType === "expeditor" ? "high" : "normal",
           message:
-            urgency === "expired"
-              ? "Клиент пропустил дедлайн 30.04.2026 — консультация по экстренным мерам"
-              : urgency === "urgent"
-                ? "Дедлайн 30.04.2026 — нужна срочная регистрация"
-                : "",
+            (businessType === "expeditor"
+              ? "Лид-экспедитор — рекомендуем партнёра. "
+              : "") + (question || ""),
           context,
           website,
         }),
@@ -112,11 +116,12 @@ export function GoslogForm() {
           <CheckCircle className="size-8 text-accent" />
         </div>
         <h3 className="mt-4 text-xl font-bold text-primary-foreground">
-          Заявка отправлена!
+          Заявка отправлена
         </h3>
         <p className="mt-2 text-primary-foreground/80">
-          Перезвоним в течение 15 минут в рабочее время. Подготовим список того,
-          что нужно до подачи, и расскажем о ваших шансах.
+          {businessType === "expeditor"
+            ? "Учтём, что вы экспедитор, и расскажем про партнёров для срочной регистрации. Перезвоним в течение 15 минут в рабочее время."
+            : "Перезвоним в течение 15 минут в рабочее время. Подготовим короткий план подготовки к 1 марта 2027 по вашему автопарку."}
         </p>
       </div>
     );
@@ -126,10 +131,10 @@ export function GoslogForm() {
     <div className="rounded-3xl bg-primary p-6 sm:p-8 lg:p-10">
       <div className="text-center">
         <h3 className="font-heading text-2xl font-bold text-primary-foreground sm:text-3xl">
-          Заявка на регистрацию в ГосЛог
+          Задать вопрос юристу по ГосЛогу
         </h3>
         <p className="mt-2 text-primary-foreground/70">
-          Заполните форму — перезвоним за 15 минут с планом действий
+          Заполните форму — перезвоним за 15 минут, вышлем план подготовки
         </p>
       </div>
 
@@ -174,6 +179,18 @@ export function GoslogForm() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
+            <Label htmlFor="goslog-email" className="text-primary-foreground">
+              Email (необязательно)
+            </Label>
+            <Input
+              id="goslog-email"
+              name="email"
+              type="email"
+              placeholder="для отправки гайда"
+              className="h-12 border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="goslog-company" className="text-primary-foreground">
               Компания (необязательно)
             </Label>
@@ -184,71 +201,92 @@ export function GoslogForm() {
               className="h-12 border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="goslog-inn" className="text-primary-foreground">
-              ИНН (необязательно)
-            </Label>
-            <Input
-              id="goslog-inn"
-              name="inn"
-              inputMode="numeric"
-              pattern="\d{10,12}"
-              placeholder="10 или 12 цифр"
-              className="h-12 border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
-            />
-          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="goslog-type" className="text-primary-foreground">
-              Тип деятельности
+            <Label
+              htmlFor="goslog-business"
+              className="text-primary-foreground"
+            >
+              Тип бизнеса
             </Label>
-            <Select name="type" value={type} onValueChange={setType}>
+            <Select
+              name="business"
+              value={businessType}
+              onValueChange={(v) => setBusinessType(v as BusinessType)}
+            >
               <SelectTrigger
-                id="goslog-type"
+                id="goslog-business"
                 className="h-12 w-full border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground data-[placeholder]:text-primary-foreground/50"
               >
-                <SelectValue placeholder="Выберите тип" />
+                <SelectValue placeholder="Выберите" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="carrier">
+                  Перевозчик (грузовой транспорт &gt; 3,5 т)
+                </SelectItem>
                 <SelectItem value="expeditor">Экспедитор</SelectItem>
-                <SelectItem value="carrier">Перевозчик</SelectItem>
-                <SelectItem value="both">И то, и другое</SelectItem>
-                <SelectItem value="unsure">Ещё не знаю</SelectItem>
+                <SelectItem value="mixed">
+                  И то, и другое
+                </SelectItem>
+                <SelectItem value="other">Другое / не уверен</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="goslog-urgency" className="text-primary-foreground">
-              Срочность
+            <Label htmlFor="goslog-fleet" className="text-primary-foreground">
+              Размер парка ТС
             </Label>
-            <Select
-              name="urgency"
-              value={urgency}
-              onValueChange={setUrgency}
-            >
+            <Select name="fleet" value={fleet} onValueChange={setFleet}>
               <SelectTrigger
-                id="goslog-urgency"
+                id="goslog-fleet"
                 className="h-12 w-full border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground data-[placeholder]:text-primary-foreground/50"
               >
-                <SelectValue placeholder="Когда нужна регистрация" />
+                <SelectValue placeholder="Выберите" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="urgent">
-                  Срочно — до 30 апреля 2026
-                </SelectItem>
-                <SelectItem value="before_deadline">
-                  В ближайшие недели
-                </SelectItem>
-                <SelectItem value="planning">Планирую — выбираю подрядчика</SelectItem>
-                <SelectItem value="expired">
-                  Пропустил дедлайн — что делать?
+                <SelectItem value="1-5">1–5 машин</SelectItem>
+                <SelectItem value="6-20">6–20 машин</SelectItem>
+                <SelectItem value="21-50">21–50 машин</SelectItem>
+                <SelectItem value="50+">Больше 50</SelectItem>
+                <SelectItem value="none">
+                  Пока нет парка / планирую
                 </SelectItem>
               </SelectContent>
             </Select>
           </div>
+        </div>
+
+        {businessType === "expeditor" && (
+          <div className="flex items-start gap-3 rounded-2xl border border-accent/40 bg-accent/10 p-4 text-sm text-primary-foreground">
+            <Info className="mt-0.5 size-5 shrink-0 text-accent" />
+            <div>
+              <div className="font-semibold text-primary-foreground">
+                Если вы экспедитор — срок для вас 30 апреля 2026
+              </div>
+              <p className="mt-1 text-primary-foreground/80">
+                Мы сосредоточены на подготовке перевозчиков к 1 марта 2027. Для
+                срочной регистрации экспедитора быстрее через наших партнёров —
+                Контур или аудит-бюро «Картель». Оставьте заявку, и мы всё
+                равно свяжемся, расскажем вариант и дадим контакт партнёра.
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="space-y-2">
+          <Label htmlFor="goslog-question" className="text-primary-foreground">
+            Ваш вопрос юристу (необязательно)
+          </Label>
+          <Textarea
+            id="goslog-question"
+            name="question"
+            rows={4}
+            placeholder="Например: с чего начать подготовку, если в парке 12 ТС?"
+            className="min-h-[120px] border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/50"
+          />
         </div>
 
         <div className="flex items-start gap-2 text-xs text-primary-foreground/70">
@@ -293,13 +331,15 @@ export function GoslogForm() {
               Отправка...
             </>
           ) : (
-            "Оставить заявку"
+            "Отправить вопрос"
           )}
         </Button>
 
         <div className="flex items-center justify-center gap-2 text-xs text-primary-foreground/60">
           <Shield className="size-3.5" />
-          <span>Перезвоним за 15 минут. Данные защищены.</span>
+          <span>
+            Перезвоним за 15 минут. Не передаём ваши данные третьим лицам.
+          </span>
         </div>
       </form>
     </div>
