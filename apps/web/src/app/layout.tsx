@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Manrope, Playfair_Display } from "next/font/google";
+import { Inter, Manrope } from "next/font/google";
 import "./globals.css";
 
 import { AnalyticsProvider } from "@/components/analytics/analytics-provider";
@@ -16,23 +16,6 @@ const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
   variable: "--font-manrope",
   display: "swap",
-});
-
-// Distinctive display serif — used only for hero/section h1-h2
-const playfair = Playfair_Display({
-  subsets: ["latin", "cyrillic"],
-  variable: "--font-display",
-  display: "swap",
-  weight: ["500", "700", "900"],
-  style: ["normal", "italic"],
-});
-
-// Technical mono for numeric accents, eyebrows, timestamps
-const mono = JetBrains_Mono({
-  subsets: ["latin", "cyrillic"],
-  variable: "--font-mono",
-  display: "swap",
-  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {
@@ -60,10 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html
-      lang="ru"
-      className={`dark ${inter.variable} ${manrope.variable} ${playfair.variable} ${mono.variable}`}
-    >
+    <html lang="ru" className={`${inter.variable} ${manrope.variable}`}>
       <body className={inter.className}>
         {children}
         <Toaster />

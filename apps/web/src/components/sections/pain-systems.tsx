@@ -1,5 +1,5 @@
 import {
-  ArrowDownRight,
+  ArrowRight,
   Building,
   Clock,
   FileCheck,
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import { painSystems } from "@/content/pain-systems";
 import { cn } from "@/lib/utils";
 
@@ -26,89 +27,79 @@ const iconMap: Record<string, LucideIcon> = {
   Stethoscope,
 };
 
+// Шесть тонов на основе токенов проекта (без хардкода Tailwind-цветов).
+// Дают визуальную дифференциацию 6 систем, оставаясь внутри дизайн-системы.
+const tonePalette = [
+  "bg-destructive/10 text-destructive",
+  "bg-primary/10 text-primary",
+  "bg-accent/15 text-accent",
+  "bg-foreground/10 text-foreground",
+  "bg-primary/15 text-primary",
+  "bg-destructive/15 text-destructive",
+];
+
 export function PainSystems({ className }: PainSystemsProps) {
   return (
-    <div className={cn("relative mx-auto w-full max-w-7xl", className)}>
-      <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
-        {/* LEFT: big headline + metric */}
-        <div>
-          <span className="eyebrow eyebrow-amber">fragmentation · market reality</span>
-          <h2 className="section-title mt-6 text-foreground">
-            Шесть{" "}
-            <span className="display-italic gradient-text">разобщённых</span>
-            <br />
-            систем вместо одной.
-          </h2>
-          <p className="mt-6 max-w-lg font-sans text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Сегодня грузоперевозчик держит в голове 6 систем регуляторики
-            и&nbsp;15 контактов. Один сбой — простой, штраф и потерянный
-            заказ.
-          </p>
-
-          {/* Metric comparison — mono, high-contrast */}
-          <div className="mt-10 grid grid-cols-2 gap-4">
-            <div className="glass px-5 py-6">
-              <div className="mono-label">сейчас</div>
-              <div className="stat-number mt-2 text-foreground">
-                15<span className="text-muted-foreground">×</span>
-              </div>
-              <div className="mt-2 text-xs text-muted-foreground">
-                контактов в рейсе
-              </div>
-            </div>
-            <div className="glass px-5 py-6 ring-neon">
-              <div className="mono-label">с нами</div>
-              <div className="stat-number mt-2 gradient-text">
-                1
-              </div>
-              <div className="mt-2 text-xs text-muted-foreground">
-                окно · AI-диспетчер
-              </div>
-            </div>
-          </div>
-
-          <Link
-            href="#packages"
-            className="mt-10 inline-flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.2em] text-foreground transition-colors hover:text-[var(--violet)]"
-          >
-            → посмотреть платформу
-          </Link>
-        </div>
-
-        {/* RIGHT: numbered list with mono indices */}
-        <ol className="relative space-y-0 divide-y divide-border/60 border-y border-border/60">
-          {painSystems.map((system, index) => {
-            const Icon = iconMap[system.iconName];
-            const num = String(index + 1).padStart(2, "0");
-            return (
-              <li
-                key={system.id}
-                className="group grid grid-cols-[auto_1fr_auto] items-start gap-5 py-6 transition-colors hover:bg-foreground/[0.03] sm:py-7"
-              >
-                <div className="flex flex-col items-center gap-3">
-                  <span className="font-mono text-xs font-medium tracking-[0.15em] text-muted-foreground">
-                    {num}
-                  </span>
-                  <div className="flex size-10 items-center justify-center rounded-xl bg-foreground/5 text-[var(--cyan)] ring-1 ring-border/80">
-                    {Icon ? <Icon className="size-5" /> : null}
-                  </div>
-                </div>
-
-                <div className="min-w-0">
-                  <h3 className="font-display text-xl font-medium text-foreground sm:text-2xl">
-                    {system.name}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {system.pain}
-                  </p>
-                </div>
-
-                <ArrowDownRight className="mt-1.5 size-4 shrink-0 text-muted-foreground/40 transition-colors group-hover:text-[var(--violet)]" />
-              </li>
-            );
-          })}
-        </ol>
+    <section
+      className={cn(
+        "relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-10 lg:p-14",
+        className
+      )}
+    >
+      <div className="mx-auto max-w-3xl text-center">
+        <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+          6 систем вместо одной
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          Сегодня грузоперевозчик держит в голове 6 систем регуляторики
+          и&nbsp;15 контактов. Один сбой — простой, штраф и потерянный заказ.
+        </p>
       </div>
-    </div>
+
+      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+        {painSystems.map((system, index) => {
+          const Icon = iconMap[system.iconName];
+          const tone = tonePalette[index % tonePalette.length];
+          return (
+            <div
+              key={system.id}
+              className="group relative flex flex-col rounded-2xl border bg-background p-6 transition-shadow hover:shadow-lg"
+            >
+              <div
+                className={cn(
+                  "mb-4 flex size-12 items-center justify-center rounded-full",
+                  tone
+                )}
+              >
+                {Icon ? <Icon className="size-6" /> : null}
+              </div>
+              <h3 className="text-lg font-bold text-foreground">
+                {system.name}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                {system.pain}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-accent/20 bg-accent/5 p-6 text-center">
+        <p className="text-base font-medium text-foreground sm:text-lg">
+          Мы собрали всё в одно окно. Плюс добавили то, чего ни у кого нет —
+          ИИ-диспетчера, который решает проблемы на трассе за водителя.
+        </p>
+        <Button
+          asChild
+          size="lg"
+          className="mt-5 h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
+        >
+          <Link href="#packages">
+            Посмотреть, как это работает
+            <ArrowRight className="ml-2 size-4" />
+          </Link>
+        </Button>
+      </div>
+    </section>
   );
 }

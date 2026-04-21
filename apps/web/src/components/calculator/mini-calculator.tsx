@@ -155,41 +155,33 @@ export function MiniCalculator({
   return (
     <section
       id="mini-calculator"
-      className={cn(
-        "relative mx-auto w-full max-w-6xl scroll-mt-20",
-        className
-      )}
+      className={cn("scroll-mt-20", className)}
       aria-labelledby="mini-calculator-title"
     >
-      <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-end">
-        <div>
-          <span className="eyebrow eyebrow-cyan">
-            <CalcIcon className="size-3" aria-hidden="true" />
-            instant quote · 10s
-          </span>
+      <div className="mx-auto max-w-5xl">
+        <div className="mb-6 text-center sm:mb-8">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-1.5 text-sm font-medium text-accent">
+            <CalcIcon className="size-3.5" aria-hidden="true" />
+            Узнайте стоимость за 10 секунд
+          </div>
           <h2
             id="mini-calculator-title"
-            className="section-title mt-6 text-foreground"
+            className="font-heading text-2xl font-bold text-foreground sm:text-3xl lg:text-4xl"
           >
-            Сколько стоит{" "}
-            <span className="display-italic gradient-text">пропуск</span>{" "}
-            для&nbsp;вашего транспорта
+            Сколько стоит пропуск для вашего транспорта
           </h2>
-          <p className="mt-5 max-w-xl font-sans text-base text-muted-foreground sm:text-lg">
-            Выберите зону, срок и количество ТС — получите цену сразу, без
-            звонков.
+          <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+            Выберите зону, срок и количество ТС — получите цену сразу, без звонков.
           </p>
         </div>
-        <Link
-          href="/calculator"
-          className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 font-mono text-xs font-medium uppercase tracking-[0.18em] text-[var(--violet)] ring-1 ring-border/80 transition-colors hover:bg-foreground/5"
-        >
-          расширенный →
-        </Link>
-      </div>
 
-      <Card className="glass mt-8 rounded-3xl border-0 shadow-none">
-        <CardContent className="space-y-5 pt-6">
+        <Card
+          className={cn(
+            "border-accent/20 shadow-lg",
+            variant === "compact" && "border-border shadow-sm"
+          )}
+        >
+          <CardContent className="space-y-5 pt-6">
             {/* Форма: 3 селекта в ряд на десктопе, stacked на мобильном */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="space-y-2">
@@ -284,7 +276,7 @@ export function MiniCalculator({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
               aria-live="polite"
-              className="rounded-2xl bg-surface-soft/60 p-5 ring-1 ring-border/40 sm:p-6"
+              className="rounded-xl border border-border bg-muted/40 p-5 sm:p-6"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
@@ -320,30 +312,40 @@ export function MiniCalculator({
                   <Button
                     size="lg"
                     onClick={() => setModalOpen(true)}
-                    className="shadow-md shadow-accent/25"
+                    className="h-11 rounded-xl bg-accent px-6 text-accent-foreground shadow-md shadow-accent/20 hover:bg-accent/90"
                   >
                     Заказать
-                    <ArrowRight className="ml-1 size-4" />
+                    <ArrowRight className="ml-1.5 size-4" />
                   </Button>
                 </div>
               </div>
             </motion.div>
 
-            {/* Hint + chat trigger */}
-            <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+            {/* Ссылка на полный калькулятор */}
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
               <span>
-                Цены «от». Экокласс, режим пропуска (дневной/ночной/
-                круглосуточный), доп. опции — в полном калькуляторе.
+                Цены «от». Экокласс, режим пропуска (дневной/ночной/круглосуточный), доп. опции — в полном калькуляторе.
               </span>
-              <OpenChatTrigger
-                className="inline-flex items-center gap-1.5 whitespace-nowrap font-semibold text-accent underline-offset-4 hover:underline"
-                ariaLabel="Открыть чат ИнфоПилот"
+              <Link
+                href="/calculator"
+                className="font-medium text-primary underline-offset-4 hover:underline"
               >
-                Есть вопросы? Спросите ИнфоПилот →
-              </OpenChatTrigger>
+                Расширенный калькулятор →
+              </Link>
             </div>
           </CardContent>
         </Card>
+
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          Есть вопросы?{" "}
+          <OpenChatTrigger
+            className="text-accent underline hover:text-accent/80"
+            ariaLabel="Открыть чат ИнфоПилот"
+          >
+            Спросите ИнфоПилот
+          </OpenChatTrigger>
+        </p>
+      </div>
 
       <QuickLeadModal
         open={modalOpen}

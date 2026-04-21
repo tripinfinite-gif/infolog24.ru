@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
 import { useState, useCallback } from "react";
 
 // Popups are heavy (framer-motion + dialog) — lazy-load them
@@ -19,8 +18,6 @@ const ScrollPopup = dynamic(
 );
 
 export function PopupProvider({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const showScrollPopup = pathname !== "/";
   const [activePopup, setActivePopup] = useState<"exit" | "scroll" | null>(null);
 
   const handleExitOpen = useCallback(() => {
@@ -48,12 +45,10 @@ export function PopupProvider({ children }: { children: React.ReactNode }) {
         onOpen={handleExitOpen}
         onClose={handleExitClose}
       /> */}
-      {showScrollPopup && (
-        <ScrollPopup
-          onOpen={handleScrollOpen}
-          onClose={handleScrollClose}
-        />
-      )}
+      <ScrollPopup
+        onOpen={handleScrollOpen}
+        onClose={handleScrollClose}
+      />
     </>
   );
 }

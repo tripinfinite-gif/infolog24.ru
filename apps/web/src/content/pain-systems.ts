@@ -27,7 +27,7 @@ export const painSystems: PainSystem[] = [
   {
     id: "goslog",
     name: "ГосЛог",
-    pain: "Экспедиторам — в реестр до 30.04.2026. Иначе штраф до 1 млн ₽",
+    pain: "Экспедиторы — дедлайн 30.04.2026. Штраф до 1 млн ₽",
     iconName: "Building",
   },
   {

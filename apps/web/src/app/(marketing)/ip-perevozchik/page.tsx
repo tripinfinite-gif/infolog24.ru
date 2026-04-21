@@ -31,7 +31,7 @@ import { absoluteUrl } from "@/lib/utils/base-url";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Пропуск в Москву для ИП — от 12 000 ₽",
+  title: "Пропуск на МКАД для ИП и частных перевозчиков — от 12 000 ₽",
   description:
     "Помощь в оформлении пропуска на МКАД, ТТК и Садовое кольцо для ИП и частных перевозчиков. Единая цена 12 000 ₽, гарантия возврата денег, помощь с документами.",
   keywords: [

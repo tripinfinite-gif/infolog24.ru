@@ -28,9 +28,9 @@ export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title:
-    "Пропуска в Москву + регуляторика + ИИ-диспетчер — Инфолог24",
+    "Инфолог24 — платформа для грузоперевозчиков. Пропуска, регуляторика, ИИ-диспетчер 24/7",
   description:
-    "Пропуск в Москву за день (МКАД, ТТК, Садовое) + РНИС, ЭТрН, ГосЛог в одном кабинете. ИнфоПилот помогает водителю прямо на трассе 24/7. С 2016 года — 50 000+ пропусков.",
+    "Больше чем пропуск. Помощь с пропусками + РНИС + ЭТрН + ГосЛог + мониторинг штрафов + ИИ-диспетчер 24/7 (эвакуация, ремонт, мойка, страхование). Пакеты «Пропуск+», «Транзит Москва», «Флот Про». С 2016 года — более 50 000 оформленных пропусков.",
   keywords: [
     "пропуск в Москву",
     "пропуск на МКАД",
@@ -141,86 +141,43 @@ export default async function HomePage() {
       />
       <BreadcrumbJsonLd items={[{ name: "Главная", href: "/" }]} />
 
-      {/* === HOMEPAGE v4 · AI OPERATIONS CENTER · full-viewport scenes === */}
-      {/* Глобальная атмосфера: grid + gradient blobs behind everything */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="atmosphere atmosphere-dim absolute inset-0" />
-        <div className="glow glow-violet left-[-20%] top-[10%] size-[40vw]" />
-        <div className="glow glow-cyan right-[-15%] top-[40%] size-[35vw]" style={{ animationDelay: "-3s" }} />
-        <div className="glow glow-amber left-[30%] bottom-[-10%] size-[35vw]" style={{ animationDelay: "-6s" }} />
-      </div>
+      {/* === HOMEPAGE v2 — PLATFORM === */}
+      <div className="mx-auto max-w-7xl space-y-10 px-4 py-6 sm:space-y-14 sm:px-6 sm:py-10 lg:px-8">
+        {/* 1. Hero */}
+        <Hero />
 
-      <div className="relative z-10">
-        {/* 01 */}
-        <section className="scene" data-scene="01">
-          <div className="scene-index">01 / 11</div>
-          <Hero />
-        </section>
+        {/* 1a. Mini-calculator — стоимость за 10 секунд, раскрывает конверсию для 80% посетителей, не доходящих до /calculator */}
+        <MiniCalculator />
 
-        {/* 02 · Mini-calculator */}
-        <section className="scene" data-scene="02">
-          <div className="scene-index">02 / 11</div>
-          <MiniCalculator />
-        </section>
+        {/* 2. Pain: 6 systems */}
+        <PainSystems />
 
-        {/* 03 · Pain */}
-        <section className="scene" data-scene="03">
-          <div className="scene-index">03 / 11</div>
-          <PainSystems />
-        </section>
+        {/* 3. Three packages — main conversion block */}
+        <PackagesGrid />
 
-        {/* 04 · Packages */}
-        <section className="scene" data-scene="04">
-          <div className="scene-index">04 / 11</div>
-          <PackagesGrid />
-        </section>
+        {/* 4. InfoPilot — flagship AI dispatcher */}
+        <InfopilotShowcase />
 
-        {/* 05 · InfoPilot */}
-        <section className="scene" data-scene="05">
-          <div className="scene-index">05 / 11</div>
-          <InfopilotShowcase />
-        </section>
+        {/* 5. Regulatory timeline */}
+        <RegulatoryTimeline />
 
-        {/* 06 · Regulatory timeline */}
-        <section className="scene" data-scene="06">
-          <div className="scene-index">06 / 11</div>
-          <RegulatoryTimeline />
-        </section>
+        {/* 6. "Just a pass" door */}
+        <SimplePass />
 
-        {/* 07 · Simple pass */}
-        <section className="scene" data-scene="07">
-          <div className="scene-index">07 / 11</div>
-          <SimplePass />
-        </section>
+        {/* 7. How it works */}
+        <HowItWorks />
 
-        {/* 08 · How it works */}
-        <section className="scene" data-scene="08">
-          <div className="scene-index">08 / 11</div>
-          <HowItWorks />
-        </section>
+        {/* 8. Why us */}
+        <WhyUsTiles />
 
-        {/* 09 · Why us */}
-        <section className="scene" data-scene="09">
-          <div className="scene-index">09 / 11</div>
-          <WhyUsTiles />
-        </section>
+        {/* 9. Testimonials (existing) */}
+        <Testimonials testimonials={testimonialsData} />
 
-        {/* 10 · Testimonials */}
-        <section className="scene" data-scene="10">
-          <div className="scene-index">10 / 11</div>
-          <Testimonials testimonials={testimonialsData} />
-        </section>
+        {/* 10. FAQ mini */}
+        <FaqMini items={faqData} />
 
-        {/* 11 · FAQ + Final CTA — оставляем вместе, но как отдельная scene */}
-        <section className="scene" data-scene="11">
-          <div className="scene-index">11 / 11</div>
-          <FaqMini items={faqData} />
-        </section>
-
-        <section className="scene" data-scene="12">
-          <div className="scene-index">CTA</div>
-          <FinalCtaForm />
-        </section>
+        {/* 11. Final CTA with form */}
+        <FinalCtaForm />
       </div>
     </>
   );

@@ -34,7 +34,8 @@ import { absoluteUrl } from "@/lib/utils/base-url";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Парк Про — личный кабинет автопарка, бесплатно",
+  title:
+    "Парк Про: личный кабинет для автопарка — бесплатно | Инфолог24",
   description:
     "Все машины, пропуска, штрафы, РНИС, сроки документов и счета — в одном кабинете. Базовый тариф бесплатно навсегда. Premium от 2 000 ₽/мес. Для парков от 1 ТС.",
   keywords: [

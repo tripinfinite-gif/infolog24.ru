@@ -39,7 +39,7 @@ export function Calculator() {
   }, [zone, passType, vehicleCount, result]);
 
   return (
-    <section id="calculator" className="scroll-mt-20">
+    <section id="calculator" className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -48,14 +48,16 @@ export function Calculator() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-surface-soft px-4 py-1.5 text-sm font-medium text-accent">
-            <CalcIcon className="size-3.5" />
-            Калькулятор
+          <div className="mx-auto mb-4 flex items-center justify-center gap-2">
+            <CalcIcon className="size-5 text-primary" />
+            <span className="text-sm font-semibold uppercase tracking-wider text-primary">
+              Калькулятор
+            </span>
           </div>
           <h2 className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
             Рассчитайте стоимость
           </h2>
-          <p className="mt-3 text-muted-foreground">
+          <p className="mt-4 text-muted-foreground">
             Выберите параметры и узнайте точную стоимость оформления пропуска
           </p>
         </motion.div>
@@ -66,7 +68,7 @@ export function Calculator() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.15 }}
         >
-          <Card className="mt-8 rounded-[28px] border-0 shadow-sm ring-1 ring-border/60">
+          <Card className="mt-8 shadow-lg">
             <CardContent className="space-y-6 pt-6">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
@@ -122,9 +124,9 @@ export function Calculator() {
               </div>
 
               {result ? (
-                <div className="rounded-2xl bg-gradient-to-br from-surface-soft via-surface-soft/60 to-card p-6 text-center ring-1 ring-border/40">
+                <div className="rounded-xl bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5 p-6 text-center ring-1 ring-primary/10">
                   {result.discount > 0 && (
-                    <Badge className="mb-3 bg-highlight text-highlight-foreground">
+                    <Badge className="mb-3 bg-accent text-accent-foreground">
                       Скидка {result.discount}% за объём
                     </Badge>
                   )}
@@ -134,7 +136,7 @@ export function Calculator() {
                       {result.pricePerVehicle.toLocaleString("ru-RU")} ₽
                     </span>
                   </p>
-                  <p className="mt-3 font-heading text-3xl font-bold text-foreground sm:text-4xl">
+                  <p className="mt-3 text-3xl font-bold text-primary sm:text-4xl">
                     {result.total.toLocaleString("ru-RU")} ₽
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
@@ -146,14 +148,14 @@ export function Calculator() {
                         : "машин"}
                   </p>
                   {passType !== "temp" && (
-                    <p className="mt-2 flex items-center justify-center gap-1 text-xs text-accent">
+                    <p className="mt-2 flex items-center justify-center gap-1 text-xs text-primary/80">
                       <Info className="size-3" />
                       Включает бесплатный временный пропуск
                     </p>
                   )}
                 </div>
               ) : (
-                <div className="rounded-2xl bg-surface p-6 text-center ring-1 ring-border/50">
+                <div className="rounded-xl bg-muted/50 p-6 text-center">
                   <p className="text-sm text-muted-foreground">
                     Для выбранной комбинации нет тарифа. Свяжитесь с нами для расчёта.
                   </p>
@@ -164,13 +166,13 @@ export function Calculator() {
                 <Button
                   size="lg"
                   onClick={() => setModalOpen(true)}
-                  className="shadow-md shadow-accent/25"
+                  className="h-12 px-8 text-base font-semibold bg-accent text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
                 >
                   Оставить заявку
-                  <ArrowRight className="ml-1 size-4" />
+                  <ArrowRight className="ml-2 size-4" />
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  Цена фиксируется в договоре. Меняется только если в СТС ошибки
+                  Окончательная цена после проверки документов
                 </p>
               </div>
             </CardContent>

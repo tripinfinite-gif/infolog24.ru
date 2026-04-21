@@ -16,7 +16,7 @@ import { ReviewsClient } from "./reviews-client";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Отзывы клиентов — 150+ историй · Инфолог24",
+  title: "Отзывы клиентов | Инфолог24 — 150+ отзывов, рейтинг 4.9",
   description:
     "Отзывы клиентов о работе Инфолог24. Средняя оценка 4.9 из 5. 150+ отзывов на Яндекс Картах, 2ГИС и сайте. 70% клиентов возвращаются ежегодно.",
   keywords: [
