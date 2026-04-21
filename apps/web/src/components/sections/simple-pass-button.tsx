@@ -46,15 +46,11 @@ export function SimplePassButton({
     <>
       <Button
         onClick={() => setOpen(true)}
-        className={cn(
-          "mt-6 w-full rounded-xl",
-          dark
-            ? "bg-accent text-accent-foreground hover:bg-accent/90"
-            : "bg-primary text-primary-foreground hover:bg-primary/90"
-        )}
+        variant={dark ? "default" : "dark"}
+        className={cn("mt-6 w-full shadow-md", dark && "shadow-accent/25")}
       >
         Оформить
-        <ArrowRight className="ml-2 size-4" />
+        <ArrowRight className="ml-1 size-4" />
       </Button>
       <QuickLeadModal
         open={open}
