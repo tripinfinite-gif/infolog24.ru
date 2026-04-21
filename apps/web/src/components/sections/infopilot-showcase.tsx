@@ -92,7 +92,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
             <Button
               asChild
               size="lg"
-              className="h-13 rounded-xl border border-primary-foreground/30 bg-primary-foreground/10 px-8 text-base text-primary-foreground backdrop-blur hover:bg-primary-foreground/20"
+              className="h-13 rounded-xl border-2 border-primary-foreground/40 !bg-transparent px-8 text-base font-semibold text-primary-foreground hover:!bg-primary-foreground/10"
             >
               <Link href="/infopilot">Подробнее про ИнфоПилот</Link>
             </Button>
