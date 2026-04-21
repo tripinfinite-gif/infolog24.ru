@@ -125,26 +125,65 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
     <section
       id="zayavka"
       className={cn(
-        "relative scroll-mt-24 overflow-hidden rounded-3xl bg-primary p-6 sm:p-10 lg:p-14",
+        "relative mx-auto w-full max-w-7xl scroll-mt-24 overflow-hidden rounded-3xl bg-gradient-to-br from-[oklch(0.22_0.06_290)] via-[oklch(0.18_0.04_280)] to-[oklch(0.14_0.02_280)] p-6 ring-neon sm:p-10 lg:p-14",
         className
       )}
     >
       <div
-        className="pointer-events-none absolute -right-32 -top-32 size-80 rounded-full bg-accent/10 blur-3xl"
+        className="pointer-events-none absolute -right-32 -top-32 size-80 rounded-full bg-accent/20 blur-3xl"
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none absolute -bottom-40 -left-20 size-[360px] rounded-full bg-highlight/12 blur-3xl"
         aria-hidden="true"
       />
 
-      <div className="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div className="grain absolute inset-0 opacity-30" aria-hidden="true" />
+
+      <div className="relative grid items-start gap-10 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-16">
         <div>
-          <h2 className="font-heading text-3xl font-bold leading-tight text-primary-foreground sm:text-4xl lg:text-5xl">
-            Обсудим ваш парк — 15 минут
+          <span className="eyebrow eyebrow-dark">
+            <Shield className="size-3.5" />
+            Оставить заявку
+          </span>
+          <h2 className="section-title mt-5 text-primary-foreground">
+            Расчёт под ваш парк —{" "}
+            <span className="bg-gradient-to-r from-[oklch(0.75_0.18_260)] to-[oklch(0.80_0.14_50)] bg-clip-text text-transparent">
+              за 15 минут, бесплатно
+            </span>
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
-            Расскажите, сколько у вас машин и что нужно. Менеджер перезвонит
-            и предложит оптимальный формат работы.
+          <p className="mt-5 text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
+            Напишите, сколько у вас машин и что нужно. Менеджер перезвонит
+            и&nbsp;покажет, сколько вы сэкономите на пакете.
           </p>
 
-          <div className="mt-8 space-y-3">
+          {/* Stats row */}
+          <div className="mt-8 grid grid-cols-3 gap-px overflow-hidden rounded-2xl bg-primary-foreground/10">
+            <div className="bg-primary/95 p-4">
+              <div className="stat-number text-2xl text-primary-foreground">
+                15 мин
+              </div>
+              <div className="text-[11px] text-primary-foreground/60">
+                до перезвона
+              </div>
+            </div>
+            <div className="bg-primary/95 p-4">
+              <div className="stat-number text-2xl text-primary-foreground">
+                0 ₽
+              </div>
+              <div className="text-[11px] text-primary-foreground/60">
+                за консультацию
+              </div>
+            </div>
+            <div className="bg-primary/95 p-4">
+              <div className="stat-number text-2xl text-highlight">152-ФЗ</div>
+              <div className="text-[11px] text-primary-foreground/60">
+                защита данных
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-2.5">
             {[
               "Бесплатная консультация",
               "Расчёт под ваш парк за 15 минут",
@@ -174,7 +213,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                       window.dispatchEvent(new Event("infopilot:open"));
                     }
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl bg-accent/15 px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/25"
+                  className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-accent-foreground shadow-md shadow-accent/25 transition-colors hover:bg-accent/90"
                 >
                   <Bot className="size-4" />
                   AI-ассистент
@@ -184,7 +223,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                     href={maxLink.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
+                    className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-5 py-2.5 text-sm font-semibold text-primary-foreground ring-1 ring-primary-foreground/15 transition-colors hover:bg-primary-foreground/15"
                   >
                     <MessageSquare className="size-4" />
                     MAX
@@ -192,7 +231,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 )}
                 <a
                   href={`tel:${companyInfo.contacts.phoneTel}`}
-                  className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-5 py-2.5 text-sm font-semibold text-primary-foreground ring-1 ring-primary-foreground/15 transition-colors hover:bg-primary-foreground/15"
                 >
                   <Phone className="size-4" />
                   {companyInfo.contacts.phoneFormatted}
@@ -203,7 +242,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
         </div>
 
         {/* Form */}
-        <div className="rounded-2xl bg-background p-6 shadow-2xl sm:p-8">
+        <div className="rounded-3xl bg-card p-6 shadow-2xl sm:p-8">
           {submitted ? (
             <div className="py-8 text-center">
               <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-accent/15">
@@ -235,7 +274,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="rounded-xl"
+                  className="h-12 rounded-2xl"
                 />
               </div>
 
@@ -248,7 +287,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
-                  className="rounded-xl"
+                  className="h-12 rounded-2xl"
                 />
               </div>
 
@@ -267,7 +306,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                           type="button"
                           onClick={() => setFleet(option.value)}
                           className={cn(
-                            "rounded-xl border px-3 py-2 text-xs font-semibold transition-colors",
+                            "rounded-full border px-3 py-2 text-xs font-semibold transition-colors",
                             active
                               ? "border-accent bg-accent text-accent-foreground shadow-sm"
                               : "border-border bg-card text-foreground hover:border-accent"
@@ -294,7 +333,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                         <label
                           key={option.id}
                           className={cn(
-                            "flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                            "flex cursor-pointer items-center gap-2 rounded-2xl border px-3 py-2 text-xs font-medium transition-colors",
                             checked
                               ? "border-accent bg-accent/5 text-foreground"
                               : "border-border bg-card text-foreground hover:border-accent"
@@ -349,7 +388,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 type="submit"
                 size="lg"
                 disabled={loading || !consent}
-                className="h-12 w-full rounded-xl bg-accent text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
+                className="w-full shadow-md shadow-accent/25"
               >
                 {loading ? "Отправка..." : "Получить расчёт"}
                 {!loading && <ArrowRight className="ml-2 size-4" />}

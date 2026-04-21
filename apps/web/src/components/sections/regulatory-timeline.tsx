@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowRight, Calendar } from "lucide-react";
+import { AlertTriangle, ArrowRight, Calendar, Flame } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -45,14 +45,11 @@ function pluralYears(n: number): string {
 function formatCountdown(days: number): string {
   if (days === 0) return "Сегодня";
   if (days > 0) {
-    // Горящий дедлайн в пределах 2 месяцев — дни.
     if (days <= 60) return `Осталось ${days} ${pluralDays(days)}`;
-    // От 2 до 12 месяцев — в месяцах.
     if (days <= 365) {
       const months = Math.round(days / 30);
       return `Через ~${months} ${pluralMonths(months)}`;
     }
-    // Больше года — в годах (округляем до 0.5 года).
     const years = Math.round((days / 365) * 2) / 2;
     const yearsLabel =
       years % 1 === 0 ? `${years}` : years.toFixed(1).replace(".", ",");
@@ -63,15 +60,18 @@ function formatCountdown(days: number): string {
   return `${absDays} ${pluralDays(absDays)} назад`;
 }
 
-function MilestoneCard({
+// Вертикальный timeline: слева "year/date" rail, справа карточка.
+// Урочные дедлайны — оранжево-красная подсветка, стандартные — blue.
+
+function MilestoneRow({
   milestone,
   index,
+  total,
 }: {
   milestone: RegulatoryMilestone;
   index: number;
+  total: number;
 }) {
-  // Hydration-safe: считаем дни только на клиенте, чтобы избежать рассинхрона
-  // SSR/CSR на границе суток (UTC vs локальный TZ).
   const [countdown, setCountdown] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
@@ -80,94 +80,129 @@ function MilestoneCard({
 
   const isUrgent = milestone.status === "urgent";
   const isModal = milestone.ctaType === "modal";
+  const isLast = index === total - 1;
+
+  // Пытаемся вытащить только год из displayDate — для большого стат-числа
+  const yearMatch = milestone.displayDate.match(/\d{4}/);
+  const year = yearMatch ? yearMatch[0] : milestone.displayDate;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, x: -10 }}
+      whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className={cn(
-        "relative flex h-full flex-col rounded-2xl border bg-background p-6 transition-shadow hover:shadow-lg",
-        isUrgent ? "border-destructive shadow-md" : "border-border"
-      )}
+      transition={{ duration: 0.4, delay: index * 0.08 }}
+      className="relative grid grid-cols-[auto_1fr] gap-4 sm:grid-cols-[140px_1fr] sm:gap-6"
     >
-      {isUrgent && (
-        <div className="mb-3 inline-flex w-fit items-center gap-1.5 rounded-full bg-destructive/10 px-3 py-1 text-xs font-semibold text-destructive">
-          <AlertTriangle className="size-3.5" />
-          Дедлайн горит
+      {/* LEFT rail: date + dot */}
+      <div className="relative flex flex-col items-center sm:items-end sm:pt-2">
+        <div className="stat-number hidden text-3xl text-muted-foreground/40 sm:block">
+          {year}
         </div>
-      )}
+        <div className="mt-2 hidden text-[11px] font-semibold uppercase tracking-wider text-muted-foreground sm:block">
+          {milestone.displayDate.replace(year, "").trim() || "—"}
+        </div>
 
-      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-        <Calendar className="size-4" />
-        <span>{milestone.displayDate}</span>
-      </div>
-
-      <div
-        className={cn(
-          "mt-1 min-h-[1rem] text-xs font-semibold",
-          isUrgent ? "text-destructive" : "text-accent"
-        )}
-        suppressHydrationWarning
-      >
-        {countdown ?? "\u00A0"}
-      </div>
-
-      <h3 className="mt-3 text-lg font-bold text-foreground">
-        {milestone.name}
-      </h3>
-
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        {milestone.who}
-      </p>
-
-      <p className="mt-3 text-xs font-medium leading-relaxed text-destructive">
-        {milestone.penalty}
-      </p>
-
-      {isModal ? (
-        <>
-          <Button
-            size="sm"
-            variant={isUrgent ? "default" : "outline"}
-            onClick={() => setModalOpen(true)}
-            className={cn(
-              "mt-5 w-full rounded-xl",
-              isUrgent &&
-                "bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            )}
-          >
-            <span className="truncate">{milestone.ctaLabel}</span>
-            <ArrowRight className="ml-2 size-4 shrink-0" />
-          </Button>
-          <QuickLeadModal
-            open={modalOpen}
-            onOpenChange={setModalOpen}
-            title={milestone.modalTitle ?? milestone.name}
-            description={milestone.modalDescription}
-            source={milestone.modalSource ?? `reg_${milestone.id}`}
-            context={milestone.modalContext}
-            submitLabel="Получить расчёт"
-          />
-        </>
-      ) : (
-        <Button
-          asChild
-          size="sm"
-          variant={isUrgent ? "default" : "outline"}
+        {/* Timeline dot */}
+        <div
           className={cn(
-            "mt-5 w-full rounded-xl",
-            isUrgent &&
-              "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            "absolute left-0 top-0 flex size-10 items-center justify-center rounded-full shadow-md ring-4 ring-card sm:-right-5 sm:left-auto sm:top-2 sm:size-12",
+            isUrgent
+              ? "bg-destructive text-destructive-foreground"
+              : "bg-accent text-accent-foreground"
           )}
         >
-          <Link href={milestone.ctaHref ?? "#"}>
-            <span className="truncate">{milestone.ctaLabel}</span>
-            <ArrowRight className="ml-2 size-4 shrink-0" />
-          </Link>
-        </Button>
-      )}
+          {isUrgent ? (
+            <Flame className="size-4 sm:size-5" />
+          ) : (
+            <Calendar className="size-4 sm:size-5" />
+          )}
+        </div>
+
+        {/* Connecting vertical line */}
+        {!isLast && (
+          <div
+            className="absolute left-5 top-10 h-[calc(100%+2rem)] w-px bg-border sm:-right-[1px] sm:left-auto sm:top-14"
+            aria-hidden="true"
+          />
+        )}
+      </div>
+
+      {/* RIGHT: card */}
+      <div
+        className={cn(
+          "ml-14 flex flex-col rounded-2xl p-5 transition-all sm:ml-0 sm:p-6",
+          isUrgent
+            ? "bg-[oklch(0.65_0.23_22_/_0.08)] ring-1 ring-[oklch(0.65_0.23_22_/_0.3)]"
+            : "glass hover:ring-neon-cyan"
+        )}
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-semibold text-foreground sm:hidden">
+            {milestone.displayDate}
+          </span>
+          <span
+            className={cn(
+              "text-xs font-semibold",
+              isUrgent ? "text-destructive" : "text-accent"
+            )}
+            suppressHydrationWarning
+          >
+            {countdown ?? "\u00A0"}
+          </span>
+          {isUrgent && (
+            <span className="chip chip-danger">
+              <AlertTriangle className="size-3" />
+              Дедлайн горит
+            </span>
+          )}
+        </div>
+
+        <h3 className="mt-2 text-lg font-bold text-foreground sm:text-xl">
+          {milestone.name}
+        </h3>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {milestone.who}
+        </p>
+        <p className="mt-2 text-xs font-semibold leading-relaxed text-destructive">
+          {milestone.penalty}
+        </p>
+
+        {isModal ? (
+          <>
+            <Button
+              size="sm"
+              variant={isUrgent ? "destructive" : "outline"}
+              onClick={() => setModalOpen(true)}
+              className="mt-4 w-fit"
+            >
+              <span className="truncate">{milestone.ctaLabel}</span>
+              <ArrowRight className="ml-1 size-4 shrink-0" />
+            </Button>
+            <QuickLeadModal
+              open={modalOpen}
+              onOpenChange={setModalOpen}
+              title={milestone.modalTitle ?? milestone.name}
+              description={milestone.modalDescription}
+              source={milestone.modalSource ?? `reg_${milestone.id}`}
+              context={milestone.modalContext}
+              submitLabel="Получить расчёт"
+            />
+          </>
+        ) : (
+          <Button
+            asChild
+            size="sm"
+            variant={isUrgent ? "destructive" : "outline"}
+            className="mt-4 w-fit"
+          >
+            <Link href={milestone.ctaHref ?? "#"}>
+              <span className="truncate">{milestone.ctaLabel}</span>
+              <ArrowRight className="ml-1 size-4 shrink-0" />
+            </Link>
+          </Button>
+        )}
+      </div>
     </motion.div>
   );
 }
@@ -177,71 +212,46 @@ export function RegulatoryTimeline({ className }: RegulatoryTimelineProps) {
     <motion.section
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, amount: 0.05 }}
       transition={{ duration: 0.6 }}
-      className={cn(
-        "relative overflow-hidden rounded-3xl border bg-card p-6 sm:p-10 lg:p-14",
-        className
-      )}
+      className={cn("relative mx-auto w-full max-w-7xl", className)}
     >
-      <div className="mx-auto max-w-3xl text-center">
-        <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-          Регуляторика — сроки, которые могут остановить бизнес
-        </h2>
-        <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-          Четыре регуляторных дедлайна до 2028 года. Мы закроем каждый.
-        </p>
-      </div>
-
-      {/* Desktop: horizontal timeline */}
-      <div className="relative mt-12 hidden lg:block">
-        <div
-          className="absolute left-0 right-0 top-8 h-0.5 bg-border"
-          aria-hidden="true"
-        />
-        <div className="relative grid grid-cols-4 gap-6">
-          {regulatoryTimeline.map((milestone, index) => (
-            <div key={milestone.id} className="flex flex-col items-center">
-              <div
-                className={cn(
-                  "relative z-10 mb-6 flex size-16 items-center justify-center rounded-full border-4 border-card shadow-md",
-                  milestone.status === "urgent"
-                    ? "bg-destructive text-destructive-foreground"
-                    : "bg-accent text-accent-foreground"
-                )}
-              >
-                <Calendar className="size-6" />
-              </div>
-              <div className="w-full">
-                <MilestoneCard milestone={milestone} index={index} />
-              </div>
-            </div>
-          ))}
+      {/* Header */}
+      <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div>
+          <span className="eyebrow eyebrow-amber">
+            <AlertTriangle className="size-3" />
+            regulatory · countdown
+          </span>
+          <h2 className="section-title mt-6 text-foreground">
+            Сроки, которые могут{" "}
+            <span className="display-italic text-[var(--amber)]">
+              остановить
+            </span>{" "}
+            бизнес
+          </h2>
+          <p className="mt-5 max-w-2xl font-sans text-base leading-relaxed text-muted-foreground sm:text-lg">
+            Четыре регуляторных дедлайна до 2028 года. Мы закроем каждый.
+          </p>
         </div>
+        <Button asChild size="lg" className="shadow-md shadow-accent/25">
+          <Link href="#zayavka">
+            Обсудить с юристом
+            <ArrowRight className="ml-1 size-4" />
+          </Link>
+        </Button>
       </div>
 
-      {/* Mobile/tablet: vertical list */}
-      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:hidden">
+      {/* Vertical timeline */}
+      <div className="mt-12 space-y-8 sm:mt-16 sm:space-y-10">
         {regulatoryTimeline.map((milestone, index) => (
-          <MilestoneCard
+          <MilestoneRow
             key={milestone.id}
             milestone={milestone}
             index={index}
+            total={regulatoryTimeline.length}
           />
         ))}
-      </div>
-
-      <div className="mt-12 text-center">
-        <Button
-          asChild
-          size="lg"
-          className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
-        >
-          <Link href="#zayavka">
-            Обсудить ваш случай с юристом
-            <ArrowRight className="ml-2 size-4" />
-          </Link>
-        </Button>
       </div>
     </motion.section>
   );

@@ -1,4 +1,4 @@
-import { ArrowRight, Check, MapPin, Zap, type LucideIcon } from "lucide-react";
+import { ArrowRight, Check, MapPin, Zap } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
@@ -11,18 +11,16 @@ interface SimplePassProps {
   className?: string;
 }
 
-interface SimplePassCard {
+interface ZoneCard {
   zone: string;
   price: string;
   period: string;
   features: string[];
   popular: boolean;
-  dark: boolean;
-  icon: LucideIcon;
   href: string;
 }
 
-const services: SimplePassCard[] = [
+const zones: ZoneCard[] = [
   {
     zone: "МКАД",
     price: "12 000",
@@ -34,8 +32,6 @@ const services: SimplePassCard[] = [
       "Регламент Дептранса — 10 раб. дней",
     ],
     popular: false,
-    dark: false,
-    icon: MapPin,
     href: "/services/propusk-mkad",
   },
   {
@@ -49,8 +45,6 @@ const services: SimplePassCard[] = [
       "Регламент Дептранса — 10 раб. дней",
     ],
     popular: true,
-    dark: true,
-    icon: MapPin,
     href: "/services/propusk-ttk",
   },
   {
@@ -64,25 +58,15 @@ const services: SimplePassCard[] = [
       "Регламент Дептранса — 10 раб. дней",
     ],
     popular: false,
-    dark: false,
-    icon: MapPin,
     href: "/services/propusk-sk",
   },
-  {
-    zone: "Временный",
-    price: "4 500",
-    period: "до 10 суток",
-    features: [
-      "Любая зона: МКАД, ТТК, СК",
-      "Оформление за 1 день",
-      "Срочная доставка",
-      "Без ЭЦП и РНИС",
-    ],
-    popular: false,
-    dark: false,
-    icon: Zap,
-    href: "/services/vremennyj-propusk",
-  },
+];
+
+const temporaryFeatures = [
+  "Любая зона: МКАД, ТТК, СК",
+  "Оформление за 1 день",
+  "Срочная доставка",
+  "Без ЭЦП и РНИС",
 ];
 
 export function SimplePass({ className }: SimplePassProps) {
@@ -91,147 +75,197 @@ export function SimplePass({ className }: SimplePassProps) {
       id="passes"
       className={cn("scroll-mt-24 space-y-10", className)}
     >
-      <div>
-        <div className="mb-6 sm:mb-8">
-          <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Нужен только пропуск? Без проблем.
-          </h2>
-          <p className="mt-3 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            Для тех, кому не нужен комплексный пакет — работаем как и раньше:
-            быстро, с гарантией результата.
-          </p>
+      <div className="relative mx-auto w-full max-w-7xl">
+        <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div>
+            <span className="eyebrow">single · permits</span>
+            <h2 className="section-title mt-6 text-foreground">
+              Нужен{" "}
+              <span className="display-italic gradient-text">
+                только пропуск?
+              </span>{" "}
+              Без проблем.
+            </h2>
+            <p className="mt-5 max-w-2xl font-sans text-base leading-relaxed text-muted-foreground sm:text-lg">
+              Для тех, кому не нужен комплексный пакет — работаем как
+              и&nbsp;раньше: быстро, с&nbsp;гарантией результата.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-          {services.map((service) => {
-            const Icon = service.icon;
-            return (
-              <div
-                key={service.zone}
-                className={cn(
-                  "relative flex flex-col rounded-2xl p-6 transition-shadow hover:shadow-lg sm:p-8",
-                  service.dark
-                    ? "bg-primary text-primary-foreground"
-                    : "border bg-card text-card-foreground"
-                )}
-              >
-                {service.popular && (
-                  <div className="absolute -top-3 right-6 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground shadow-md">
-                    Популярное
-                  </div>
-                )}
-
-                <div className="flex items-center gap-2">
-                  <Icon
-                    className={cn(
-                      "size-4",
-                      service.dark ? "text-accent" : "text-primary"
-                    )}
-                  />
-                  <span className="text-sm font-medium opacity-70">
-                    {service.zone}
-                  </span>
+        {/* Bento layout: 3 zone cards (col-span-4 each on 12-col) + 1 big "Временный" (col-span-12 на мобиле / интегрирован снизу) */}
+        <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-3 lg:gap-6">
+          {zones.map((zone) => (
+            <div
+              key={zone.zone}
+              className={cn(
+                "relative flex flex-col rounded-2xl p-6 transition-all hover:-translate-y-0.5 sm:p-7",
+                zone.popular
+                  ? "bg-gradient-to-br from-[oklch(0.22_0.06_290)] via-[oklch(0.18_0.04_280)] to-[oklch(0.15_0.02_280)] ring-neon lg:-my-2 lg:p-8"
+                  : "glass hover:ring-neon-cyan"
+              )}
+            >
+              {zone.popular && (
+                <div className="absolute -top-3 left-7 rounded-full bg-highlight px-4 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-highlight-foreground shadow-md">
+                  Популярное
                 </div>
+              )}
 
-                <div className="mt-4">
+              {/* Header: icon + zone code */}
+              <div className="flex items-start justify-between gap-3">
+                <div
+                  className={cn(
+                    "flex size-11 items-center justify-center rounded-2xl",
+                    zone.popular
+                      ? "bg-primary-foreground/10 text-highlight"
+                      : "bg-accent/10 text-accent"
+                  )}
+                >
+                  <MapPin className="size-5" />
+                </div>
+                <div
+                  className={cn(
+                    "text-[11px] font-bold uppercase tracking-[0.12em]",
+                    zone.popular
+                      ? "text-primary-foreground/60"
+                      : "text-muted-foreground"
+                  )}
+                >
+                  Зона · годовой
+                </div>
+              </div>
+
+              <div className="mt-5">
+                <div className="text-sm font-semibold opacity-80">
+                  {zone.zone}
+                </div>
+                <div className="mt-1 flex items-baseline gap-1">
+                  <span className="stat-number">{zone.price}</span>
                   <span
                     className={cn(
-                      "text-4xl font-bold tracking-tight",
-                      service.dark
-                        ? "text-primary-foreground"
-                        : "text-foreground"
-                    )}
-                  >
-                    {service.price}
-                  </span>
-                  <span
-                    className={cn(
-                      "ml-1 text-lg",
-                      service.dark
-                        ? "text-primary-foreground/60"
+                      "text-lg",
+                      zone.popular
+                        ? "text-primary-foreground/70"
                         : "text-muted-foreground"
                     )}
                   >
-                    {" "}
                     ₽
                   </span>
                 </div>
                 <p
                   className={cn(
                     "mt-1 text-xs",
-                    service.dark
-                      ? "text-primary-foreground/50"
+                    zone.popular
+                      ? "text-primary-foreground/60"
                       : "text-muted-foreground"
                   )}
                 >
-                  {service.period}
+                  {zone.period}
                 </p>
-
-                <ul className="mt-6 flex-1 space-y-3">
-                  {service.features.map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-start gap-2 text-sm"
-                    >
-                      <Check
-                        className={cn(
-                          "mt-0.5 size-4 shrink-0",
-                          service.dark ? "text-accent" : "text-primary"
-                        )}
-                      />
-                      <span
-                        className={
-                          service.dark
-                            ? "text-primary-foreground/80"
-                            : "text-muted-foreground"
-                        }
-                      >
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <SimplePassButton
-                  zone={service.zone}
-                  price={service.price}
-                  period={service.period}
-                  dark={service.dark}
-                />
-                <Link
-                  href={service.href}
-                  className="mt-2 block text-center text-xs text-muted-foreground hover:underline"
-                >
-                  Подробнее →
-                </Link>
               </div>
-            );
-          })}
+
+              <ul className="mt-6 flex-1 space-y-2.5">
+                {zone.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-2 text-sm">
+                    <Check
+                      className={cn(
+                        "mt-0.5 size-4 shrink-0",
+                        zone.popular ? "text-highlight" : "text-accent"
+                      )}
+                    />
+                    <span
+                      className={
+                        zone.popular
+                          ? "text-primary-foreground/80"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      {feature}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <SimplePassButton
+                zone={zone.zone}
+                price={zone.price}
+                period={zone.period}
+                dark={zone.popular}
+              />
+              <Link
+                href={zone.href}
+                className={cn(
+                  "mt-2 block text-center text-xs underline-offset-4 hover:underline",
+                  zone.popular
+                    ? "text-primary-foreground/60"
+                    : "text-muted-foreground"
+                )}
+              >
+                Подробнее →
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* Big «Временный» block */}
+        <div className="relative mt-6 overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--amber)] via-[oklch(0.68_0.17_50)] to-[oklch(0.55_0.20_30)] p-6 text-[oklch(0.15_0.02_280)] shadow-2xl shadow-[var(--amber)]/20 sm:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-10">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-highlight-foreground/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] backdrop-blur">
+                <Zap className="size-3.5" />
+                Срочный режим
+              </div>
+              <h3 className="mt-3 font-heading text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+                Временный пропуск — от 4 500 ₽ до 10 суток
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-highlight-foreground/85 sm:text-base">
+                Любая зона: МКАД, ТТК, СК. Оформим за 1 день, без ЭЦП и РНИС.
+              </p>
+              <ul className="mt-5 grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:flex sm:flex-wrap sm:gap-x-6">
+                {temporaryFeatures.map((feature) => (
+                  <li key={feature} className="flex items-center gap-1.5">
+                    <Check className="size-4 shrink-0" />
+                    <span className="text-highlight-foreground/90">
+                      {feature}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="flex flex-col items-stretch gap-3 lg:min-w-[220px]">
+              <div className="text-right lg:text-left">
+                <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-highlight-foreground/70">
+                  Стоимость от
+                </div>
+                <div className="stat-number text-highlight-foreground">
+                  4 500 ₽
+                </div>
+              </div>
+              <SimplePassButton
+                zone="Временный"
+                price="4 500"
+                period="до 10 суток"
+                dark
+              />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Existing calculator */}
+      {/* Existing calculator (already restyled) */}
       <Calculator />
 
-      {/* Dual CTAs after calculator */}
+      {/* Dual CTAs */}
       <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-        <Button
-          asChild
-          size="lg"
-          className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
-        >
+        <Button asChild size="lg" className="shadow-md shadow-accent/25">
           <Link href="#zayavka">
             Оформить пропуск
-            <ArrowRight className="ml-2 size-4" />
+            <ArrowRight className="ml-1 size-4" />
           </Link>
         </Button>
-        <Button
-          asChild
-          size="lg"
-          variant="outline"
-          className="h-12 rounded-xl px-8 text-base font-semibold"
-        >
-          <Link href="#packages">А может быть пакет дешевле?</Link>
+        <Button asChild size="lg" variant="secondary" className="border border-primary/40">
+          <Link href="#packages">Пакет может быть дешевле — сравнить</Link>
         </Button>
       </div>
     </section>
