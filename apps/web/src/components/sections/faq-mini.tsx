@@ -33,7 +33,7 @@ export function FaqMini({ items, className }: FaqMiniProps) {
           Частые вопросы
         </h2>
         <p className="mt-3 text-base text-muted-foreground sm:text-lg">
-          Коротко о главном — от пакета до ИнфоПилота
+          Вопросы, которые задают перед заказом
         </p>
       </div>
 

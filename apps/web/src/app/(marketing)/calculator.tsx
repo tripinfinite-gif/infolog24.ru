@@ -172,7 +172,7 @@ export function Calculator() {
                   <ArrowRight className="ml-2 size-4" />
                 </Button>
                 <p className="text-xs text-muted-foreground">
-                  Окончательная цена после проверки документов
+                  Цена фиксируется в договоре. Меняется только если в СТС ошибки
                 </p>
               </div>
             </CardContent>

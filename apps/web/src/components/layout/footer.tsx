@@ -16,7 +16,7 @@ const serviceLinks = [
   { href: "/etrn", label: "Переход на ЭТрН" },
   { href: "/kep", label: "КЭП и МЧД" },
   { href: "/monitoring", label: "Антиштраф — мониторинг" },
-  { href: "/yurist", label: "Юрист-перевозчик" },
+  { href: "/yurist", label: "Юрист для перевозчика" },
   { href: "/park-pro", label: "Парк Про — ЛК" },
 ];
 
@@ -32,7 +32,7 @@ const companyLinks = [
 const trustItems = [
   { value: "10 лет", label: "на рынке" },
   { value: "50 000+", label: "пропусков" },
-  { value: "98%", label: "одобрение" },
+  { value: "98%", label: "заявок с первого раза" },
   { value: "Договор", label: "с каждым клиентом" },
 ];
 
@@ -202,7 +202,7 @@ export function Footer({ className }: FooterProps) {
                 </p>
                 <p>
                   Генеральный директор: {companyInfo.legal.director}. Дата
-                  регистрации: {companyInfo.legal.registrationDate}.
+                  регистрации: {companyInfo.legal.registrationDate}
                 </p>
               </div>
             </div>

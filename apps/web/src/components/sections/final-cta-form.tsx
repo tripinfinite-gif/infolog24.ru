@@ -137,11 +137,11 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
       <div className="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
           <h2 className="font-heading text-3xl font-bold leading-tight text-primary-foreground sm:text-4xl lg:text-5xl">
-            Обсудим ваш парк — 15 минут
+            Расчёт под ваш парк — за 15 минут, бесплатно
           </h2>
           <p className="mt-4 text-base leading-relaxed text-primary-foreground/70 sm:text-lg">
-            Расскажите, сколько у вас машин и что нужно. Менеджер перезвонит
-            и предложит оптимальный формат работы.
+            Напишите, сколько у вас машин и что нужно. Менеджер перезвонит
+            и покажет, сколько вы сэкономите на пакете.
           </p>
 
           <div className="mt-8 space-y-3">

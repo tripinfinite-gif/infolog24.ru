@@ -228,10 +228,10 @@ export function SimplePass({ className }: SimplePassProps) {
         <Button
           asChild
           size="lg"
-          variant="outline"
-          className="h-12 rounded-xl px-8 text-base font-semibold"
+          variant="secondary"
+          className="h-12 rounded-xl border border-primary/30 px-8 text-base font-semibold"
         >
-          <Link href="#packages">А может быть пакет дешевле?</Link>
+          <Link href="#packages">Пакет может быть дешевле — сравнить</Link>
         </Button>
       </div>
     </section>
