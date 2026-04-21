@@ -1,8 +1,23 @@
 .business/
+.business.backup-*/
 .claude/
 .env
 .env.local
 .DS_Store
+
+# Транскрипты звонков и пользовательские диалоги (только для внутреннего дашборда / базы знаний)
+qa_database.jsonl
+dialogs_by_roles.jsonl
+*.transcripts.jsonl
+
+# Бэкапы планов и аналитика агентов (локальные артефакты)
+plans.backup-*/
+analysis/
+apps/web/.claude-flow/
+apps/web/src/.claude-flow/
+apps/web/drizzle/.claude-flow/
+apps/web/playwright-report/
+apps/web/test-results/
 
 # Dependencies
 node_modules/
