@@ -339,7 +339,7 @@ export function MiniCalculator({
         <p className="mt-4 text-center text-xs text-muted-foreground">
           Есть вопросы?{" "}
           <OpenChatTrigger
-            className="text-accent underline hover:text-accent/80"
+            className="!inline !w-auto text-accent underline hover:text-accent/80"
             ariaLabel="Открыть чат ИнфоПилот"
           >
             Спросите ИнфоПилот
