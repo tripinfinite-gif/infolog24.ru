@@ -100,7 +100,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <OpenChatTrigger className="inline-flex h-13 w-auto items-center justify-center rounded-full bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl">
+            <OpenChatTrigger className="inline-flex h-12 w-auto items-center justify-center rounded-full bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl">
               <span className="inline-flex items-center gap-2">
                 <Bot className="size-4" />
                 Открыть AI-ассистента ИнфоПилот
@@ -110,7 +110,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
             <Button
               asChild
               size="lg"
-              className="h-13 rounded-full border-2 border-primary-foreground/40 !bg-transparent px-8 text-base font-semibold text-primary-foreground hover:!bg-primary-foreground/10"
+              className="h-12 rounded-full border-2 border-primary-foreground/40 !bg-transparent px-8 text-base font-semibold text-primary-foreground hover:!bg-primary-foreground/10"
             >
               <Link href="/infopilot">Подробнее про ИнфоПилот</Link>
             </Button>

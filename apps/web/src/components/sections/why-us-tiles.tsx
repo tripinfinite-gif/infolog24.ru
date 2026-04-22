@@ -84,7 +84,7 @@ export function WhyUsTiles({ className }: WhyUsTilesProps) {
               className={cn(
                 "group flex flex-col rounded-3xl p-6 transition-shadow hover:shadow-lg sm:p-8 lg:p-10",
                 tile.dark && "bg-primary text-primary-foreground",
-                tile.accent && "bg-primary text-primary-foreground",
+                tile.accent && "bg-accent text-accent-foreground",
                 !tile.dark && !tile.accent && "border bg-card text-foreground"
               )}
             >
@@ -92,7 +92,7 @@ export function WhyUsTiles({ className }: WhyUsTilesProps) {
                 className={cn(
                   "mb-5 flex size-12 items-center justify-center rounded-2xl",
                   tile.dark && "bg-primary-foreground/10 text-accent",
-                  tile.accent && "bg-primary-foreground/10 text-primary-foreground",
+                  tile.accent && "bg-accent-foreground/10 text-accent-foreground",
                   !tile.dark && !tile.accent && "bg-primary/10 text-primary"
                 )}
               >

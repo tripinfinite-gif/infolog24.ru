@@ -167,7 +167,7 @@ export function PackagesGrid({ className }: PackagesGridProps) {
                     <CheckCircle2
                       className={cn(
                         "mt-0.5 size-4 shrink-0",
-                        isHighlighted ? "text-accent" : "text-accent"
+                        isHighlighted ? "text-primary-foreground" : "text-accent"
                       )}
                     />
                     <span

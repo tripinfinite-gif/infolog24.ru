@@ -88,7 +88,7 @@ export function Testimonials({ testimonials, className }: TestimonialsProps) {
 
           return (
             <motion.div
-              key={index}
+              key={`${testimonial.name}-${testimonial.company}`}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
