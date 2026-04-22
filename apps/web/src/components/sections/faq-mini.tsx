@@ -20,6 +20,14 @@ interface FaqMiniProps {
   className?: string;
 }
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 export function FaqMini({ items, className }: FaqMiniProps) {
   return (
     <section
@@ -29,6 +37,12 @@ export function FaqMini({ items, className }: FaqMiniProps) {
       )}
     >
       <div className="mx-auto max-w-3xl text-center">
+        <div className="mb-3 flex justify-center">
+          <LavenderBadge>
+            <MessageCircle className="size-3.5" />
+            FAQ
+          </LavenderBadge>
+        </div>
         <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Частые вопросы
         </h2>
@@ -56,8 +70,8 @@ export function FaqMini({ items, className }: FaqMiniProps) {
         </Accordion>
       </div>
 
-      <div className="mx-auto mt-10 max-w-xl rounded-2xl bg-muted/50 p-6 text-center">
-        <MessageCircle className="mx-auto size-7 text-primary" />
+      <div className="mx-auto mt-10 max-w-xl rounded-2xl bg-secondary p-6 text-center">
+        <MessageCircle className="mx-auto size-7 text-accent" />
         <h3 className="mt-3 text-base font-semibold text-foreground">
           Не нашли ответ?
         </h3>
@@ -67,7 +81,7 @@ export function FaqMini({ items, className }: FaqMiniProps) {
         <div className="mt-4 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Button
             asChild
-            className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90"
+            className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
           >
             <Link href="/faq">
               Все вопросы
@@ -77,7 +91,7 @@ export function FaqMini({ items, className }: FaqMiniProps) {
           <Button
             asChild
             variant="outline"
-            className="rounded-xl"
+            className="rounded-full"
           >
             <Link href="#zayavka">Задать свой</Link>
           </Button>

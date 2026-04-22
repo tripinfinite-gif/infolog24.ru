@@ -47,7 +47,7 @@ export function Footer({ className }: FooterProps) {
   return (
     <footer className={cn(className)}>
       {/* Trust Bar */}
-      <div className="border-b border-primary-foreground/10 bg-primary">
+      <div className="border-t border-secondary/20 border-b border-primary-foreground/10 bg-primary">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-y-8 px-4 py-10 sm:px-6 md:grid-cols-4 md:gap-y-0 md:divide-x md:divide-primary-foreground/10 md:py-12 lg:px-8">
           {trustItems.map((item) => (
             <div

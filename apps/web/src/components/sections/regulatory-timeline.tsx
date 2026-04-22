@@ -18,6 +18,14 @@ interface RegulatoryTimelineProps {
   className?: string;
 }
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 function pluralDays(n: number): string {
   const mod10 = n % 10;
   const mod100 = n % 100;
@@ -45,14 +53,11 @@ function pluralYears(n: number): string {
 function formatCountdown(days: number): string {
   if (days === 0) return "Сегодня";
   if (days > 0) {
-    // Горящий дедлайн в пределах 2 месяцев — дни.
     if (days <= 60) return `Осталось ${days} ${pluralDays(days)}`;
-    // От 2 до 12 месяцев — в месяцах.
     if (days <= 365) {
       const months = Math.round(days / 30);
       return `Через ~${months} ${pluralMonths(months)}`;
     }
-    // Больше года — в годах (округляем до 0.5 года).
     const years = Math.round((days / 365) * 2) / 2;
     const yearsLabel =
       years % 1 === 0 ? `${years}` : years.toFixed(1).replace(".", ",");
@@ -70,8 +75,6 @@ function MilestoneCard({
   milestone: RegulatoryMilestone;
   index: number;
 }) {
-  // Hydration-safe: считаем дни только на клиенте, чтобы избежать рассинхрона
-  // SSR/CSR на границе суток (UTC vs локальный TZ).
   const [countdown, setCountdown] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
@@ -130,12 +133,12 @@ function MilestoneCard({
         <>
           <Button
             size="sm"
-            variant={isUrgent ? "default" : "outline"}
             onClick={() => setModalOpen(true)}
             className={cn(
-              "mt-5 w-full rounded-xl",
-              isUrgent &&
-                "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              "mt-5 w-full rounded-full",
+              isUrgent
+                ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                : "bg-transparent border border-border text-foreground hover:bg-muted"
             )}
           >
             <span className="truncate">{milestone.ctaLabel}</span>
@@ -155,11 +158,11 @@ function MilestoneCard({
         <Button
           asChild
           size="sm"
-          variant={isUrgent ? "default" : "outline"}
           className={cn(
-            "mt-5 w-full rounded-xl",
-            isUrgent &&
-              "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            "mt-5 w-full rounded-full",
+            isUrgent
+              ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              : "bg-transparent border border-border text-foreground hover:bg-muted"
           )}
         >
           <Link href={milestone.ctaHref ?? "#"}>
@@ -185,6 +188,12 @@ export function RegulatoryTimeline({ className }: RegulatoryTimelineProps) {
       )}
     >
       <div className="mx-auto max-w-3xl text-center">
+        <div className="mb-4 flex justify-center">
+          <LavenderBadge>
+            <Calendar className="size-3.5" />
+            Регуляторные дедлайны
+          </LavenderBadge>
+        </div>
         <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
           Регуляторика — сроки, которые могут остановить бизнес
         </h2>
@@ -193,7 +202,6 @@ export function RegulatoryTimeline({ className }: RegulatoryTimelineProps) {
         </p>
       </div>
 
-      {/* Desktop: horizontal timeline */}
       <div className="relative mt-12 hidden lg:block">
         <div
           className="absolute left-0 right-0 top-8 h-0.5 bg-border"
@@ -220,7 +228,6 @@ export function RegulatoryTimeline({ className }: RegulatoryTimelineProps) {
         </div>
       </div>
 
-      {/* Mobile/tablet: vertical list */}
       <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:hidden">
         {regulatoryTimeline.map((milestone, index) => (
           <MilestoneCard
@@ -235,7 +242,7 @@ export function RegulatoryTimeline({ className }: RegulatoryTimelineProps) {
         <Button
           asChild
           size="lg"
-          className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
+          className="h-12 rounded-full bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
         >
           <Link href="#zayavka">
             Обсудить ваш случай с юристом

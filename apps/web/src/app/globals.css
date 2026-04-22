@@ -23,6 +23,8 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-orange: var(--orange);
+  --color-orange-foreground: var(--orange-foreground);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -67,60 +69,64 @@
 }
 
 :root {
-  /* Background — airy white with subtle cool tint */
-  --background: oklch(0.97 0.005 260);
-  /* Foreground — deep slate (#1a1a2e) */
-  --foreground: oklch(0.18 0.02 280);
+  /* Background — light gray-blue (#EFEFF4) */
+  --background: oklch(0.944 0.006 258);
+  /* Foreground — deep navy (#0F1020) */
+  --foreground: oklch(0.135 0.03 264);
 
-  /* Primary — deep indigo (#2d2b55) */
-  --primary: oklch(0.25 0.06 280);
-  --primary-foreground: oklch(0.98 0.005 270);
+  /* Primary — navy dark (#131B3A) — hero, footer, dark section backgrounds */
+  --primary: oklch(0.178 0.056 260);
+  --primary-foreground: oklch(1 0 0);
 
-  /* Secondary — pale lavender (#eee8f5) */
-  --secondary: oklch(0.93 0.02 290);
-  --secondary-foreground: oklch(0.25 0.06 280);
+  /* Secondary — light blue pill (#DBEAFE) */
+  --secondary: oklch(0.920 0.040 240);
+  --secondary-foreground: oklch(0.450 0.21 264);
 
-  /* Accent — vivid violet (#7C5CFC) */
-  --accent: oklch(0.48 0.22 285);
+  /* Accent — indigo blue (#2563EB) — primary CTA, badges, highlights */
+  --accent: oklch(0.513 0.248 264);
   --accent-foreground: oklch(1 0 0);
 
-  /* Muted — cool gray-lavender (#e8e4f0) */
-  --muted: oklch(0.92 0.015 280);
-  --muted-foreground: oklch(0.45 0.02 270);
+  /* Orange — secondary CTA (#F97316) */
+  --orange: oklch(0.646 0.196 45);
+  --orange-foreground: oklch(1 0 0);
 
-  /* Card — pure white (#ffffff) */
+  /* Muted — very light blue (#E8ECFF) */
+  --muted: oklch(0.940 0.018 264);
+  --muted-foreground: oklch(0.460 0.02 270);
+
+  /* Card — pure white */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.02 280);
+  --card-foreground: oklch(0.135 0.03 264);
 
   /* Popover — white */
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.02 280);
+  --popover-foreground: oklch(0.135 0.03 264);
 
-  /* Border — cool light (#e0dcea) */
-  --border: oklch(0.9 0.015 280);
-  --input: oklch(0.9 0.015 280);
-  --ring: oklch(0.48 0.22 285);
+  /* Border — light gray (#E2E4EA) */
+  --border: oklch(0.904 0.010 258);
+  --input: oklch(0.904 0.010 258);
+  --ring: oklch(0.513 0.248 264);
 
-  /* Destructive — #dc2626 */
-  --destructive: oklch(0.55 0.22 27);
+  /* Destructive — #E54D3D */
+  --destructive: oklch(0.555 0.22 25);
   --destructive-foreground: oklch(1 0 0);
 
-  /* Chart colors — violet palette */
-  --chart-1: oklch(0.25 0.06 280);
-  --chart-2: oklch(0.48 0.22 285);
-  --chart-3: oklch(0.6 0.15 200);
-  --chart-4: oklch(0.7 0.12 320);
-  --chart-5: oklch(0.55 0.22 27);
+  /* Chart colors — blue palette */
+  --chart-1: oklch(0.178 0.056 260);
+  --chart-2: oklch(0.513 0.248 264);
+  --chart-3: oklch(0.646 0.196 45);
+  --chart-4: oklch(0.650 0.15 200);
+  --chart-5: oklch(0.555 0.22 25);
 
-  /* Sidebar — cool tones */
-  --sidebar-background: oklch(0.98 0.005 270);
-  --sidebar-foreground: oklch(0.18 0.02 280);
-  --sidebar-primary: oklch(0.48 0.22 285);
+  /* Sidebar — dark navy tones */
+  --sidebar-background: oklch(0.178 0.056 260);
+  --sidebar-foreground: oklch(0.95 0.005 264);
+  --sidebar-primary: oklch(0.513 0.248 264);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.94 0.02 290);
-  --sidebar-accent-foreground: oklch(0.25 0.06 280);
-  --sidebar-border: oklch(0.9 0.015 280);
-  --sidebar-ring: oklch(0.48 0.22 285);
+  --sidebar-accent: oklch(0.22 0.04 264);
+  --sidebar-accent-foreground: oklch(0.95 0.005 264);
+  --sidebar-border: oklch(0.28 0.03 264);
+  --sidebar-ring: oklch(0.513 0.248 264);
 
   /* Radius — large rounded (20px) */
   --radius: 1.25rem;
@@ -139,8 +145,8 @@
   --secondary: oklch(0.22 0.04 280);
   --secondary-foreground: oklch(0.95 0.005 270);
 
-  /* Accent — vivid violet (same) */
-  --accent: oklch(0.65 0.22 285);
+  /* Accent — indigo blue (lighter on dark) */
+  --accent: oklch(0.65 0.22 264);
   --accent-foreground: oklch(1 0 0);
 
   /* Muted — dark indigo */
@@ -195,16 +201,16 @@
 /* ── Utility classes for bento-grid design ── */
 
 @layer components {
-  /* Dark-themed card for bento grids */
+  /* Dark-themed card for bento grids (#131B3A navy) */
   .card-dark {
-    background-color: oklch(0.25 0.06 280);
-    color: oklch(0.98 0.005 270);
+    background-color: oklch(0.178 0.056 260);
+    color: oklch(0.95 0.005 264);
     border-radius: 1.5rem;
     border: none;
   }
 
   .card-dark .text-muted-foreground {
-    color: oklch(0.65 0.02 270);
+    color: oklch(0.65 0.02 264);
   }
 
   /* Bento grid layout utility */

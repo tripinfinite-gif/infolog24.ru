@@ -24,6 +24,14 @@ const sourceLabels: Record<string, string> = {
   site: "Сайт",
 };
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex gap-0.5" role="img" aria-label={`Оценка ${rating} из 5`}>
@@ -32,7 +40,9 @@ function StarRating({ rating }: { rating: number }) {
           key={i}
           className={cn(
             "size-3.5",
-            i < rating ? "fill-accent text-accent" : "fill-muted text-muted"
+            i < rating
+              ? "fill-[#FFB648] text-[#FFB648]"
+              : "fill-muted text-muted"
           )}
         />
       ))}
@@ -43,7 +53,6 @@ function StarRating({ rating }: { rating: number }) {
 export function Testimonials({ testimonials, className }: TestimonialsProps) {
   return (
     <div className={cn("space-y-6", className)}>
-      {/* Header row */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -52,13 +61,19 @@ export function Testimonials({ testimonials, className }: TestimonialsProps) {
         className="flex flex-wrap items-baseline justify-between gap-4"
       >
         <div>
+          <div className="mb-3">
+            <LavenderBadge>
+              <Star className="size-3.5 fill-[#FFB648] text-[#FFB648]" />
+              150+ отзывов
+            </LavenderBadge>
+          </div>
           <h2 className="font-heading text-2xl font-bold text-foreground sm:text-3xl">
             Отзывы клиентов
           </h2>
           <div className="mt-2 flex items-center gap-3">
             <div className="flex gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="size-4 fill-accent text-accent" />
+                <Star key={i} className="size-4 fill-[#FFB648] text-[#FFB648]" />
               ))}
             </div>
             <span className="text-sm font-semibold text-foreground">4.9</span>
@@ -67,7 +82,6 @@ export function Testimonials({ testimonials, className }: TestimonialsProps) {
         </div>
       </motion.div>
 
-      {/* Scrollable testimonial cards */}
       <div className="flex gap-4 overflow-x-auto pb-4 sm:gap-6 snap-x snap-mandatory scrollbar-hide">
         {testimonials.map((testimonial, index) => {
           const isDark = index % 3 === 1;
@@ -90,7 +104,7 @@ export function Testimonials({ testimonials, className }: TestimonialsProps) {
                 <Quote
                   className={cn(
                     "size-8",
-                    isDark ? "text-primary-foreground/20" : "text-foreground/10"
+                    isDark ? "text-primary-foreground/20" : "text-accent/20"
                   )}
                 />
                 {testimonial.source && sourceLabels[testimonial.source] && (
@@ -98,8 +112,8 @@ export function Testimonials({ testimonials, className }: TestimonialsProps) {
                     className={cn(
                       "rounded-full px-2.5 py-0.5 text-[10px] font-medium",
                       isDark
-                        ? "bg-primary-foreground/10 text-primary-foreground/60"
-                        : "bg-muted text-muted-foreground"
+                        ? "bg-primary-foreground/10 text-primary-foreground/70"
+                        : "bg-secondary text-secondary-foreground"
                     )}
                   >
                     {sourceLabels[testimonial.source]}

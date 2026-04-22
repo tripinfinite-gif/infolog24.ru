@@ -41,6 +41,14 @@ const needOptions: NeedOption[] = [
   { id: "all", label: "Всё сразу" },
 ];
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 export function FinalCtaForm({ className }: FinalCtaFormProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -136,6 +144,12 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
 
       <div className="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
+          <div className="mb-4">
+            <LavenderBadge>
+              <Phone className="size-3.5" />
+              За 15 минут
+            </LavenderBadge>
+          </div>
           <h2 className="font-heading text-3xl font-bold leading-tight text-primary-foreground sm:text-4xl lg:text-5xl">
             Расчёт под ваш парк — за 15 минут, бесплатно
           </h2>
@@ -160,7 +174,6 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
             ))}
           </div>
 
-          {/* Alternatives */}
           {!SIMPLIFIED && (
             <div className="mt-8 space-y-3">
               <p className="text-xs font-semibold uppercase tracking-wider text-primary-foreground/50">
@@ -174,7 +187,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                       window.dispatchEvent(new Event("infopilot:open"));
                     }
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl bg-accent/15 px-4 py-2.5 text-sm font-semibold text-accent transition-colors hover:bg-accent/25"
+                  className="inline-flex items-center gap-2 rounded-full bg-accent text-accent-foreground px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-accent/90"
                 >
                   <Bot className="size-4" />
                   AI-ассистент
@@ -184,7 +197,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                     href={maxLink.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
+                    className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
                   >
                     <MessageSquare className="size-4" />
                     MAX
@@ -192,7 +205,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 )}
                 <a
                   href={`tel:${companyInfo.contacts.phoneTel}`}
-                  className="inline-flex items-center gap-2 rounded-xl bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-foreground/20"
                 >
                   <Phone className="size-4" />
                   {companyInfo.contacts.phoneFormatted}
@@ -202,7 +215,6 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
           )}
         </div>
 
-        {/* Form */}
         <div className="rounded-2xl bg-background p-6 shadow-2xl sm:p-8">
           {submitted ? (
             <div className="py-8 text-center">
@@ -252,7 +264,6 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 />
               </div>
 
-              {/* Fleet size */}
               {!SIMPLIFIED && (
                 <fieldset className="space-y-2">
                   <legend className="text-sm font-medium text-foreground">
@@ -267,7 +278,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                           type="button"
                           onClick={() => setFleet(option.value)}
                           className={cn(
-                            "rounded-xl border px-3 py-2 text-xs font-semibold transition-colors",
+                            "rounded-full border px-3 py-2 text-xs font-semibold transition-colors",
                             active
                               ? "border-accent bg-accent text-accent-foreground shadow-sm"
                               : "border-border bg-card text-foreground hover:border-accent"
@@ -281,7 +292,6 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 </fieldset>
               )}
 
-              {/* Needs */}
               {!SIMPLIFIED && (
                 <fieldset className="space-y-2">
                   <legend className="text-sm font-medium text-foreground">
@@ -296,7 +306,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                           className={cn(
                             "flex cursor-pointer items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
                             checked
-                              ? "border-accent bg-accent/5 text-foreground"
+                              ? "border-accent bg-secondary text-foreground"
                               : "border-border bg-card text-foreground hover:border-accent"
                           )}
                         >
@@ -313,7 +323,6 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 </fieldset>
               )}
 
-              {/* 152-ФЗ согласие на обработку персональных данных */}
               <div className="flex items-start gap-2 text-xs text-muted-foreground">
                 <Checkbox
                   id="consent-final"
@@ -349,7 +358,8 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 type="submit"
                 size="lg"
                 disabled={loading || !consent}
-                className="h-12 w-full rounded-xl bg-accent text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
+                className="h-12 w-full rounded-full text-base font-semibold text-white shadow-lg hover:opacity-90"
+                style={{ background: "var(--orange)" }}
               >
                 {loading ? "Отправка..." : "Получить расчёт"}
                 {!loading && <ArrowRight className="ml-2 size-4" />}
@@ -371,6 +381,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 <Button
                   type="button"
                   variant="outline"
+                  className="rounded-full"
                   onClick={() => {
                     if (typeof window !== "undefined") {
                       window.dispatchEvent(new Event("infopilot:open"));
@@ -379,7 +390,7 @@ export function FinalCtaForm({ className }: FinalCtaFormProps) {
                 >
                   <Bot className="mr-2 size-4" /> Чат ИнфоПилот
                 </Button>
-                <Button type="button" variant="outline" asChild>
+                <Button type="button" variant="outline" className="rounded-full" asChild>
                   <a href={`tel:${companyInfo.contacts.phoneTel}`}>
                     <Phone className="mr-2 size-4" /> Позвонить
                   </a>

@@ -20,6 +20,14 @@ interface Step {
   icon: LucideIcon;
 }
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 const steps: Step[] = [
   {
     number: "01",
@@ -61,6 +69,12 @@ export function HowItWorks({ className }: HowItWorksProps) {
       )}
     >
       <div className="mx-auto max-w-3xl text-center">
+        <div className="mb-4 flex justify-center">
+          <LavenderBadge>
+            <Send className="size-3.5" />
+            4 шага
+          </LavenderBadge>
+        </div>
         <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Как это работает
         </h2>
@@ -82,12 +96,15 @@ export function HowItWorks({ className }: HowItWorksProps) {
               )}
 
               <div className="flex flex-col items-center text-center">
-                <div className="font-heading text-5xl font-bold tracking-tighter text-foreground/10 sm:text-6xl">
+                <div className="font-heading text-5xl font-bold tracking-tighter text-accent/8 sm:text-6xl">
                   {step.number}
                 </div>
 
-                <div className="-mt-4 flex size-12 items-center justify-center rounded-xl bg-primary/10">
-                  <Icon className="size-5 text-primary" />
+                <div
+                  className="-mt-4 flex size-12 items-center justify-center bg-secondary"
+                  style={{ borderRadius: "14px" }}
+                >
+                  <Icon className="size-5 text-accent" />
                 </div>
 
                 <h3 className="mt-4 text-base font-semibold text-foreground">
@@ -95,7 +112,7 @@ export function HowItWorks({ className }: HowItWorksProps) {
                 </h3>
 
                 {step.duration && (
-                  <span className="mt-1 inline-block rounded-full bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
+                  <span className="mt-1 inline-block rounded-full bg-secondary px-3 py-0.5 text-xs font-medium text-secondary-foreground">
                     {step.duration}
                   </span>
                 )}

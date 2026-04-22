@@ -21,6 +21,14 @@ interface PackagesGridProps {
   className?: string;
 }
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 const iconMap: Record<string, LucideIcon> = {
   Sparkles,
   Crown,
@@ -69,6 +77,12 @@ export function PackagesGrid({ className }: PackagesGridProps) {
       )}
     >
       <div className="mx-auto max-w-3xl text-center">
+        <div className="mb-3 flex justify-center">
+          <LavenderBadge>
+            <Crown className="size-3.5" />
+            3 пакета решений
+          </LavenderBadge>
+        </div>
         <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
           Три пакета — под размер вашего парка
         </h2>
@@ -83,6 +97,7 @@ export function PackagesGrid({ className }: PackagesGridProps) {
           const Icon = iconMap[pkg.iconName];
           const isSelected = highlightedPackageId === pkg.id;
           const isHighlighted = pkg.highlighted;
+          const isEnterprise = pkg.id === "flot-pro";
 
           return (
             <motion.div
@@ -92,62 +107,127 @@ export function PackagesGrid({ className }: PackagesGridProps) {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
               className={cn(
-                "relative flex flex-col rounded-2xl border bg-background p-6 transition-all sm:p-8",
+                "relative flex flex-col rounded-2xl p-6 transition-all sm:p-8",
                 isHighlighted
-                  ? "border-accent shadow-xl"
-                  : "border-border hover:shadow-lg",
-                isSelected && "ring-2 ring-accent ring-offset-2 ring-offset-card"
+                  ? "bg-primary shadow-xl"
+                  : "border bg-card",
+                isSelected && !isHighlighted && "ring-2 ring-accent ring-offset-2 ring-offset-card"
               )}
             >
               {isHighlighted && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-xs font-semibold text-accent-foreground shadow-md">
+                <div
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-semibold text-white shadow-md"
+                  style={{ background: "var(--orange)" }}
+                >
                   Рекомендуем
                 </div>
               )}
 
-              <div className="mb-5 flex size-14 items-center justify-center rounded-full bg-accent/10 text-accent">
+              <div
+                className={cn(
+                  "mb-5 flex size-14 items-center justify-center rounded-full",
+                  isHighlighted
+                    ? "bg-white/10 text-white"
+                    : "bg-accent/10 text-accent"
+                )}
+              >
                 {Icon ? <Icon className="size-7" /> : null}
               </div>
 
-              <h3 className="text-2xl font-bold text-foreground">{pkg.name}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">{pkg.tagline}</p>
-              <p className="mt-3 text-sm font-medium text-foreground">
+              <h3
+                className={cn(
+                  "text-2xl font-bold",
+                  isHighlighted ? "text-primary-foreground" : "text-foreground"
+                )}
+              >
+                {pkg.name}
+              </h3>
+              <p
+                className={cn(
+                  "mt-1 text-sm",
+                  isHighlighted
+                    ? "text-primary-foreground/70"
+                    : "text-muted-foreground"
+                )}
+              >
+                {pkg.tagline}
+              </p>
+              <p
+                className={cn(
+                  "mt-3 text-sm font-medium",
+                  isHighlighted ? "text-primary-foreground/90" : "text-foreground"
+                )}
+              >
                 {pkg.targetAudience}
               </p>
 
               <ul className="mt-6 flex-1 space-y-3">
                 {pkg.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2 text-sm">
-                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-accent" />
-                    <span className="text-muted-foreground">{feature}</span>
+                    <CheckCircle2
+                      className={cn(
+                        "mt-0.5 size-4 shrink-0",
+                        isHighlighted ? "text-accent" : "text-accent"
+                      )}
+                    />
+                    <span
+                      className={
+                        isHighlighted
+                          ? "text-primary-foreground/80"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      {feature}
+                    </span>
                   </li>
                 ))}
               </ul>
 
               <div className="mt-6 space-y-3">
-                <p className="text-lg font-bold text-foreground">
+                <p
+                  className={cn(
+                    "text-lg font-bold",
+                    isHighlighted ? "text-primary-foreground" : "text-foreground"
+                  )}
+                >
                   {pkg.priceFrom}
                 </p>
                 {pkg.savingsLabel && (
-                  <span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                  <span className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-secondary-foreground">
                     {pkg.savingsLabel}
                   </span>
                 )}
               </div>
 
-              <Button
-                size="lg"
-                onClick={() => setModalState({ open: true, pkg })}
-                className={cn(
-                  "mt-6 h-12 w-full rounded-xl text-base font-semibold",
-                  isHighlighted
-                    ? "bg-accent text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
-                    : "bg-primary text-primary-foreground hover:bg-primary/90"
-                )}
-              >
-                {pkg.ctaLabel}
-                <ArrowRight className="ml-2 size-4" />
-              </Button>
+              {isHighlighted ? (
+                <Button
+                  size="lg"
+                  onClick={() => setModalState({ open: true, pkg })}
+                  className="mt-6 h-12 w-full rounded-full text-base font-semibold text-white shadow-lg hover:opacity-90"
+                  style={{ background: "var(--orange)" }}
+                >
+                  {pkg.ctaLabel}
+                  <ArrowRight className="ml-2 size-4" />
+                </Button>
+              ) : isEnterprise ? (
+                <Button
+                  size="lg"
+                  onClick={() => setModalState({ open: true, pkg })}
+                  className="mt-6 h-12 w-full rounded-full border border-border bg-transparent text-base font-semibold text-foreground hover:bg-muted"
+                >
+                  {pkg.ctaLabel}
+                  <ArrowRight className="ml-2 size-4" />
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  onClick={() => setModalState({ open: true, pkg })}
+                  className="mt-6 h-12 w-full rounded-full bg-accent text-base font-semibold text-accent-foreground hover:bg-accent/90"
+                >
+                  {pkg.ctaLabel}
+                  <ArrowRight className="ml-2 size-4" />
+                </Button>
+              )}
               <Link
                 href={pkg.ctaHref}
                 className="mt-2 block text-center text-xs text-muted-foreground hover:underline"
@@ -159,7 +239,6 @@ export function PackagesGrid({ className }: PackagesGridProps) {
         })}
       </div>
 
-      {/* Мини-калькулятор подбора */}
       <div className="mt-12 rounded-2xl border bg-background p-6 sm:p-8">
         <div className="text-center">
           <h3 className="font-heading text-xl font-bold text-foreground sm:text-2xl">
@@ -179,7 +258,7 @@ export function PackagesGrid({ className }: PackagesGridProps) {
                 type="button"
                 onClick={() => setSelectedFleet(option.value)}
                 className={cn(
-                  "rounded-xl border px-5 py-2.5 text-sm font-semibold transition-colors",
+                  "rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors",
                   active
                     ? "border-accent bg-accent text-accent-foreground shadow-md"
                     : "border-border bg-card text-foreground hover:border-accent hover:text-accent"

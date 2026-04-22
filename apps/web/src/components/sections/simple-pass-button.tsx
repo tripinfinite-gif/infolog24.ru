@@ -8,23 +8,19 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface SimplePassButtonProps {
-  zone: string;        // "МКАД" / "ТТК" / "Садовое" / "Временный"
-  price: string;       // "12 000" / "4 500"
-  period: string;      // "за машину / год" / "до 10 суток"
+  zone: string;
+  price: string;
+  period: string;
   dark?: boolean;
+  className?: string;
 }
 
-/**
- * Кнопка "Оформить" в карточке SimplePass.
- * Открывает QuickLeadModal с контекстом зоны и цены,
- * вместо редиректа на /services/<slug> — минимизирует количество
- * кликов клиента до заявки.
- */
 export function SimplePassButton({
   zone,
   price,
   period,
   dark = false,
+  className,
 }: SimplePassButtonProps) {
   const [open, setOpen] = useState(false);
 
@@ -47,10 +43,11 @@ export function SimplePassButton({
       <Button
         onClick={() => setOpen(true)}
         className={cn(
-          "mt-6 w-full rounded-xl",
+          "mt-6 w-full rounded-full",
           dark
             ? "bg-accent text-accent-foreground hover:bg-accent/90"
-            : "bg-primary text-primary-foreground hover:bg-primary/90"
+            : "bg-primary text-primary-foreground hover:bg-primary/90",
+          className
         )}
       >
         Оформить

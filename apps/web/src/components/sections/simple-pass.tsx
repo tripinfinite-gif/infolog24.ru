@@ -22,6 +22,14 @@ interface SimplePassCard {
   href: string;
 }
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 const services: SimplePassCard[] = [
   {
     zone: "МКАД",
@@ -93,6 +101,12 @@ export function SimplePass({ className }: SimplePassProps) {
     >
       <div>
         <div className="mb-6 sm:mb-8">
+          <div className="mb-3">
+            <LavenderBadge>
+              <MapPin className="size-3.5" />
+              Только пропуск
+            </LavenderBadge>
+          </div>
           <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Нужен только пропуск? Без проблем.
           </h2>
@@ -197,6 +211,7 @@ export function SimplePass({ className }: SimplePassProps) {
                   price={service.price}
                   period={service.period}
                   dark={service.dark}
+                  className="rounded-full w-full justify-center"
                 />
                 <Link
                   href={service.href}
@@ -210,15 +225,14 @@ export function SimplePass({ className }: SimplePassProps) {
         </div>
       </div>
 
-      {/* Existing calculator */}
       <Calculator />
 
-      {/* Dual CTAs after calculator */}
       <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
         <Button
           asChild
           size="lg"
-          className="h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 hover:bg-accent/90"
+          className="h-12 rounded-full px-8 text-base font-semibold text-white shadow-lg hover:opacity-90"
+          style={{ background: "var(--orange)" }}
         >
           <Link href="#zayavka">
             Оформить пропуск
@@ -229,7 +243,7 @@ export function SimplePass({ className }: SimplePassProps) {
           asChild
           size="lg"
           variant="secondary"
-          className="h-12 rounded-xl border border-primary/30 px-8 text-base font-semibold"
+          className="h-12 rounded-full border border-primary/30 px-8 text-base font-semibold"
         >
           <Link href="#packages">Пакет может быть дешевле — сравнить</Link>
         </Button>

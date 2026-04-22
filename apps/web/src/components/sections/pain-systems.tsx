@@ -1,4 +1,5 @@
 import {
+  AlertTriangle,
   ArrowRight,
   Building,
   Clock,
@@ -18,6 +19,14 @@ interface PainSystemsProps {
   className?: string;
 }
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 const iconMap: Record<string, LucideIcon> = {
   FileCheck,
   Satellite,
@@ -27,16 +36,14 @@ const iconMap: Record<string, LucideIcon> = {
   Stethoscope,
 };
 
-// Шесть тонов на основе токенов проекта (без хардкода Tailwind-цветов).
-// Дают визуальную дифференциацию 6 систем, оставаясь внутри дизайн-системы.
-const tonePalette = [
-  "bg-destructive/10 text-destructive",
-  "bg-primary/10 text-primary",
-  "bg-accent/15 text-accent",
-  "bg-foreground/10 text-foreground",
-  "bg-primary/15 text-primary",
-  "bg-destructive/15 text-destructive",
-];
+const tintMap: Record<string, { tint: string; fg: string }> = {
+  propusk:  { tint: "#FFE6E0", fg: "#D32F2F" },
+  rnis:     { tint: "#E8ECFF", fg: "var(--accent)" },
+  etrn:     { tint: "#E8ECFF", fg: "var(--accent)" },
+  goslog:   { tint: "#FFEDD5", fg: "#F97316" },
+  tahograf: { tint: "#EEF2FF", fg: "var(--accent)" },
+  dk:       { tint: "#DBEAFE", fg: "var(--accent)" },
+};
 
 export function PainSystems({ className }: PainSystemsProps) {
   return (
@@ -47,6 +54,12 @@ export function PainSystems({ className }: PainSystemsProps) {
       )}
     >
       <div className="mx-auto max-w-3xl text-center">
+        <div className="mb-4 flex justify-center">
+          <LavenderBadge>
+            <AlertTriangle className="size-3.5" />
+            6 систем регуляторики
+          </LavenderBadge>
+        </div>
         <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
           6 систем вместо одной
         </h2>
@@ -57,21 +70,21 @@ export function PainSystems({ className }: PainSystemsProps) {
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-        {painSystems.map((system, index) => {
+        {painSystems.map((system) => {
           const Icon = iconMap[system.iconName];
-          const tone = tonePalette[index % tonePalette.length];
+          const colors = tintMap[system.id] ?? { tint: "#E8ECFF", fg: "var(--accent)" };
           return (
             <div
               key={system.id}
               className="group relative flex flex-col rounded-2xl border bg-background p-6 transition-shadow hover:shadow-lg"
             >
               <div
-                className={cn(
-                  "mb-4 flex size-12 items-center justify-center rounded-full",
-                  tone
-                )}
+                className="mb-4 flex size-12 items-center justify-center rounded-full"
+                style={{ background: colors.tint }}
               >
-                {Icon ? <Icon className="size-6" /> : null}
+                {Icon ? (
+                  <Icon className="size-6" style={{ color: colors.fg }} />
+                ) : null}
               </div>
               <h3 className="text-lg font-bold text-foreground">
                 {system.name}
@@ -84,15 +97,15 @@ export function PainSystems({ className }: PainSystemsProps) {
         })}
       </div>
 
-      <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-accent/20 bg-accent/5 p-6 text-center">
-        <p className="text-base font-medium text-foreground sm:text-lg">
-          Мы собрали всё в одно окно. Плюс добавили то, чего ни у кого нет —
-          ИИ-диспетчера, который решает проблемы на трассе за водителя.
+      <div className="mx-auto mt-10 max-w-2xl overflow-hidden rounded-2xl bg-primary p-6 text-center text-primary-foreground">
+        <p className="text-base font-medium text-primary-foreground/85 sm:text-lg">
+          Мы собрали всё в одно окно. Плюс добавили то, чего ни у кого нет —{" "}
+          <span className="text-primary-foreground font-semibold">ИИ-диспетчера</span>, который решает проблемы на трассе за водителя.
         </p>
         <Button
           asChild
           size="lg"
-          className="mt-5 h-12 rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl"
+          className="mt-5 h-12 rounded-full border border-white/30 bg-transparent px-8 text-base font-semibold text-white transition-all hover:bg-white/10"
         >
           <Link href="#packages">
             Посмотреть, как это работает

@@ -44,17 +44,33 @@ const techIconMap: Record<string, LucideIcon> = {
   History,
 };
 
+const scenarioTints: Record<string, { tint: string; fg: string }> = {
+  evakuaciya: { tint: "#FFE6E0", fg: "#D32F2F" },
+  diagnostika: { tint: "#EEF2FF", fg: "var(--accent)" },
+  remont: { tint: "#FFEDD5", fg: "#F97316" },
+  mojki: { tint: "#E8ECFF", fg: "var(--accent)" },
+  strahovanie: { tint: "#DBEAFE", fg: "var(--accent)" },
+  obzhalovanie: { tint: "#FFEDD5", fg: "#F97316" },
+};
+
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
   return (
     <section id="infopilot" className={cn("scroll-mt-24 space-y-6", className)}>
-      {/* Dark hero block */}
       <div className="relative overflow-hidden rounded-3xl bg-primary p-6 sm:p-10 lg:p-14">
         <div
           className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary via-primary to-foreground/80 opacity-90"
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute -top-40 right-0 size-[500px] rounded-full bg-accent/10 blur-3xl"
+          className="pointer-events-none absolute -top-40 right-0 size-[500px] rounded-full bg-accent/8 blur-3xl"
           aria-hidden="true"
         />
         <div
@@ -63,9 +79,11 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
         />
 
         <div className="relative mx-auto max-w-3xl text-center">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-1.5 text-sm text-primary-foreground/80">
-            <Sparkles className="size-4 text-accent" />
-            Флагманский продукт
+          <div className="mb-5 flex justify-center">
+            <LavenderBadge>
+              <Sparkles className="size-3.5 text-accent" />
+              Флагманский продукт
+            </LavenderBadge>
           </div>
 
           <h2 className="font-heading text-3xl font-bold leading-[1.1] tracking-tight text-primary-foreground sm:text-4xl lg:text-5xl">
@@ -82,7 +100,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <OpenChatTrigger className="inline-flex h-13 w-auto items-center justify-center rounded-xl bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl">
+            <OpenChatTrigger className="inline-flex h-13 w-auto items-center justify-center rounded-full bg-accent px-8 text-base font-semibold text-accent-foreground shadow-lg shadow-accent/25 transition-all hover:bg-accent/90 hover:shadow-xl">
               <span className="inline-flex items-center gap-2">
                 <Bot className="size-4" />
                 Открыть AI-ассистента ИнфоПилот
@@ -92,7 +110,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
             <Button
               asChild
               size="lg"
-              className="h-13 rounded-xl border-2 border-primary-foreground/40 !bg-transparent px-8 text-base font-semibold text-primary-foreground hover:!bg-primary-foreground/10"
+              className="h-13 rounded-full border-2 border-primary-foreground/40 !bg-transparent px-8 text-base font-semibold text-primary-foreground hover:!bg-primary-foreground/10"
             >
               <Link href="/infopilot">Подробнее про ИнфоПилот</Link>
             </Button>
@@ -100,7 +118,6 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
         </div>
       </div>
 
-      {/* Scenarios block */}
       <div className="rounded-3xl border bg-card p-6 sm:p-10 lg:p-14">
         <div className="mx-auto max-w-3xl text-center">
           <h3 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
@@ -115,12 +132,20 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
         <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {infopilotScenarios.map((scenario) => {
             const Icon = scenarioIconMap[scenario.iconName];
+            const tintConfig = scenarioTints[scenario.id];
             return (
               <div
                 key={scenario.id}
                 className="group flex flex-col rounded-2xl border bg-background p-6 transition-shadow hover:shadow-lg"
               >
-                <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+                <div
+                  className="mb-4 flex size-12 items-center justify-center rounded-full"
+                  style={
+                    tintConfig
+                      ? { backgroundColor: tintConfig.tint, color: tintConfig.fg }
+                      : undefined
+                  }
+                >
                   {Icon ? <Icon className="size-6" /> : null}
                 </div>
                 <h4 className="text-lg font-bold text-foreground">
@@ -137,7 +162,6 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
           })}
         </div>
 
-        {/* Tech features strip */}
         <div className="mt-12 border-t pt-10">
           <h3 className="text-center font-heading text-xl font-bold text-foreground sm:text-2xl">
             Что внутри технологически
@@ -150,7 +174,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
                   key={feature.title}
                   className="flex flex-col items-center text-center"
                 >
-                  <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-primary/5 text-primary">
+                  <div className="mb-3 flex size-12 items-center justify-center rounded-full bg-secondary text-accent">
                     {Icon ? <Icon className="size-6" /> : null}
                   </div>
                   <h4 className="text-base font-bold text-foreground">
@@ -165,8 +189,7 @@ export function InfopilotShowcase({ className }: InfopilotShowcaseProps) {
           </div>
         </div>
 
-        {/* Social proof */}
-        <div className="mt-10 flex flex-col items-center gap-2 rounded-2xl bg-accent/5 p-6 text-center sm:flex-row sm:justify-center sm:gap-4">
+        <div className="mt-10 flex flex-col items-center gap-2 rounded-2xl bg-secondary p-6 text-center sm:flex-row sm:justify-center sm:gap-4">
           <Sparkles className="size-5 text-accent" />
           <p className="text-sm font-medium text-foreground sm:text-base">
             На пилотном запуске —{" "}

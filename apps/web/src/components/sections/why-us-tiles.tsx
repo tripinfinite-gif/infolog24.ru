@@ -20,6 +20,14 @@ interface Tile {
   accent?: boolean;
 }
 
+function LavenderBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 const tiles: Tile[] = [
   {
     title: "10 лет на рынке",
@@ -53,6 +61,12 @@ export function WhyUsTiles({ className }: WhyUsTilesProps) {
   return (
     <section className={cn("space-y-8", className)}>
       <div className="mx-auto max-w-3xl text-center">
+        <div className="mb-4 flex justify-center">
+          <LavenderBadge>
+            <ShieldCheck className="size-3.5" />
+            Почему мы
+          </LavenderBadge>
+        </div>
         <h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
           Почему мы
         </h2>
@@ -70,7 +84,7 @@ export function WhyUsTiles({ className }: WhyUsTilesProps) {
               className={cn(
                 "group flex flex-col rounded-3xl p-6 transition-shadow hover:shadow-lg sm:p-8 lg:p-10",
                 tile.dark && "bg-primary text-primary-foreground",
-                tile.accent && "bg-accent text-accent-foreground",
+                tile.accent && "bg-primary text-primary-foreground",
                 !tile.dark && !tile.accent && "border bg-card text-foreground"
               )}
             >
@@ -78,7 +92,7 @@ export function WhyUsTiles({ className }: WhyUsTilesProps) {
                 className={cn(
                   "mb-5 flex size-12 items-center justify-center rounded-2xl",
                   tile.dark && "bg-primary-foreground/10 text-accent",
-                  tile.accent && "bg-accent-foreground/10 text-accent-foreground",
+                  tile.accent && "bg-primary-foreground/10 text-primary-foreground",
                   !tile.dark && !tile.accent && "bg-primary/10 text-primary"
                 )}
               >
@@ -90,7 +104,7 @@ export function WhyUsTiles({ className }: WhyUsTilesProps) {
                 className={cn(
                   "mt-2 text-sm leading-relaxed sm:text-base",
                   tile.dark && "text-primary-foreground/75",
-                  tile.accent && "text-accent-foreground/85",
+                  tile.accent && "text-primary-foreground/75",
                   !tile.dark && !tile.accent && "text-muted-foreground"
                 )}
               >

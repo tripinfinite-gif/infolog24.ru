@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Calculator as CalcIcon, Clock } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 
 import { OpenChatTrigger } from "@/components/chat/open-chat-trigger";
 import { QuickLeadModal } from "@/components/forms/quick-lead-modal";
@@ -89,6 +90,14 @@ function formatRub(value: number): string {
   return currencyFormatter.format(value).replace(",00", "");
 }
 
+function LavenderBadge({ children }: { children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-[12px] font-semibold text-secondary-foreground">
+      {children}
+    </span>
+  );
+}
+
 function findBasePrice(zone: ZoneId, passType: PassType): number {
   return (
     PRICING.find((r) => r.zone === zone && r.passType === passType)
@@ -160,9 +169,11 @@ export function MiniCalculator({
     >
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 text-center sm:mb-8">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-accent/10 px-4 py-1.5 text-sm font-medium text-accent">
-            <CalcIcon className="size-3.5" aria-hidden="true" />
-            Узнайте стоимость за 10 секунд
+          <div className="mb-3">
+            <LavenderBadge>
+              <CalcIcon className="size-3.5" aria-hidden="true" />
+              Узнайте стоимость за 10 секунд
+            </LavenderBadge>
           </div>
           <h2
             id="mini-calculator-title"
@@ -276,7 +287,7 @@ export function MiniCalculator({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
               aria-live="polite"
-              className="rounded-xl border border-border bg-muted/40 p-5 sm:p-6"
+              className="rounded-2xl border border-border bg-muted/40 p-5 sm:p-6"
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-1">
@@ -292,7 +303,7 @@ export function MiniCalculator({
                     {result.discount > 0 && (
                       <Badge
                         variant="secondary"
-                        className="bg-accent/15 text-accent hover:bg-accent/15"
+                        className="rounded-full bg-accent/15 text-accent hover:bg-accent/15"
                       >
                         Скидка {Math.round(result.discount * 100)}%
                       </Badge>
@@ -312,7 +323,8 @@ export function MiniCalculator({
                   <Button
                     size="lg"
                     onClick={() => setModalOpen(true)}
-                    className="h-11 rounded-xl bg-accent px-6 text-accent-foreground shadow-md shadow-accent/20 hover:bg-accent/90"
+                    style={{ background: "var(--orange)" }}
+                    className="h-11 rounded-full px-6 text-white shadow-md hover:opacity-90"
                   >
                     Заказать
                     <ArrowRight className="ml-1.5 size-4" />
@@ -328,7 +340,7 @@ export function MiniCalculator({
               </span>
               <Link
                 href="/calculator"
-                className="font-medium text-primary underline-offset-4 hover:underline"
+                className="rounded-full font-medium text-primary underline-offset-4 hover:underline"
               >
                 Расширенный калькулятор →
               </Link>
