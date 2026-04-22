@@ -142,7 +142,7 @@ export default async function HomePage() {
       <BreadcrumbJsonLd items={[{ name: "Главная", href: "/" }]} />
 
       {/* === HOMEPAGE v2 — PLATFORM === */}
-      <div className="py-6">
+      <div className="mx-auto max-w-[1400px] space-y-8 px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         {/* 1. Hero */}
         <Hero />
 
