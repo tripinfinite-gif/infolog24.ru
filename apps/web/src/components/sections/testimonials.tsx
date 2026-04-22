@@ -82,7 +82,7 @@ export function Testimonials({ testimonials, className }: TestimonialsProps) {
         </div>
       </motion.div>
 
-      <div className="flex gap-4 overflow-x-auto pb-4 sm:gap-6 snap-x snap-mandatory scrollbar-hide">
+      <div className="flex gap-4 overflow-x-auto overflow-y-hidden pb-4 sm:gap-6 snap-x snap-mandatory scrollbar-hide">
         {testimonials.map((testimonial, index) => {
           const isDark = index % 3 === 1;
 
