@@ -1,0 +1,84 @@
+# =============================================================================
+# CUSTOM DOMAINS — Manually-managed Traefik routes
+# =============================================================================
+# Управляется вручную (не Coolify). Добавляет домены к существующим
+# контейнерам без изменения настроек Coolify. Traefik подхватывает изменения
+# автоматически (file provider, watch=true).
+#
+# МЕСТО НА VPS: /data/coolify/proxy/dynamic/custom-domains.yaml
+# КОПИЯ В РЕПО: infologistic-24/tooling/traefik/custom-domains.yaml
+#               personalhab/tooling/traefik/custom-domains.yaml
+#
+# Правила синхронизации: файл редактируется на VPS, затем snapshot копируется
+# сюда вручную (или в ходе следующей сессии). Расхождение = bug, чинить сразу.
+#
+# ДОМЕНЫ И НАЗНАЧЕНИЕ:
+#   infologistic24.ru, www.infologistic24.ru → Coolify app "infolog24.ru"
+#     (uuid: gkohy4rhul9eplsvyxu89vz6, git: redesign/legal-brain)
+#   inlog24.ru, www.inlog24.ru → container "personalhab" (raw Docker, не Coolify)
+#
+# ПЛАН ПЕРЕЕЗДА infologistic24.ru → infolog24.ru:
+#   Когда DNS infolog24.ru переключится на 109.69.18.80:
+#   1. Добавить в rules роутеров infologistic24-*:
+#        || Host(`infolog24.ru`) || Host(`www.infolog24.ru`)
+#   2. Позже удалить infologistic24.ru/www.infologistic24.ru (когда редирект 301
+#      настроен через Cloudflare или в коде приложения)
+#
+# СТАБИЛЬНОСТЬ:
+#   - infologistic24 route ссылается на service@docker (Coolify Docker provider
+#     генерирует имя на основе UUID приложения — стабильно между redeploy)
+#   - inlog24 route ссылается на container name `personalhab` напрямую
+#     (контейнер запущен вручную с фиксированным именем)
+# =============================================================================
+
+http:
+  routers:
+    # --- infologistic24.ru (main site Инфолог24) ---
+    infologistic24-https:
+      rule: "Host(`infologistic24.ru`) || Host(`www.infologistic24.ru`)"
+      entryPoints:
+        - https
+      service: "https-0-gkohy4rhul9eplsvyxu89vz6@docker"
+      tls:
+        certResolver: letsencrypt
+      priority: 100
+
+    infologistic24-http:
+      rule: "Host(`infologistic24.ru`) || Host(`www.infologistic24.ru`)"
+      entryPoints:
+        - http
+      middlewares:
+        - redirect-to-https-custom
+      service: "https-0-gkohy4rhul9eplsvyxu89vz6@docker"
+      priority: 100
+
+    # --- inlog24.ru (Personal Hub) ---
+    personalhab-https:
+      rule: "Host(`inlog24.ru`) || Host(`www.inlog24.ru`)"
+      entryPoints:
+        - https
+      service: personalhab-app
+      tls:
+        certResolver: letsencrypt
+      priority: 100
+
+    personalhab-http:
+      rule: "Host(`inlog24.ru`) || Host(`www.inlog24.ru`)"
+      entryPoints:
+        - http
+      middlewares:
+        - redirect-to-https-custom
+      service: personalhab-app
+      priority: 100
+
+  middlewares:
+    redirect-to-https-custom:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+  services:
+    personalhab-app:
+      loadBalancer:
+        servers:
+          - url: "http://personalhab:3000"
